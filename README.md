@@ -15,4 +15,5 @@ This repository contains a MERN stack application, which is a simple CRUD app bu
 ## Installation
 
 To install the necessary packages for this project, run this command in both the root directory (for backend) and the `client` directory (for frontend):
+```bash
 npm install

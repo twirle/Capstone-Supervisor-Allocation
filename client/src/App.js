@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 // pages & components
-import Home from './pages/home'
-import Navbar from './components/navbar'
+import Home from './pages/Home'
+import Navbar from './components/Navbar'
 
 function App() {
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -17,7 +19,6 @@ function App() {
           </Routes>
         </div>
       </BrowserRouter >
-
     </div >
   );
 }

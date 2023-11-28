@@ -3,8 +3,13 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const studentRoutes = require('./routes/students')
+const userRoutes = require('./routes/user')
+
 
 const app = express();
+
+// Parse JSON requests
+app.use(express.json());
 
 // Logging middleware
 app.use((req, res, next) => {
@@ -12,11 +17,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// Parse JSON requests
-app.use(express.json());
-
-// Set up routes
+// Routes
 app.use('/api/students', studentRoutes);
+app.use('/api/user', userRoutes);
 
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {
@@ -32,13 +35,13 @@ app.get('/', (req, res) => {
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('connected to database')
-        const PORT = process.env.PORT || 5000
+        const PORT = process.env.PORT
         app.listen(PORT, () => {
             console.log('listening for requests on port', PORT)
         })
     })
-    .catch((err) => {
-        console.log(err);
+    .catch((error) => {
+        console.log(error);
     })
 
 module.exports = app

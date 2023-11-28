@@ -1,5 +1,4 @@
-import { useEffect} from 'react'
-
+import { useEffect } from 'react'
 
 // Components
 import StudentDetails from '../components/StudentDetails'

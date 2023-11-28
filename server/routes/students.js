@@ -8,8 +8,12 @@ const {
   deleteStudent,
   updateStudent
 } = require('../controllers/studentController')
+const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router();
+
+// forces the user to be authenticated for route functions
+router.use(requireAuth)
 
 // GET all workouts
 router.get('/', getStudents)

@@ -1,8 +1,11 @@
 import { useState } from "react"
 import { useStudentsContext } from "../hooks/useStudentsContext"
+import { useAuthContext } from "../hooks/useAuthContext"
 
 const StudentForm = () => {
     const { dispatch } = useStudentsContext()
+    const { user } = useAuthContext()
+
     const [name, setName] = useState('')
     const [course, setCourse] = useState('')
     const [faculty, setFaculty] = useState('')
@@ -13,13 +16,20 @@ const StudentForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        // error for not logged in auth
+        if (!user) {
+            setError('You must be logged in.')
+            return
+        }
+
         const student = { name, course, faculty, company }
 
         const response = await fetch('/api/students', {
             method: 'POST',
             body: JSON.stringify(student),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             }
         })
         const json = await response.json()

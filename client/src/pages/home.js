@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 // Components
 import StudentDetails from '../components/StudentDetails'
@@ -7,17 +8,24 @@ import { useStudentsContext } from '../hooks/useStudentsContext'
 
 const Home = () => {
     const { students, dispatch } = useStudentsContext()
+    const { user } = useAuthContext()
 
     useEffect(() => {
         const fetchStudents = async () => {
-            const response = await fetch('/api/students')
+            const response = await fetch('/api/students', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
             const json = await response.json()
 
             if (response.ok) {
                 dispatch({ type: 'SET_STUDENTS', payload: json })
             }
         }
-        fetchStudents()
+        if (user) {
+            fetchStudents()
+        }
     }, [dispatch])
 
     return (

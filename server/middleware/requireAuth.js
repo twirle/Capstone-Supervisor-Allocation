@@ -3,14 +3,14 @@ const User = require('../models/userModel')
 
 const requireAuth = async (req, res, next) => {
     // to verify user authentication
-    const { authorisation } = req.headers()
+    const { authorization } = req.headers
 
-    if (!authorisation) {
-        return res.status(401).json({ error: 'Authorisation token required.' })
+    if (!authorization) {
+        return res.status(401).json({ error: 'Authorization token required.' })
     }
 
     // split token string to get the token
-    const token = authorisation.split(' ')[1]
+    const token = authorization.split(' ')[1]
 
     // grab id from token to verify using jsonwebtoken
     try {

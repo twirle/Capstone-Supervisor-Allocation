@@ -27,7 +27,7 @@ const getStudent = async (req, res) => {
 
 // create a new Student
 const createStudent = async (req, res) => {
-    const { name, course, faculty, company } = req.body
+    const { name, course, faculty, company, role } = req.body
 
     let emptyFields = []
 
@@ -43,13 +43,16 @@ const createStudent = async (req, res) => {
     if (!company) {
         emptyFields.push('company')
     }
+    if (!role) {
+        emptyFields.push('company')
+    }
     if (emptyFields.length > 0) {
         return res.status(400).json({ error: 'Please fill in all fields.', emptyFields })
     }
 
     // add to the database
     try {
-        const student = await Student.create({ name, course, faculty, company })
+        const student = await Student.create({ name, course, faculty, company, role })
         res.status(200).json(student)
     } catch (error) {
         res.status(400).json({ error: error.message })

@@ -35,7 +35,7 @@ const Home = () => {
                     <StudentDetails key={student._id} student={student} />
                 ))}
             </div>
-            <StudentForm />ππ
+            <StudentForm />
         </div>
     )
 }

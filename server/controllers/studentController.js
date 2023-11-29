@@ -27,9 +27,13 @@ const getStudent = async (req, res) => {
 
 // create a new Student
 const createStudent = async (req, res) => {
-    const { name, course, faculty, company, role } = req.body
+    const { name, course, faculty, company, assignedMentor } = req.body
 
     let emptyFields = []
+    // check if admin
+    if (!['admin'].includes(req.user.role)) {
+        return res.status(403).json({ error: 'Not authorized to create a student' });
+    }
 
     if (!name) {
         emptyFields.push('name')
@@ -43,16 +47,13 @@ const createStudent = async (req, res) => {
     if (!company) {
         emptyFields.push('company')
     }
-    if (!role) {
-        emptyFields.push('company')
-    }
     if (emptyFields.length > 0) {
         return res.status(400).json({ error: 'Please fill in all fields.', emptyFields })
     }
 
     // add to the database
     try {
-        const student = await Student.create({ name, course, faculty, company, role })
+        const student = await Student.create({ name, course, faculty, company, assignedMentor })
         res.status(200).json(student)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -78,22 +79,20 @@ const deleteStudent = async (req, res) => {
 
 // update a Student
 const updateStudent = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
+    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'No such Student' })
+    try {
+        const student = await Student.findByIdAndUpdate(id, updateData, { new: true });
+        if (!student) {
+            return res.status(404).json({ error: 'No such student' });
+        }
+        res.status(200).json(student);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
+};
 
-    const student = await Student.findOneAndUpdate({ _id: id }, {
-        ...req.body
-    })
-
-    if (!student) {
-        return res.status(400).json({ error: 'No such Student' })
-    }
-
-    res.status(200).json(student)
-}
 
 module.exports = {
     getStudents,

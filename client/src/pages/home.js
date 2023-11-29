@@ -1,43 +1,13 @@
-import { useEffect } from 'react'
-import { useAuthContext } from '../hooks/useAuthContext'
-
-// Components
-import StudentDetails from '../components/StudentDetails'
-import StudentForm from '../components/StudentForm'
-import { useStudentsContext } from '../hooks/useStudentsContext'
-
+import { useAuthContext } from "../hooks/useAuthContext";
 const Home = () => {
-    const { students, dispatch } = useStudentsContext()
-    const { user } = useAuthContext()
-
-    useEffect(() => {
-        const fetchStudents = async () => {
-            const response = await fetch('/api/students', {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            const json = await response.json()
-
-            if (response.ok) {
-                dispatch({ type: 'SET_STUDENTS', payload: json })
-            }
-        }
-        if (user) {
-            fetchStudents()
-        }
-    }, [dispatch])
+    // const { user } = useAuthContext();
 
     return (
         <div className="home">
-            <div className="students">
-                {students && students.map((student) => (
-                    <StudentDetails key={student._id} student={student} />
-                ))}
-            </div>
-            <StudentForm />
+            <h1>Welcome to the Dashboard</h1>
+            {/* Other dashboard content */}
         </div>
-    )
+    );
 }
 
-export default Home
+export default Home;

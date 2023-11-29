@@ -3,7 +3,7 @@ import { useAuthContext } from './useAuthContext'
 
 export const useLogin = () => {
     const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false); // Initialized to false
+    const [isLoading, setIsLoading] = useState(false);
     const { dispatch } = useAuthContext();
 
     const login = async (email, password) => {
@@ -21,9 +21,10 @@ export const useLogin = () => {
             if (!response.ok) {
                 setError(json.error);
             } else {
-                localStorage.setItem('user', JSON.stringify(json));
+                localStorage.setItem('user', JSON.stringify({ email: json.email, token: json.token, role: json.role }));
                 dispatch({ type: 'LOGIN', payload: json });
             }
+
         } catch (err) {
             setError('Failed to login');
         }

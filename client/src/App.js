@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthContext } from './hooks/useAuthContext'
 
@@ -7,7 +6,8 @@ import Home from './pages/Home'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
-import { AuthContext } from './context/AuthContext'
+import Student from './pages/Student'
+import ManageStudents from './pages/ManageStudents'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -30,6 +30,19 @@ function App() {
               path="/signup"
               element={!loading && (!user ? <Signup /> : <Navigate to="/" />)}
             />
+            <Route
+              path="/students"
+              element={<Student />}
+            // limit to only faculty leads later
+            // {user && user.role === 'faculty_lead' && <Link to="/students">Students</Link>}
+
+            />
+            <Route
+              path='/managestudents'
+              element={<ManageStudents />}
+            />
+
+
           </Routes>
         </div>
       </BrowserRouter >

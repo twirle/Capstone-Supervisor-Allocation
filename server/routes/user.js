@@ -9,7 +9,7 @@ const router = express.Router()
 router.post('/login', loginUser)
 
 // sign up route
-router.post('/signup', signupUser)
+// router.post('/signup', signupUser)
 
 
 module.exports = router

@@ -13,9 +13,15 @@ const Navbar = () => {
     <header>
       <div className="container">
         <Link to="/">
-          <h1>Students List</h1>
+          <h1>IWSP Mentor-Student Assignments</h1>
         </Link>
         <nav>
+          {user && user.role === 'admin' && (
+            <div>
+              <Link to="/students">Students</Link>
+              <Link to="/managestudents">Manage Students</Link>
+            </div>
+          )}
           {user && (
             <div>
               <span> {user.email}</span>
@@ -28,6 +34,7 @@ const Navbar = () => {
               <Link to="/signup">Signup</Link>
             </div>
           )}
+
         </nav>
       </div>
     </header>

@@ -8,7 +8,7 @@ const {
   deleteStudent,
   updateStudent
 } = require('../controllers/studentController')
-const requireAuth = require('../middleware/requireAuth')
+const { requireAuth, checkRole } = require('../middleware/requireAuth')
 
 const router = express.Router();
 

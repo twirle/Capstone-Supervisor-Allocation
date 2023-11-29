@@ -24,7 +24,7 @@ export const studentsReducer = (state, action) => {
 
 export const StudentContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(studentsReducer, {
-        students: null
+        students: []
     })
 
     return (

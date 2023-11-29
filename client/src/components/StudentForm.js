@@ -6,10 +6,13 @@ const StudentForm = () => {
     const { dispatch } = useStudentsContext()
     const { user } = useAuthContext()
 
+    // const [userId, setUserId] = useState('');
     const [name, setName] = useState('')
     const [course, setCourse] = useState('')
     const [faculty, setFaculty] = useState('')
     const [company, setCompany] = useState('')
+    const [assignedMentor, setAssignedMentor] = useState('');
+
     const [error, setError] = useState('')
     const [emptyFields, setEmptyFields] = useState([])
 
@@ -22,7 +25,8 @@ const StudentForm = () => {
             return
         }
 
-        const student = { name, course, faculty, company }
+        const student = { name, course, faculty, company, assignedMentor };
+
 
         const response = await fetch('/api/students', {
             method: 'POST',
@@ -36,13 +40,15 @@ const StudentForm = () => {
 
         if (!response.ok) {
             setError(json.error)
-            setEmptyFields(json.emptyFields)
+            // setEmptyFields(json.emptyFields)
+            setEmptyFields(json.emptyFields || []);
         }
         if (response.ok) {
             setName('')
             setCourse('')
             setFaculty('')
             setCompany('')
+            setAssignedMentor('')
             setError(null)
             setEmptyFields([])
             console.log('New student added', json)
@@ -54,6 +60,14 @@ const StudentForm = () => {
     return (
         <form className="create" onSubmit={handleSubmit}>
             <h3>Add a new Student</h3>
+
+            {/* <label>User ID</label>
+            <input
+                type="text"
+                onChange={(e) => setUserId(e.target.value)}
+                value={userId}
+                className={emptyFields.includes('userId') ? 'error' : ''}
+            /> */}
 
             <label>Student Name</label>
             <input
@@ -85,6 +99,14 @@ const StudentForm = () => {
                 onChange={(e) => setCompany(e.target.value)}
                 value={company}
                 className={emptyFields.includes('company') ? 'error' : ''}
+            />
+
+            <label>Assigned To (Mentor)</label>
+            <input
+                type="text"
+                onChange={(e) => setAssignedMentor(e.target.value)}
+                value={assignedMentor}
+                className={emptyFields.includes('assignedMentor') ? 'error' : ''}
             />
 
             <button>Add Student</button>

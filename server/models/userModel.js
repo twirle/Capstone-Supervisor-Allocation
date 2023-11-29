@@ -19,7 +19,7 @@ const userSchema = new Schema({
         enum: ['admin', 'faculty_lead', 'mentor', 'student'],
         required: true
     },
-    assignedTo: {
+    assignedMentor: {
         type: mongoose.Schema.Types.ObjectId
     }
 })

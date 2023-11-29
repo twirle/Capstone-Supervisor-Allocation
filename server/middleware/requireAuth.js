@@ -17,7 +17,7 @@ const requireAuth = async (req, res, next) => {
         const { _id } = jwt.verify(token, process.env.SECRET)
 
         // grab _id from token if verification was success
-        req.user = await User.findOne({ _id }).select('_id')
+        req.user = await User.findOne({ _id }).select('_id role')
         next()
 
     } catch (error) {
@@ -26,4 +26,12 @@ const requireAuth = async (req, res, next) => {
     }
 }
 
-module.exports = requireAuth
+const checkRole = (roles) => (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+        return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+};
+
+
+module.exports = { requireAuth, checkRole }

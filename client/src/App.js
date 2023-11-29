@@ -7,7 +7,7 @@ import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Student from './pages/Student'
-import ManageStudents from './pages/ManageStudents'
+import AddStudent from './pages/AddStudent'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -28,7 +28,7 @@ function App() {
             />
             <Route
               path="/signup"
-              element={!loading && (!user ? <Signup /> : <Navigate to="/" />)}
+              element={!loading && (user && user.role === 'admin' ? <Signup /> : <Navigate to="/" />)}
             />
             <Route
               path="/students"
@@ -38,8 +38,8 @@ function App() {
 
             />
             <Route
-              path='/managestudents'
-              element={<ManageStudents />}
+              path='/AddStudent'
+              element={<AddStudent />}
             />
 
 

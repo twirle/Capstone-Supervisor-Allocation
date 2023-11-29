@@ -18,8 +18,9 @@ const Navbar = () => {
         <nav>
           {user && user.role === 'admin' && (
             <div>
-              <Link to="/students">Students</Link>
-              <Link to="/managestudents">Manage Students</Link>
+              <Link to="/addstudent">Add Students</Link>
+              <Link to="/students">Manage Students</Link>
+              <Link to="/signup">Signup</Link>
             </div>
           )}
           {user && (
@@ -31,7 +32,6 @@ const Navbar = () => {
           {!user && (
             <div>
               <Link to="/login">Login</Link>
-              <Link to="/signup">Signup</Link>
             </div>
           )}
 

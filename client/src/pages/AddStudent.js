@@ -3,7 +3,7 @@ import { useAuthContext } from '../hooks/useAuthContext';
 import { useNavigate } from 'react-router-dom';
 import StudentForm from '../components/StudentForm';
 
-const ManageStudents = () => {
+const AddStudent = () => {
     
     const { user } = useAuthContext();
     const navigate = useNavigate();
@@ -23,4 +23,4 @@ const ManageStudents = () => {
     );
 };
 
-export default ManageStudents;
+export default AddStudent;

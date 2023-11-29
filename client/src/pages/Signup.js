@@ -11,7 +11,7 @@ const Signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        await signup(email, password)
+        await signup(email, password, role)
     }
 
     // admin check
@@ -41,11 +41,11 @@ const Signup = () => {
                 <option value="">Select a role</option>
                 <option value="student">Student</option>
                 <option value="mentor">Mentor</option>
-                <option value="faculty_lead">Faculty Lead</option>
+                <option value="admin">Admin</option>
                 {/* Add other roles as needed */}
             </select>
 
-            <button disabled={isLoading}>Sign Up</button>
+            <button className="signup-button" disabled={isLoading}>Sign Up</button>
             {error && <div className="error">{error}</div>}
         </form>
     )

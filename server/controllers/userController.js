@@ -12,26 +12,25 @@ const loginUser = async (req, res) => {
         const user = await User.login(email, password,)
         // create a token
         const token = createToken(user._id)
-        res.status(200).json({ email, token, role: user.role})
+        res.status(200).json({ email, token, role: user.role })
     } catch (error) {
         res.status(400).json({ error: error.message })
     }
 }
 
-// moved to admincontroller.js
-// // signup user
-// const signupUser = async (req, res) => {
-//     console.log(req.body)
-//     const { email, password, role } = req.body
-//     try {
-//         const user = await User.signup(email, password, role)
+// signup user
+const signupUser = async (req, res) => {
+    console.log(req.body)
+    const { email, password, role } = req.body
+    try {
+        const user = await User.signup(email, password, role)
 
-//         // create token
-//         const token = createToken(user._id)
-//         res.status(200).json({ email, token, role })
-//     } catch (error) {
-//         res.status(400).json({ error: error.message })
-//     }
-// }
+        // create token
+        const token = createToken(user._id)
+        res.status(200).json({ email, token, role })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+}
 
-module.exports = { loginUser }
+module.exports = { loginUser, signupUser }

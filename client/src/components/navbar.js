@@ -13,7 +13,7 @@ const Navbar = () => {
     <header>
       <div className="container">
         <Link to="/">
-          <h1>IWSP Mentor-Student Assignments</h1>
+          <h1>Capstone Mentor-Student Assignments</h1>
         </Link>
         <nav>
           {user && user.role === 'admin' && (
@@ -21,6 +21,12 @@ const Navbar = () => {
               <Link to="/addstudent">Add Students</Link>
               <Link to="/students">Manage Students</Link>
               <Link to="/signup">Signup</Link>
+              <Link to="/adminUsersPage">Manage Users</Link>
+            </div>
+          )}
+          {user && user.role === 'mentor' && (
+            <div>
+              <Link to="/students">Manage Students</Link>
             </div>
           )}
           {user && (

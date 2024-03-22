@@ -8,22 +8,28 @@ const getStudents = async (req, res) => {
     res.status(200).json(students)
 }
 
-// get a single Student
+// get a single Student with access control
 const getStudent = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such student' })
     }
 
-    const student = await Student.findById(id)
+    const student = await Student.findById(id);
 
     if (!student) {
         return res.status(404).json({ error: 'No such student' })
     }
 
-    res.status(200).json(student)
+    // Check if the requesting user is the student themselves or an admin
+    if (student._id.toString() !== req.user.id && req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Not authorized to access this student' })
+    }
+
+    res.status(200).json(student);
 }
+
 
 // create a new Student
 const createStudent = async (req, res) => {
@@ -32,7 +38,7 @@ const createStudent = async (req, res) => {
     let emptyFields = []
     // check if admin
     if (!['admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Not authorized to create a student' });
+        return res.status(403).json({ error: 'Not authorized to create a student' })
     }
 
     if (!name) {
@@ -60,6 +66,22 @@ const createStudent = async (req, res) => {
     }
 }
 
+// update a Student
+const updateStudent = async (req, res) => {
+    const { id } = req.params;
+    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
+
+    try {
+        const student = await Student.findByIdAndUpdate(id, updateData, { new: true });
+        if (!student) {
+            return res.status(404).json({ error: 'No such student' });
+        }
+        res.status(200).json(student);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // delete a Student
 const deleteStudent = async (req, res) => {
     const { id } = req.params
@@ -77,27 +99,10 @@ const deleteStudent = async (req, res) => {
     res.status(200).json(student)
 }
 
-// update a Student
-const updateStudent = async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
-
-    try {
-        const student = await Student.findByIdAndUpdate(id, updateData, { new: true });
-        if (!student) {
-            return res.status(404).json({ error: 'No such student' });
-        }
-        res.status(200).json(student);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
-
 module.exports = {
     getStudents,
     getStudent,
     createStudent,
-    deleteStudent,
-    updateStudent
+    updateStudent,
+    deleteStudent
 }

@@ -27,8 +27,6 @@ const Students = () => {
         }
     }, [dispatch, user]);
 
-    console.log('StudentsL ', students)
-
     // Filtered and searched students
     const filteredStudents = students.filter(student => {
         return (

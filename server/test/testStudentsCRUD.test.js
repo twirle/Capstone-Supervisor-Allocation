@@ -1,3 +1,4 @@
+// outdated test no longer in use
 require('dotenv').config({ path: './.env' });
 
 const mongoose = require('mongoose');

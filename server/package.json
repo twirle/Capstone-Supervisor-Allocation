@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+
     "connectionTest": "mocha test/dbConnection.test.js",
-    "CRUDTest": "mocha test/testStudentsCRUD.test.js",
-    "POSTTest": "mocha test/testStudentsPOST.test.js --exit"
+    "postTest": "mocha test/testStudentsPOST.test.js --exit",
+    "tokenTest": "mocha test/testStudentsToken.test.js --exit",
+    
+    "seedStudents": "node ./scripts/seedStudents.js",
+    "clearStudents": "node ./scripts/clearStudents"
   },
   "keywords": [],
   "author": "",

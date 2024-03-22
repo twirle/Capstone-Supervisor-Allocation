@@ -16,11 +16,8 @@ const userSchema = new Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'faculty_lead', 'mentor', 'student'],
+        enum: ['admin', 'mentor', 'student'],
         required: true
-    },
-    assignedMentor: {
-        type: mongoose.Schema.Types.ObjectId
     }
 })
 

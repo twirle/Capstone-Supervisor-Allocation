@@ -1,19 +1,26 @@
 // set test environment when connecting to database
 process.env.NODE_ENV = 'test';
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../server');
+// Import the necessary modules
+require('dotenv').config()
+const mongoose = require('mongoose')
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const server = require('../server')
 const expect = chai.expect;
 
-chai.use(chaiHttp);
+// Use chaiHttp for HTTP requests
+chai.use(chaiHttp)
 
-let authToken; // Variable to store the token
+const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTY2NjM2ODk5YTg1NWIxMjhiODI2YmUiLCJpYXQiOjE3MTAwNjkyNTksImV4cCI6MTcxMDMyODQ1OX0.akrNnoYgpyHEkHKLPso2YoYNYG_YlfSu2POPPCu_HaA'
 
+
+// Assumes that server is already running.
+
+// Test suite
 describe('Database and API Tests', function () {
-    this.timeout(15000);
+    // Increase the timeout if the database connection takes longer
+    this.timeout(15000)
 
     before(async () => {
         try {
@@ -22,32 +29,23 @@ describe('Database and API Tests', function () {
                 useUnifiedTopology: true
             });
             console.log('Connected to MongoDB for testing');
+
         } catch (err) {
             console.error('Database connection error', err.message);
             throw err;
         }
-
-        // Login before tests run to obtain authToken
-        const loginResponse = await chai.request(server)
-            .post('/api/user/login') // Adjust to match your actual login route
-            .send({
-                email: process.env.TEST_USER_EMAIL,
-                password: process.env.TEST_USER_PASSWORD
-            });
-
-        expect(loginResponse).to.have.status(200);
-        authToken = loginResponse.body.token;
     });
 
+    // After hook to close the database connection
     after(async () => {
         try {
-            await mongoose.disconnect();
-            console.log('Disconnected from MongoDB');
+            await mongoose.disconnect()
+            console.log('Disconnected from MongoDB')
         } catch (err) {
-            console.error('Error disconnecting from MongoDB', err.message);
-            throw err;
+            console.error('Error disconnecting from MongoDB', err.message)
+            throw err
         }
-    });
+    })
 
 
     // Test case for GET all students

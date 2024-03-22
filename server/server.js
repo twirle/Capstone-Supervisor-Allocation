@@ -34,17 +34,31 @@ app.get('/', (req, res) => {
     res.send('Welcome to the API!')
 })
 
-// Connect to MongoDB and start server
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        console.log('connected to database')
-        const PORT = process.env.PORT
-        app.listen(PORT, () => {
-            console.log('listening for requests on port', PORT)
+// Only connect to DB and listen on port if NOT in test environment
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => {
+            app.listen(process.env.PORT, () => {
+                console.log(`Server listening on port ${process.env.PORT}`);
+            });
         })
-    })
-    .catch((error) => {
-        console.log(error);
-    })
+        .catch((error) => {
+            console.error('Connection error:', error);
+        });
+} 
+
+// else {
+//     // Connect to MongoDB and start server
+//     mongoose.connect(process.env.MONGO_URI)
+//         .then(() => {
+//             console.log('connected to database')
+//             app.listen(PORT, () => {
+//                 console.log('listening for requests on port', PORT)
+//             })
+//         })
+//         .catch((error) => {
+//             console.log(error);
+//         })
+// }
 
 module.exports = app

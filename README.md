@@ -1,4 +1,4 @@
-# IWSP Supervisor Allocation Application
+# Capstone Supervisor Allocation Application
 
 This repository contains a MERN stack application, which is a simple CRUD app built with MongoDB, Express.js, React, and Node.js.
 

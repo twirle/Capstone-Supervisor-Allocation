@@ -1,7 +1,10 @@
 // npm install mocha chai dotenv mongoose
 // npx mocha dbConnection.test.js
 
-require('dotenv').config();  // Load environment variables from .env file
+// set test environment when connecting to database
+process.env.NODE_ENV = 'test';
+
+require('dotenv').config();
 
 const mongoose = require('mongoose');
 const chai = require('chai');
@@ -12,14 +15,14 @@ const expect = chai.expect;
 const MONGODB_URI = process.env.MONGODB_URI;
 
 describe('MongoDB Connection using Mongoose', () => {
-    
+
     before((done) => {
         mongoose.connect(MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         })
-        .then(() => done())
-        .catch(err => done(err));
+            .then(() => done())
+            .catch(err => done(err));
     });
 
     it('should connect to MongoDB without errors', (done) => {
@@ -29,7 +32,7 @@ describe('MongoDB Connection using Mongoose', () => {
 
     after((done) => {
         mongoose.disconnect()
-        .then(() => done())
-        .catch(err => done(err));
+            .then(() => done())
+            .catch(err => done(err));
     });
 });

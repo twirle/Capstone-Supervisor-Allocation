@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Student from './pages/Student'
 import AddStudent from './pages/AddStudent'
+import AdminUsersPage from './pages/AdminUsersPage'
 
 function App() {
   const { user, loading } = useAuthContext()
@@ -40,6 +41,11 @@ function App() {
             <Route
               path='/AddStudent'
               element={<AddStudent />}
+            />
+
+            <Route
+              path="/adminUsersPage"
+              element={!loading && (user && user.role === 'admin' ? <AdminUsersPage /> : <Navigate to="/" />)}
             />
 
 

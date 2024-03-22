@@ -67,7 +67,7 @@ const StudentDetails = ({ student }) => {
                 assignedMentor || 'Not assigned'
             )}</p>
             {/* <p>{formatDistanceToNow(new Date(student.createdAt), { addSuffix: true })}</p> */}
-            {user && user.role === 'admin' && (
+            {user && user.role === 'admin' || user.role === 'mentor' && (
                 <div>
                     {isEditing ? (
                         <button onClick={handleEdit}>Save</button>

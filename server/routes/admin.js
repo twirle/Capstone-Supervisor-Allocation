@@ -1,3 +1,5 @@
+// NOT IN USE
+
 const express = require('express');
 const { requireAuth, checkRole } = require('../middleware/requireAuth');
 const adminController = require('../controllers/adminController');

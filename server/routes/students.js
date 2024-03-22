@@ -7,27 +7,28 @@ const {
   createStudent,
   deleteStudent,
   updateStudent
-} = require('../controllers/studentController')
+} = require('../controllers/studentController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
 
 const router = express.Router();
 
 // forces the user to be authenticated for route functions
-router.use(requireAuth)
+router.use(requireAuth);
 
-// GET all workouts
-router.get('/', getStudents)
+// GET all student
+router.get('/', getStudents);
 
-// GET a single workout
-router.get('/:id', getStudent)
+// GET a single student
+router.get('/:id', getStudent);
 
-// POST a new workout
-router.post('/', createStudent)
+// POST a new student
+router.post('/', requireAuth, checkRole(['admin', 'mentor']), createStudent);
 
-// DELETE a workout
-router.delete('/:id', deleteStudent)
+// UPDATE a student
+router.patch('/:id', requireAuth, checkRole(['admin', 'mentor']), updateStudent);
 
-// UPDATE a workout
-router.patch('/:id', updateStudent)
+// DELETE a student
+router.delete('/:id', deleteStudent);
 
-module.exports = router
+
+module.exports = router;

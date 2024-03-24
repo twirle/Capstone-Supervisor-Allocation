@@ -4,16 +4,15 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const server = require('../server')
+const server = require('../../server')
 const expect = chai.expect
 
 chai.use(chaiHttp);
 
-describe('Admin User Flow', function () {
+describe('Faculty Member User Flow Test', function () {
     this.timeout(15000);
-    let originalAdminToken;
-    let adminToken;
-    let adminUserId;
+    let adminToken
+    let facultyMemberUserId
 
     before(async () => {
         try {
@@ -37,7 +36,7 @@ describe('Admin User Flow', function () {
                 });
 
             expect(loginResponse).to.have.status(200)
-            originalAdminToken = loginResponse.body.token
+            adminToken = loginResponse.body.token
         } catch (err) {
             console.error('Failed to login', err.message)
             throw err
@@ -54,16 +53,21 @@ describe('Admin User Flow', function () {
         }
     });
 
-    // Test case to create admin user
-    describe('Create admin /user', () => {
-        it('create an admin user', async () => {
+    // Test case to create faculty member user
+    describe('Create faculty member /user', () => {
+        it('create an faculty member user', async () => {
             const resCreate = await chai.request(server)
                 .post('/api/user/signup')
-                .set('Authorization', `Bearer ${originalAdminToken}`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send({
-                    email: 'admintest@sit.edu.sg',
+                    email: 'facultymembertest@sit.edu.sg',
                     password: 'testASD123!@#',
-                    role: 'admin'
+                    role: 'facultyMember',
+                    additionalInfo: {
+                        name: 'Test Student',
+                        faculty: 'Infocomm Technology',
+                        researchArea: 'Blockchain'
+                    }
                 })
 
             // console.log('response:', resCreate.body)
@@ -71,45 +75,42 @@ describe('Admin User Flow', function () {
         })
     })
 
-    // Test case to login to the new admin user
-    describe('Login admin /user', () => {
-        it('login the admin user and get a token', async () => {
+    // Test case to login to the new faculty member user
+    describe('Login faculty member /user', () => {
+        it('login the faculty member user and get a token', async () => {
             const resLogin = await chai.request(server)
                 .post('/api/user/login')
                 .send({
-                    email: 'admintest@sit.edu.sg',
+                    email: 'facultymembertest@sit.edu.sg',
                     password: 'testASD123!@#'
                 })
 
-            adminToken = resLogin.body.token
-            adminUserId = resLogin.body.id
-            // console.log('resLogin Body:', resLogin.body)
-            // console.log('adminUserId:', adminUserId)
+            facultyMemberUserId = resLogin.body.id
             expect(resLogin).to.have.status(200)
         })
     })
 
-    describe('Patch admin /user', () => {
-        it('patch the admin user password', async () => {
+    describe('Patch faculty member /user', () => {
+        it('patch the faculty member user role', async () => {
             const resPatch = await chai.request(server)
-                .patch(`/api/user/${adminUserId}/role`)
+                .patch(`/api/user/${facultyMemberUserId}/role`)
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
                     role: 'mentor'
                 });
 
 
-            console.log(resPatch.body)
+            // console.log(resPatch.body)
             expect(resPatch).to.have.status(200)
             expect(resPatch.body).to.have.property('role', 'mentor')
         });
     })
 
-    describe('Delete admin /user', () => {
-        it('should delete the admin user', async () => {
+    describe('Delete faculty member /user', () => {
+        it('should delete the faculty member user', async () => {
             const resDelete = await chai.request(server)
-                .delete(`/api/user/${adminUserId}`)
-                .set('Authorization', `Bearer ${originalAdminToken}`);
+                .delete(`/api/user/${facultyMemberUserId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
 
             expect(resDelete).to.have.status(200);
         })

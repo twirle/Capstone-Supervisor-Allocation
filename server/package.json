@@ -8,7 +8,12 @@
     "connectionTest": "mocha test/dbConnection.test.js",
     "postTest": "mocha test/testStudentsPOST.test.js --exit",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-    "adminCreateTest": "mocha test/testAdminCreate.test.js --exit",
+
+
+    "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
+    "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
+    "mentorUserTest": "mocha test/users/testMentorUser.test.js --exit",
+    "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
     
     "seedStudents": "node ./scripts/seedStudents.js",
     "clearStudents": "node ./scripts/clearStudents"

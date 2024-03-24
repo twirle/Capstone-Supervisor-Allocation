@@ -3,8 +3,8 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const userRoutes = require('./routes/user')
-const studentRoutes = require('./routes/students')
-const mentorRoutes = require('./routes/mentors')
+const studentRoutes = require('./routes/student')
+const mentorRoutes = require('./routes/mentor')
 const FacultyMemberRoutes = require('./routes/facultyMember')
 
 
@@ -23,8 +23,8 @@ app.use((req, res, next) => {
 // Routes
 // app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/mentors', mentorRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/mentor', mentorRoutes);
 app.use('/api/facultyMember', FacultyMemberRoutes);
 
 
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV !== 'test') {
         .catch((error) => {
             console.error('Connection error:', error);
         });
-} 
+}
 
 // else {
 //     // Connect to MongoDB and start server

@@ -6,7 +6,7 @@ const {
   createFacultyMember,
   deleteFacultyMember,
   updateFacultyMember
-} = require('../controllers/facultyController');
+} = require('../controllers/facultyMemberController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
 
 const router = express.Router();

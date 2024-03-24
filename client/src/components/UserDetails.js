@@ -11,7 +11,7 @@ const UserDetails = ({ userDetail, onDelete }) => {
             return;
         }
 
-        const response = await fetch(`/api/user/${userDetail._id}`, {
+        const response = await fetch(`/api/user/${userDetail._id}/role`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

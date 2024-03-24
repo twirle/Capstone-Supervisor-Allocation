@@ -1,16 +1,16 @@
 // set test environment when connecting to database
-process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'test'
 
-require('dotenv').config();
-const mongoose = require('mongoose');
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../server');
-const expect = chai.expect;
+require('dotenv').config()
+const mongoose = require('mongoose')
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const server = require('../server')
+const expect = chai.expect
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
-let authToken; // Variable to store the token
+let authToken
 
 describe('Database and API Tests', function () {
     this.timeout(15000);
@@ -23,20 +23,20 @@ describe('Database and API Tests', function () {
             });
             console.log('Connected to MongoDB for testing');
         } catch (err) {
-            console.error('Database connection error', err.message);
-            throw err;
+            console.error('Database connection error', err.message)
+            throw err
         }
 
         // Login before tests run to obtain authToken
         const loginResponse = await chai.request(server)
-            .post('/api/user/login') // Adjust to match your actual login route
+            .post('/api/user/login')
             .send({
                 email: process.env.TEST_USER_EMAIL,
                 password: process.env.TEST_USER_PASSWORD
-            });
+            })
 
-        expect(loginResponse).to.have.status(200);
-        authToken = loginResponse.body.token;
+        expect(loginResponse).to.have.status(200)
+        authToken = loginResponse.body.token
     });
 
     after(async () => {
@@ -51,10 +51,10 @@ describe('Database and API Tests', function () {
 
 
     // Test case for GET all students
-    describe('GET /students', () => {
-        it('GET all students', async () => { // Using async here
+    describe('GET /student', () => {
+        it('GET all students', async () => { 
             const resGet = await chai.request(server)
-                .get('/api/students')
+                .get('/api/student')
                 .set('Authorization', `Bearer ${authToken}`)
             expect(resGet).to.have.status(200)
             expect(resGet.body).to.be.an('array')
@@ -64,10 +64,10 @@ describe('Database and API Tests', function () {
 
     // Test case for creating a new student
     let studentID
-    describe('POST /students', () => {
+    describe('POST /student', () => {
         it('POST a student and save id', async () => {
             const resPOST = await chai.request(server)
-                .post('/api/students')
+                .post('/api/student')
                 .set('Authorization', `Bearer ${authToken}`)
                 .send({
                     name: "John Doe",
@@ -90,10 +90,10 @@ describe('Database and API Tests', function () {
     })
 
     // Test case for updating a student
-    describe('PATCH /students', () => {
+    describe('PATCH /student', () => {
         it('UPDATE a student', async () => {
             const resPATCH = await chai.request(server)
-                .patch(`/api/students/${studentID}`)
+                .patch(`/api/student/${studentID}`)
                 .set('Authorization', `Bearer ${authToken}`)
                 .send({
                     name: "Jane Doe",
@@ -108,7 +108,7 @@ describe('Database and API Tests', function () {
         // retrieve and check PATCH success
         it('check PATCH success', async () => {
             const resGet = await chai.request(server)
-                .get(`/api/students/${studentID}`)
+                .get(`/api/student/${studentID}`)
                 .set('Authorization', `Bearer ${authToken}`)
             expect(resGet).to.have.status(200);
             expect(resGet.body).to.include({
@@ -121,10 +121,10 @@ describe('Database and API Tests', function () {
     })
 
     // Test case for deleting a student
-    describe('DELETE /students', () => {
+    describe('DELETE /student', () => {
         it('DELETE a student', async () => {
             const resDEL = await chai.request(server)
-                .delete(`/api/students/${studentID}`)
+                .delete(`/api/student/${studentID}`)
                 .set('Authorization', `Bearer ${authToken}`)
             expect(resDEL).to.have.status(200)
             expect(resDEL.body).to.be.an('object')

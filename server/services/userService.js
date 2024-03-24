@@ -1,7 +1,7 @@
 const User = require('../models/userModel')
-const Student = require('../models/studentModel')
-const Mentor = require('../models/mentorModel')
-const Faculty = require('../models/facultyModel')
+const StudentService = require('../services/studentService')
+const MentorService = require('../services/mentorService')
+const FacultyService = require('../services/facultyMemberService')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 
@@ -19,6 +19,11 @@ async function signupUser(email, password, role, additionalInfo) {
     if (!validator.isStrongPassword(password)) {
         throw Error('Password is not strong enough.');
     }
+    
+    if ((role === 'student' || role === 'mentor' || role === 'facultyMember') && !additionalInfo) {
+        throw new Error('additionalInfo is required for all users');
+    }
+
 
     const exists = await User.findOne({ email });
     if (exists) {
@@ -28,18 +33,20 @@ async function signupUser(email, password, role, additionalInfo) {
     const salt = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(password, salt);
 
-    const user = await User.signup({ email, password: hash, role });
+    // Create the basic user
+    const user = await User.create({ email, password: hash, role });
 
-    // Now handle the role-specific profile creation
-    if (role === 'student') {
-        await Student.create({ user: user._id, additionalInfo });
-    } else if (role === 'mentor') {
-        await Mentor.create({ user: user._id, additionalInfo });
-    } else if (role === 'faculty') {
-        await Faculty.create({ user: user._id, additionalInfo });
+    switch (role) {
+        case 'student':
+            await StudentService.createProfile(user._id, additionalInfo)
+            break
+        case 'mentor':
+            await MentorService.createProfile(user._id, additionalInfo)
+            break
+        case 'facultyMember':
+            await FacultyService.createProfile(user._id, additionalInfo)
+            break
     }
-
-    return user;
 }
 
 module.exports = { signupUser };

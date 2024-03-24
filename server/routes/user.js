@@ -1,8 +1,9 @@
 const express = require('express')
 
 // controller functions
-const { signupUser, loginUser, getAllUsers, deleteUser } = require('../controllers/userController')
-const {requireAuth, checkRole} = require('../middleware/requireAuth')
+const { loginUser, getAllUsers, deleteUser } = require('../controllers/userController')
+const { requireAuth, checkRole } = require('../middleware/requireAuth')
+const userService = require('../services/userService')
 
 const router = express.Router()
 
@@ -10,7 +11,16 @@ const router = express.Router()
 router.post('/login', loginUser)
 
 // sign up route
-router.post('/signup', signupUser)
+// router.post('/signup', signupUser)
+router.post('/signup', async (req, res) => {
+    try {
+        const { email, password, role, additionalInfo } = req.body
+        const user = await userService.signUp(email, password, role, additionalInfo)
+        res.status(201).json(user)
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+})
 
 // get all users
 router.get('/all', requireAuth, checkRole(['admin']), getAllUsers)

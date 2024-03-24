@@ -2,9 +2,10 @@ require('dotenv').config()
 
 const express = require('express')
 const mongoose = require('mongoose')
-const adminRoutes = require('./routes/admin')
-const studentRoutes = require('./routes/students')
 const userRoutes = require('./routes/user')
+const studentRoutes = require('./routes/students')
+const mentorRoutes = require('./routes/mentors')
+const FacultyMemberRoutes = require('./routes/facultyMember')
 
 
 const app = express();
@@ -20,9 +21,12 @@ app.use((req, res, next) => {
 
 
 // Routes
-app.use('/api/admin', adminRoutes);
-app.use('/api/students', studentRoutes);
+// app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/mentors', mentorRoutes);
+app.use('/api/facultyMember', FacultyMemberRoutes);
+
 
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {

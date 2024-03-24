@@ -1,6 +1,5 @@
 const express = require("express")
 
-// const Student = require("../models/studentModel")
 const {
   getStudents,
   getStudent,
@@ -22,10 +21,10 @@ router.get('/', getStudents);
 router.get('/:id', getStudent);
 
 // POST a new student
-router.post('/', requireAuth, checkRole(['admin', 'mentor']), createStudent);
+router.post('/', requireAuth, checkRole(['admin']), createStudent);
 
 // UPDATE a student
-router.patch('/:id', requireAuth, checkRole(['admin', 'mentor']), updateStudent);
+router.patch('/:id', requireAuth, checkRole(['admin', 'facultyMember']), updateStudent);
 
 // DELETE a student
 router.delete('/:id', deleteStudent);

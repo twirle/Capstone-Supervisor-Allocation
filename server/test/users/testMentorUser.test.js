@@ -64,7 +64,7 @@ describe('Mentor User Flow Test', function () {
                     password: 'testASD123!@#',
                     role: 'mentor',
                     additionalInfo: {
-                        name: 'Test Student',
+                        name: 'Test Mentor',
                         faculty: 'Infocomm Technology',
                         researchArea: 'Blockchain'
                     }
@@ -91,28 +91,30 @@ describe('Mentor User Flow Test', function () {
         })
     })
 
-    describe('Patch mentor /user', () => {
-        it('patch the mentor user role', async () => {
-            const resPatch = await chai.request(server)
-                .patch(`/api/user/${mentorUserId}/role`)
-                .set('Authorization', `Bearer ${adminToken}`)
-                .send({
-                    role: 'student'
-                });
+    // describe('Patch mentor /user', () => {
+    //     it('change mentor user password', async () => {
+    //         const resPatch = await chai.request(server)
+    //             .patch(`/api/user/${mentorUserId}/changePassword`)
+    //             .set('Authorization', `Bearer ${adminToken}`)
+    //             .send({
+    //                 oldPassword: 'testASD123!@#',
+    //                 newPassword: 'testASD123!@#$'
+    //             });
 
+    //         // Verify the response
+    //         console.log('body', resPatch.body)
+    //         expect(resPatch).to.have.status(200);
+    //         expect(resPatch.body).to.have.property('message', 'Password changed successfully');
+    //     });
+    // });
 
-            // console.log(resPatch.body)
-            expect(resPatch).to.have.status(200)
-            expect(resPatch.body).to.have.property('role', 'student')
-        });
-    })
 
     describe('Delete mentor /user', () => {
         it('delete the mentor user', async () => {
             const resDelete = await chai.request(server)
                 .delete(`/api/user/${mentorUserId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
-
+            
             expect(resDelete).to.have.status(200);
         })
     })

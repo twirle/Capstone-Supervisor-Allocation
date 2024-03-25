@@ -16,6 +16,8 @@
     "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
     
     "seedStudents": "node ./scripts/seedStudents.js",
+    "seedStudentsv2": "node ./scripts/seedStudentsv2.js",
+    "seedMentors": "node ./scripts/seedMentors.js",
     "clearStudents": "node ./scripts/clearStudents"
   },
   "keywords": [],

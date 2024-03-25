@@ -68,17 +68,17 @@ const createMentor = async (req, res) => {
 
 // update a Mentor
 const updateMentor = async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
+    const { id } = req.params
+    const updateData = req.body
 
     try {
-        const mentor = await Mentor.findByIdAndUpdate(id, updateData, { new: true });
+        const mentor = await Mentor.findByIdAndUpdate(id, updateData, { new: true })
         if (!mentor) {
-            return res.status(404).json({ error: 'No such mentor' });
+            return res.status(404).json({ error: 'No such mentor' })
         }
-        res.status(200).json(mentor);
+        res.status(200).json(mentor)
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message })
     }
 };
 

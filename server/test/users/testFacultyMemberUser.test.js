@@ -64,7 +64,7 @@ describe('Faculty Member User Flow Test', function () {
                     password: 'testASD123!@#',
                     role: 'facultyMember',
                     additionalInfo: {
-                        name: 'Test Student',
+                        name: 'Test FacultyMember',
                         faculty: 'Infocomm Technology',
                         researchArea: 'Blockchain'
                     }

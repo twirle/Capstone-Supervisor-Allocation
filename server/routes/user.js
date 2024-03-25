@@ -1,10 +1,9 @@
 const express = require('express')
 
 // controller functions
-const { loginUser, getAllUsers, deleteUser, updateUserRole } = require('../controllers/userController')
+const { loginUser, getAllUsers, deleteUser, updateUserPassword, removeUser } = require('../controllers/userController')
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
 const userService = require('../services/userService')
-const { updateFacultyMember } = require('../controllers/facultyMemberController')
 
 const router = express.Router()
 
@@ -26,11 +25,18 @@ router.post('/signup', async (req, res) => {
 // get all users
 router.get('/all', requireAuth, checkRole(['admin']), getAllUsers)
 
+// change user password
+router.patch('/:id/changePassword', requireAuth, updateUserPassword);
+
 // update user role
-router.patch('/:id/role', requireAuth, checkRole(['admin']), updateUserRole)
+// router.patch('/:id/role', requireAuth, checkRole(['admin']), updateUserRole)
 
 // delete a user
 router.delete('/:id', requireAuth, checkRole(['admin']), deleteUser)
+
+// remove user (for cascadeDelete)
+// router.delete('/:id/remove', requireAuth, checkRole(['admin']), removeUser);
+
 
 
 module.exports = router

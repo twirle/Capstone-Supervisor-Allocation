@@ -1,10 +1,9 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const validator = require('validator')
+const deleteUserRelatedData = require('../middleware/cascadeDelete')
 
-const Schema = mongoose.Schema
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
@@ -55,5 +54,11 @@ userSchema.statics.login = async function (email, password) {
 
     return user
 }
+
+// Remove user information when user is deleted using middleware cascadeDelete.js
+userSchema.pre('remove', async function (next) {
+    await deleteUserRelatedData(this._id)
+    next()
+})
 
 module.exports = mongoose.model('User', userSchema)

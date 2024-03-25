@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-
     "connectionTest": "mocha test/dbConnection.test.js",
     "postTest": "mocha test/testStudentsPOST.test.js --exit",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-
 
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
@@ -18,7 +16,11 @@
     "seedStudents": "node ./scripts/seedStudents.js",
     "seedStudentsv2": "node ./scripts/seedStudentsv2.js",
     "seedMentors": "node ./scripts/seedMentors.js",
-    "clearStudents": "node ./scripts/clearStudents"
+    "clearStudents": "node ./scripts/clearStudents.js",
+    "resetAssignments": "node ./scripts/resetAssignments.js",
+    
+    "matchTest": "mocha test/testMatch.test.js --exit"
+
   },
   "keywords": [],
   "author": "",
@@ -34,6 +36,7 @@
     "mocha": "^10.2.0",
     "mongodb": "^6.2.0",
     "mongoose": "^7.6.3",
+    "munkres-js": "^1.2.2",
     "validator": "^13.11.0"
   }
 }

@@ -15,7 +15,7 @@ async function resetAssignments() {
 
         // Reset assignedStudents for all mentors
         // If your mentor model doesn't directly link to students, adjust this part
-        await Mentor.updateMany({}, { $set: { assignedStudents: null } });
+        await Mentor.updateMany({}, { $set: { assignedStudents: [] } });
 
         console.log('Reset completed successfully.');
     } catch (error) {

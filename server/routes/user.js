@@ -1,42 +1,39 @@
-const express = require('express')
+const express = require('express');
+const router = express.Router();
+const UserService = require('../services/userService'); // Ensure this is correctly imported
 
-// controller functions
-const { loginUser, getAllUsers, deleteUser, updateUserPassword, removeUser } = require('../controllers/userController')
-const { requireAuth, checkRole } = require('../middleware/requireAuth')
-const userService = require('../services/userService')
+// Controller functions
+const { loginUser, getAllUsers, updateUserPassword } = require('../controllers/userController');
+const { requireAuth, checkRole } = require('../middleware/requireAuth');
 
-const router = express.Router()
+// Login route
+router.post('/login', loginUser);
 
-// login route
-router.post('/login', loginUser)
-
-// sign up route
-// router.post('/signup', signupUser)
-router.post('/signup', async (req, res) => {
+// Sign up route, accessible only by admins
+router.post('/signup', requireAuth, checkRole(['admin']), async (req, res) => {
     try {
         const { email, password, role, additionalInfo } = req.body;
-        const user = await userService.signupUser(email, password, role, additionalInfo);
+        const user = await UserService.signupUser(email, password, role, additionalInfo);
         res.status(201).json({ message: "User created successfully", user });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 });
 
-// get all users
-router.get('/all', requireAuth, checkRole(['admin']), getAllUsers)
+// Get all users, accessible only by admins
+router.get('/all', requireAuth, checkRole(['admin']), getAllUsers);
 
-// change user password
+// Change user password, requires authentication
 router.patch('/:id/changePassword', requireAuth, updateUserPassword);
 
-// update user role
-// router.patch('/:id/role', requireAuth, checkRole(['admin']), updateUserRole)
+// Delete a user, accessible only by admins
+router.delete('/:userId', requireAuth, checkRole(['admin']), async (req, res) => {
+    try {
+        await UserService.deleteUserandProfile(req.params.userId);
+        res.status(204).send(); // No content to send back
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
-// delete a user
-router.delete('/:id', requireAuth, checkRole(['admin']), deleteUser)
-
-// remove user (for cascadeDelete)
-// router.delete('/:id/remove', requireAuth, checkRole(['admin']), removeUser);
-
-
-
-module.exports = router
+module.exports = router;

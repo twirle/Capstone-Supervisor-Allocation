@@ -32,10 +32,9 @@ const AdminUsersPage = () => {
 
     // Filtered and searched users
     const filteredUsers = users.filter(userDetail => {
-        return (
-            userDetail.email.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (filter === '' || userDetail.role === filter)
-        );
+        const emailMatch = userDetail.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const roleMatch = filter === '' || userDetail.role.toLowerCase().startsWith(filter.toLowerCase());
+        return emailMatch && roleMatch;
     });
 
     const handleUserDelete = (userId) => {

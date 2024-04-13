@@ -5,14 +5,14 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const server = require('../server')
+const server = require('../../server')
 const expect = chai.expect
 
 chai.use(chaiHttp)
 
 let authToken
 
-describe('Database and API Tests', function () {
+describe('Student CRUD Flow Test', function () {
     this.timeout(15000);
 
     before(async () => {
@@ -52,7 +52,7 @@ describe('Database and API Tests', function () {
 
     // Test case for GET all students
     describe('GET /student', () => {
-        it('GET all students', async () => { 
+        it('GET all students', async () => {
             const resGet = await chai.request(server)
                 .get('/api/student')
                 .set('Authorization', `Bearer ${authToken}`)

@@ -12,8 +12,21 @@ async function createProfile(userId, additionalInfo) {
         });
         return profile;
     } catch (error) {
-        throw new Error('Error creating student profile:', error);
+        throw new Error('Error creating student profile:', error)
     }
 }
 
-module.exports = { createProfile };
+async function deleteProfile(userId) {
+    try {
+        console.log('Deleting profile:', userId)
+        const profile = await Student.findOneAndDelete({ user: userId })
+        if (!profile) {
+            throw new Error('Student profile not found for deletion')
+        }
+        console.log('Deleted student profile for:', userId)
+        return profile
+    } catch (error) {
+        throw new Error('Error deleting student profile:', error)
+    }
+}
+module.exports = { createProfile, deleteProfile }

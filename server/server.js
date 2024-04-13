@@ -6,6 +6,7 @@ const userRoutes = require('./routes/user')
 const studentRoutes = require('./routes/student')
 const mentorRoutes = require('./routes/mentor')
 const facultyMemberRoutes = require('./routes/facultyMember')
+const facultyRoutes = require('./routes/faculty')
 const matchRoutes = require('./routes/match')
 
 
@@ -27,6 +28,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/student', studentRoutes)
 app.use('/api/mentor', mentorRoutes)
 app.use('/api/facultyMember', facultyMemberRoutes)
+app.use('/api/faculty', facultyRoutes)
 app.use('/api/match', matchRoutes)
 
 
@@ -52,19 +54,5 @@ if (process.env.NODE_ENV !== 'test') {
             console.error('Connection error:', error);
         });
 }
-
-// else {
-//     // Connect to MongoDB and start server
-//     mongoose.connect(process.env.MONGO_URI)
-//         .then(() => {
-//             console.log('connected to database')
-//             app.listen(PORT, () => {
-//                 console.log('listening for requests on port', PORT)
-//             })
-//         })
-//         .catch((error) => {
-//             console.log(error);
-//         })
-// }
 
 module.exports = app

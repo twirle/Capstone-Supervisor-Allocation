@@ -2,18 +2,26 @@ const munkres = require('munkres-js')
 
 function calculateCompatibilityScores(mentors, students) {
     let scoresMatrix = [];
-    console.log('Mentor sample:', mentors[0]);
-    console.log('Student sample:', students[0]);
+    // console.log('Mentor sample:', mentors[0]);
+    // console.log('Student sample:', students[0]);
 
-    // Iterate through the mentors and students arrays correctly and access each object
     for (let i = 0; i < mentors.length; i++) {
         let mentorScores = [];
         for (let j = 0; j < students.length; j++) {
             let score = 0;
-            // Correctly reference the properties of mentors and students
-            if (mentors[i].faculty === students[j].faculty) score += 7;
-            if (mentors[i].researchArea === students[j].course) score += 10;
-            if (mentors[i].faculty !== students[j].faculty) score += 3;
+
+            // Check if the student's course matches the mentor's research area.
+            if (mentors[i].researchArea === students[j].course) {
+                // Highest score for a direct match in research area and course.
+                score += 10;
+            } else if (mentors[i].faculty.equals(students[j].faculty)) {
+                // Moderate score for being in the same faculty but no direct match in research area.
+                score += 5;
+            } else {
+                // Lowest score for not being in the same faculty.
+                score += 1;
+            }
+
             console.log(`Calculating score for mentor ${mentors[i].name} and student ${students[j].name}:`, score);
             mentorScores.push(score);
         }
@@ -22,9 +30,6 @@ function calculateCompatibilityScores(mentors, students) {
 
     return scoresMatrix;
 }
-
-
-
 
 function findOptimalAssignments(scoresMatrix) {
     // The Hungarian algorithm expects a cost matrix, where lower values are preferred.
@@ -41,9 +46,16 @@ function findOptimalAssignments(scoresMatrix) {
     return assignments;
 }
 
-async function updateMatches(assignments, mentors, students) {
-    let updatePromises = []; // To collect all update promises
-    let matchDetails = []; // To collect match details for logging or response
+async function updateMatches(assignments, mentors, students, scoresMatrix) {
+    let updatePromises = []
+    let matchDetails = []
+
+    let sameFacultyCount = 0;
+    let differentFacultyCount = 0;
+    let researchAreaMatchCount = 0;
+    let totalCost = 0
+
+    const maxScore = scoresMatrix.flat().reduce((max, score) => Math.max(max, score), 0)
 
     for (let [mentorIndex, studentIndex] of assignments) {
         if (mentorIndex >= mentors.length || studentIndex >= students.length) {
@@ -53,6 +65,11 @@ async function updateMatches(assignments, mentors, students) {
 
         const mentor = mentors[mentorIndex];
         const student = students[studentIndex];
+
+        let score = scoresMatrix[mentorIndex][studentIndex];
+        let matchCost = maxScore - score; // Convert score back to cost for this pair
+        totalCost += matchCost;
+
 
         if (!mentor || !student) {
             console.error(`Missing mentor or student for assignment: mentorIndex=${mentorIndex}, studentIndex=${studentIndex}`);
@@ -63,62 +80,39 @@ async function updateMatches(assignments, mentors, students) {
         updatePromises.push(student.updateOne({ assignedMentor: mentor._id }));
 
         // Update the mentor model by adding the student to the mentor's list of assignedStudents
-        // This assumes the mentor model's `assignedStudents` field can store multiple student IDs
-        updatePromises.push(mentor.updateOne({ assignedStudents: student._id }));
+        updatePromises.push(mentor.updateOne({ $push: { assignedStudents: student._id } }));
+
+        // Calculate statistics
+        if (mentor.faculty.equals(student.faculty)) {
+            sameFacultyCount++;
+        } else {
+            differentFacultyCount++;
+        }
+        if (mentor.researchArea === student.course) {
+            researchAreaMatchCount++;
+        }
 
         // Collect match details for logging or response
         matchDetails.push({
-            mentor: mentor.name,
-            mentorId: mentor._id.toString(),
-            student: student.name,
-            studentId: student._id.toString(),
-            // Include any additional details you might find relevant
+            "Mentor + Student": `${mentor.name} + ${student.name}`,
+            "Details": `Research Area: ${mentor.researchArea}, Course: ${student.course}`,
+            "Match Cost": matchCost
         });
     }
 
     // Await all updates to finish
     await Promise.all(updatePromises);
 
-    // Log or return the match details
-    console.log('Match details:', matchDetails);
+    // Display the match details in table form
+    console.log('Statistics:');
+    console.log(`Same faculty pairs: ${sameFacultyCount}`);
+    console.log(`Different faculty pairs: ${differentFacultyCount}`);
+    console.log(`Research area matches course: ${researchAreaMatchCount}`);
+    console.log(`Total cost of matching: ${totalCost}`);
+    console.table(matchDetails);
 
-    return matchDetails; // Return the details of the matches for logging or review
-}
-
-// In your matching/index.js or wherever updateMatches is defined
-async function logMatchesWithoutUpdating(assignments, mentors, students) {
-    const matchDetails = [];
-
-    for (let [mentorIndex, studentIndex] of assignments) {
-        if (mentorIndex >= mentors.length || studentIndex >= students.length) {
-            console.error(`Invalid assignment: mentorIndex=${mentorIndex}, studentIndex=${studentIndex}`);
-            continue; // Skip invalid assignments
-        }
-
-        const mentor = mentors[mentorIndex];
-        const student = students[studentIndex];
-
-        if (!mentor || !student) {
-            console.error(`Missing mentor or student for assignment: mentorIndex=${mentorIndex}, studentIndex=${studentIndex}`);
-            continue; // Skip if mentor or student is missing
-        }
-
-        // Log the match without saving it to the database
-        console.log(`Match found: Mentor ${mentor.name} (ID: ${mentor._id}) --> Student ${student.name} (ID: ${student._id})`);
-
-        // Collect match details for logging or future use
-        matchDetails.push({
-            mentor: mentor.name,
-            mentorId: mentor._id.toString(),
-            student: student.name,
-            studentId: student._id.toString(),
-            // Include any additional details you might find relevant
-        });
-    }
-    console.log('All match details:', matchDetails)
-
-    return matchDetails; // Return the details of the matches for logging or review
+    return matchDetails
 }
 
 
-module.exports = { calculateCompatibilityScores, findOptimalAssignments, updateMatches, logMatchesWithoutUpdating }
+module.exports = { calculateCompatibilityScores, findOptimalAssignments, updateMatches }

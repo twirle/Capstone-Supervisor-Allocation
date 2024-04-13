@@ -11,18 +11,19 @@ const mentorSchema = new mongoose.Schema({
         required: true
     },
     faculty: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
         required: true
     },
     researchArea: {
         type: String,
         default: null
     },
-    assignedStudents: {
+    assignedStudents: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student',
-        default: null
-    }
+        default: []
+    }]
 });
 
 module.exports = mongoose.model('Mentor', mentorSchema)

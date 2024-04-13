@@ -11,7 +11,8 @@ const studentSchema = new mongoose.Schema({
         required: true
     },
     faculty: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
         required: true
     },
     course: {
@@ -26,6 +27,10 @@ const studentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Mentor',
         default: null
+    },
+    assignedMentorName: {
+        type: String,
+        default: ''
     }
 });
 

@@ -1,52 +1,69 @@
-const User = require('../models/userModel')
-const StudentService = require('../services/studentService')
-const MentorService = require('../services/mentorService')
-const FacultyService = require('../services/facultyMemberService')
-const bcrypt = require('bcrypt')
-const validator = require('validator')
+const User = require('../models/userModel');
+const StudentService = require('./studentService');
+const MentorService = require('./mentorService');
+const FacultyService = require('./facultyMemberService');
+const { hashPassword, comparePassword } = require('../utils/securityUtils');
+const { validateUserInput } = require('../utils/validateHelpers');
+
 
 async function signupUser(email, password, role, additionalInfo) {
 
-    // validation
-    if (!email || !password) {
-        throw Error('All fields must be filled.');
-    }
-
-    if (!validator.isEmail(email)) {
-        throw Error('Email is not valid.');
-    }
-
-    if (!validator.isStrongPassword(password)) {
-        throw Error('Password is not strong enough.');
-    }
-    
-    if ((role === 'student' || role === 'mentor' || role === 'facultyMember') && !additionalInfo) {
-        throw new Error('additionalInfo is required for all users');
-    }
-
+    // Validate user input using centralized helper function
+    validateUserInput(email, password, role, additionalInfo);
 
     const exists = await User.findOne({ email });
     if (exists) {
-        throw Error('Email already in use.');
+        throw new Error('Email already in use.');
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+    const hashedPassword = await hashPassword(password);
 
-    // Create the basic user
-    const user = await User.create({ email, password: hash, role });
+    // create user
+    const user = await User.create({ email, password: hashedPassword, role });
 
     switch (role) {
         case 'student':
-            await StudentService.createProfile(user._id, additionalInfo)
-            break
+            await StudentService.createProfile(user._id, additionalInfo);
+            break;
         case 'mentor':
-            await MentorService.createProfile(user._id, additionalInfo)
-            break
+            await MentorService.createProfile(user._id, additionalInfo);
+            break;
         case 'facultyMember':
-            await FacultyService.createProfile(user._id, additionalInfo)
-            break
+            await FacultyService.createProfile(user._id, additionalInfo);
+            break;
+        default:
+            break;
+    }
+
+    return user;
+}
+
+async function deleteUserandProfile(userId) {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw Error('User not found.');
+        }
+
+        switch (user.role) {
+            case 'mentor':
+                await MentorService.deleteProfile(userId)
+                break
+            case 'student':
+                await StudentService.deleteProfile(userId)
+                break
+            case 'facultyMember':
+                await FacultyService.deleteProfile(userId)
+                break
+        }
+
+        // After profile deletion, delete the user
+        await User.deleteOne({ _id: userId })
+        console.log(`User and all related data deleted successfully: ${userId}`)
+    } catch (error) {
+        console.error(`Error deleting user: ${error.message}`)
+        throw error
     }
 }
 
-module.exports = { signupUser };
+module.exports = { signupUser, deleteUserandProfile };

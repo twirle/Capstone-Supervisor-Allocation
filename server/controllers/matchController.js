@@ -27,9 +27,7 @@ const runMatchingProcess = async (req, res) => {
         const scoresMatrix = calculateCompatibilityScores(mentors, students);
         const assignments = findOptimalAssignments(scoresMatrix);
 
-        const matchDetails = await updateMatches(assignments, mentors, students);
-        // const matchDetails = await logMatchesWithoutUpdating(assignments, mentors, students);
-        
+        const matchDetails = await updateMatches(assignments, mentors, students, scoresMatrix);
 
         res.status(200).json({
             message: "Matching process completed successfully.",

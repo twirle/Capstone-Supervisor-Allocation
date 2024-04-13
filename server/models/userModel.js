@@ -1,7 +1,6 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const validator = require('validator')
-const deleteUserRelatedData = require('../middleware/cascadeDelete')
+const mongoose = require('mongoose');
+const validator = require('validator');
+const { hashPassword, comparePassword } = require('../utils/securityUtils');
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -18,47 +17,57 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'mentor', 'student', 'facultyMember'],
         required: true
     }
-})
+});
 
-// status signup
-userSchema.statics.signUp = async function (email, password, role) {
+// // Signup static method
+// userSchema.statics.signUp = async function (email, password, role) {
+//     // Validate input
+//     if (!email || !password) {
+//         throw new Error('All fields must be filled.');
+//     }
+//     if (!validator.isEmail(email)) {
+//         throw new Error('Email is not valid.');
+//     }
+//     if (!validator.isStrongPassword(password)) {
+//         throw new Error('Password is not strong enough.');
+//     }
 
-    // validation
-    if (!email || !password) { throw Error('All fields must be filled.') }
+//     // Check if email is already in use
+//     const exists = await this.findOne({ email });
+//     if (exists) {
+//         throw new Error('Email already in use.');
+//     }
 
-    if (!validator.isEmail(email)) { throw Error('Email is not valid.') }
+//     // Hash password using utility
+//     const hashedPassword = await hashPassword(password);
 
-    if (!validator.isStrongPassword(password)) { throw Error('Password is not strong.') }
+//     // Create user with hashed password
+//     const user = await this.create({
+//         email,
+//         password: hashedPassword,
+//         role
+//     });
+//     return user;
+// };
 
-    const exists = await this.findOne({ email })
-    if (exists) { throw Error('Email already in use.') }
-
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
-
-    const user = await this.create({ email, password: hash, role })
-    return user
-}
-
-// static login
+// Login static method
 userSchema.statics.login = async function (email, password) {
     if (!email || !password) {
-        throw Error('All fields must be filled.')
+        throw new Error('All fields must be filled.');
     }
 
-    const user = await this.findOne({ email })
-    if (!user) { throw Error('Incorrect email.') }
+    const user = await this.findOne({ email });
+    if (!user) {
+        throw new Error('Incorrect email.');
+    }
 
-    const match = await bcrypt.compare(password, user.password)
-    if (!match) { throw Error('Incorrect password.') }
+    // Compare password using utility
+    const match = await comparePassword(password, user.password);
+    if (!match) {
+        throw new Error('Incorrect password.');
+    }
 
-    return user
-}
+    return user;
+};
 
-// Remove user information when user is deleted using middleware cascadeDelete.js
-userSchema.pre('remove', async function (next) {
-    await deleteUserRelatedData(this._id)
-    next()
-})
-
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User', userSchema);

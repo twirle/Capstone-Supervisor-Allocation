@@ -56,10 +56,6 @@ describe('Matching Test', () => {
 
             expect(res).to.have.status(200);
             console.log('Compatibility Matrix:', res.body.scoresMatrix);
-            console.log('Matches:', res.body.matches);
         });
-
     })
-
-    // Additional tests related to the matching process can be added here
 });

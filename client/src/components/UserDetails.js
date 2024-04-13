@@ -5,7 +5,10 @@ const UserDetails = ({ userDetail, onDelete }) => {
     const { user } = useAuthContext();
     const [isEditing, setIsEditing] = useState(false);
     const [editedRole, setEditedRole] = useState(userDetail.role);
-
+    // Assuming userDetail now contains facultyName, researchArea for mentors, and course for students
+    const [editedFacultyName, setEditedFacultyName] = useState(userDetail.facultyName || '');
+    const [editedResearchArea, setEditedResearchArea] = useState(userDetail.researchArea || '');
+    const [editedCourse, setEditedCourse] = useState(userDetail.course || '');
     const handleEdit = async () => {
         if (!user) {
             return;

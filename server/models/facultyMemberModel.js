@@ -11,9 +11,10 @@ const facultyMemberSchema = new mongoose.Schema({
         required: true
     },
     faculty: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Faculty',
         required: true
-    }
+    },
 });
 
 module.exports = mongoose.model('FacultyMember', facultyMemberSchema)

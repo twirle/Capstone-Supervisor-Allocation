@@ -2,67 +2,77 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Mentor = require('../models/mentorModel');
 const User = require('../models/userModel');
+const Faculty = require('../models/facultyModel');
 const bcrypt = require('bcrypt');
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.error(err));
+    .catch(err => console.error('Error connecting to MongoDB:', err));
 
-// Sample faculties and research areas
-const faculties = {
-    "Infocomm Technology": ["Blockchain", "Cybersecurity", "Artificial Intelligence"],
-    "Food, Chemical and Biotechnology": ["Food Processing", "Biomedical Engineering", "Chemical Synthesis"]
+const clearExistingMentorsAndUsers = async () => {
+    await Mentor.deleteMany({});
+    await User.deleteMany({ role: 'mentor' });
+    console.log('Cleared existing mentors and mentor users.');
 };
 
-const usedNames = new Set(); // Track used names to ensure uniqueness
-const operations = [];
-
-async function createMentorUser(fullName, faculty, researchArea) {
+// Function to create a single mentor user
+const createMentorUser = async (fullName, facultyId, researchArea) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash('defaultPassword', salt);
-    const userEmail = `${fullName.replace(' ', '').toLowerCase()}@example.com`;
+    let userEmail = `${fullName.replace(/\s+/g, '').toLowerCase()}@sit.edu.sg`;
 
-    const user = new User({
+    // Create user with unique email
+    let counter = 0;
+    while (await User.findOne({ email: userEmail })) {
+        counter++;
+        userEmail = `${fullName.replace(/\s+/g, '').toLowerCase()}${counter}@sit.edu.sg`;
+    }
+
+    const user = await User.create({
         email: userEmail,
         password: hashedPassword,
         role: 'mentor',
     });
 
-    await user.save();
-
-    const mentor = new Mentor({
+    await Mentor.create({
         user: user._id,
         name: fullName,
-        faculty: faculty,
+        faculty: facultyId,
         researchArea: researchArea,
     });
+};
 
-    await mentor.save();
-}
+// Main function to seed mentors
+const seedMentors = async () => {
+    await clearExistingMentorsAndUsers();
+    const faculties = await Faculty.find({});
+    const totalMentors = 10; // Total number of mentors you want to create
+    const allResearchAreas = faculties.reduce((acc, faculty) => acc.concat(faculty.courses.map(researchArea => ({ faculty: faculty._id, researchArea }))), []);
 
-for (let i = 0; i < 10; i++) {
-    let fullName, faculty, researchArea; // Declare variables outside the do-while loop
-    do {
-        const facultyKeys = Object.keys(faculties);
-        faculty = facultyKeys[Math.floor(Math.random() * facultyKeys.length)];
-        researchArea = faculties[faculty][Math.floor(Math.random() * faculties[faculty].length)];
+    for (let i = 0; i < totalMentors; i++) {
+        // Select a random research area from all research areas
+        const randomIndex = Math.floor(Math.random() * allResearchAreas.length);
+        const { faculty, researchArea } = allResearchAreas[randomIndex];
 
-        // Randomly select a first name and a last name
-        const firstName = ["John", "Jane", "Chris", "Pat", "Alex", "Taylor", "Jordan", "Casey", "Morgan", "Jamie"][Math.floor(Math.random() * 10)];
-        const lastName = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor"][Math.floor(Math.random() * 10)];
-        fullName = `${firstName} ${lastName}`;
-    } while (usedNames.has(fullName)); // Keep generating until a unique name is found
+        // Generate a unique name
+        // Generate a unique name for mentors
+        const firstNames = ["Morgan", "Taylor", "Jordan", "Casey", "Cameron", "Avery", "Riley", "Alexis", "Peyton", "Quinn"];
+        const lastNames = ["Murphy", "Kelly", "Ryan", "Reed", "Parker", "Campbell", "Owen", "Brooks", "Kennedy", "Ellis"];
 
-    usedNames.add(fullName); // Mark the name as used
-    operations.push(createMentorUser(fullName, faculty, researchArea));
-}
+        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+        const fullName = `${firstName} ${lastName}`;
 
-Promise.all(operations)
-    .then(() => {
-        console.log('Inserted 10 mentors successfully');
-        mongoose.disconnect();
-    })
-    .catch(err => {
-        console.error(err);
-        mongoose.disconnect();
+        await createMentorUser(fullName, faculty, researchArea);
+    }
+
+    console.log(`Inserted ${totalMentors} mentors successfully.`);
+};
+
+
+seedMentors()
+    .then(() => mongoose.disconnect().then(() => console.log('MongoDB Disconnected')))
+    .catch(error => {
+        console.error('Seeding mentors failed', error);
+        mongoose.disconnect().then(() => console.log('MongoDB Disconnected'));
     });

@@ -1,4 +1,5 @@
 const Mentor = require('../models/mentorModel')
+const MentorService = require('../services/mentorService')
 const mongoose = require('mongoose')
 
 // get all Mentors
@@ -30,41 +31,36 @@ const getMentor = async (req, res) => {
     res.status(200).json(mentor);
 }
 
+const UserService = require('../services/userService');
 
-// create a new Mentor
+// Create a new Mentor using UserService
 const createMentor = async (req, res) => {
-    const { name, faculty, researchArea, assignedStudent } = req.body
+    const { email, password, name, faculty, researchArea } = req.body;
 
-    let emptyFields = []
-    // check if admin
-    if (!['admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Not authorized to create a mentor' })
+    // Check for required fields and permissions
+    if (!req.user || !['admin'].includes(req.user.role)) {
+        return res.status(403).json({ error: 'Not authorized to create a mentor' });
     }
 
-    if (!name) {
-        emptyFields.push('name')
-    }
-    if (!course) {
-        emptyFields.push('course')
-    }
-    if (!faculty) {
-        emptyFields.push('faculty')
-    }
-    if (!company) {
-        emptyFields.push('company')
-    }
+    let emptyFields = [];
+    if (!name) emptyFields.push('name');
+    if (!faculty) emptyFields.push('faculty');
+    if (!researchArea) emptyFields.push('researchArea');
+    if (!email || !password) emptyFields.push('email and password');
+
     if (emptyFields.length > 0) {
-        return res.status(400).json({ error: 'Please fill in all fields.', emptyFields })
+        return res.status(400).json({ error: 'Please fill in all fields', emptyFields });
     }
 
-    // add to the database
+    // Use UserService to create a mentor user
     try {
-        const mentor = await Mentor.create({ name, faculty, researchArea, assignedStudent })
-        res.status(200).json(mentor)
+        await UserService.signupUser(email, password, 'mentor', { name, faculty, researchArea });
+        res.status(201).json({ message: 'Mentor created successfully' });
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        res.status(400).json({ error: error.message });
     }
-}
+};
+
 
 // update a Mentor
 const updateMentor = async (req, res) => {
@@ -84,20 +80,21 @@ const updateMentor = async (req, res) => {
 
 // delete a Mentor
 const deleteMentor = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'No such Mentor' })
+        return res.status(400).json({ error: 'Invalid mentor ID' });
     }
 
-    const mentor = await Mentor.findOneAndDelete({ _id: id })
-
-    if (!mentor) {
-        return res.status(400).json({ error: 'No such Mentor' })
+    try {
+        await UserService.deleteUserAndProfile(id, 'mentor'); // This method should handle both user and mentor profile deletions.
+        res.status(200).json({ message: 'Mentor deleted successfully' });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
-
-    res.status(200).json(mentor)
 }
+
+
 
 module.exports = {
     getMentors,

@@ -1,4 +1,3 @@
-const { deleteUserRelatedData } = require('../middleware/cascadeDelete')
 const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 

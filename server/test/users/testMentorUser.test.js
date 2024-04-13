@@ -13,6 +13,8 @@ describe('Mentor User Flow Test', function () {
     this.timeout(15000);
     let adminToken
     let mentorUserId
+    let facultyId
+    let researchArea
 
     before(async () => {
         try {
@@ -41,6 +43,30 @@ describe('Mentor User Flow Test', function () {
             console.error('Failed to login', err.message)
             throw err
         }
+
+        // Fetch an existing faculty
+        try {
+            const facultyResponse = await chai.request(server)
+                .get('/api/faculty') // Adjust this endpoint as necessary
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(facultyResponse).to.have.status(200);
+            expect(facultyResponse.body).to.be.an('array').that.is.not.empty;
+
+            faculty = facultyResponse.body[0]
+            facultyId = faculty._id
+            courses = faculty.courses
+
+            console.log('facultyID:', facultyId)
+            console.log('faculty name:', faculty.name)
+            console.log('faculty courses:', courses)
+
+            researchArea = courses[0]
+
+        } catch (err) {
+            console.error('Failed to fetch faculty', err.message);
+            throw err;
+        }
     });
 
     after(async () => {
@@ -65,12 +91,14 @@ describe('Mentor User Flow Test', function () {
                     role: 'mentor',
                     additionalInfo: {
                         name: 'Test Mentor',
-                        faculty: 'Infocomm Technology',
-                        researchArea: 'Blockchain'
+                        faculty: facultyId,
+                        researchArea: researchArea
                     }
                 })
 
-            // console.log('response:', resCreate.body)
+            if (resCreate.status !== 201) {
+                console.error('Failed to create mentor user:', resCreate.body)
+            }
             expect(resCreate).to.have.status(201)
         })
     })
@@ -91,31 +119,25 @@ describe('Mentor User Flow Test', function () {
         })
     })
 
-    // describe('Patch mentor /user', () => {
-    //     it('change mentor user password', async () => {
-    //         const resPatch = await chai.request(server)
-    //             .patch(`/api/user/${mentorUserId}/changePassword`)
-    //             .set('Authorization', `Bearer ${adminToken}`)
-    //             .send({
-    //                 oldPassword: 'testASD123!@#',
-    //                 newPassword: 'testASD123!@#$'
-    //             });
+    // Test case to amend mentor user password
+    // WIP to allow password amendments
 
-    //         // Verify the response
-    //         console.log('body', resPatch.body)
-    //         expect(resPatch).to.have.status(200);
-    //         expect(resPatch.body).to.have.property('message', 'Password changed successfully');
-    //     });
-    // });
-
-
+    // Test case to delete mentor user and also Mentor
     describe('Delete mentor /user', () => {
-        it('delete the mentor user', async () => {
+        it('delete the mentor user and ensure profile is also deleted', async () => {
             const resDelete = await chai.request(server)
                 .delete(`/api/user/${mentorUserId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
-            
-            expect(resDelete).to.have.status(200);
-        })
-    })
+
+            expect(resDelete).to.have.status(204);
+
+            // Check if the related mentor profile is also deleted
+            const checkProfile = await chai.request(server)
+                .get(`/api/mentor/user/${mentorUserId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+
+            expect(checkProfile.status).to.equal(404)
+        });
+    });
+
 })

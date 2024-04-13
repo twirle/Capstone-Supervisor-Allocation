@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "connectionTest": "mocha test/dbConnection.test.js",
-    "postTest": "mocha test/testStudentsPOST.test.js --exit",
+    "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
+    "mentorCRUDTest": "mocha test/crud/testMentorCRUD.test.js --exit",
+    "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
 
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
@@ -14,9 +16,9 @@
     "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
     
     "seedStudents": "node ./scripts/seedStudents.js",
-    "seedStudentsv2": "node ./scripts/seedStudentsv2.js",
     "seedMentors": "node ./scripts/seedMentors.js",
-    "clearStudents": "node ./scripts/clearStudents.js",
+    "seedFaculties": "node ./scripts/seedFaculties.js",
+    "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
     
     "matchTest": "mocha test/testMatch.test.js --exit"

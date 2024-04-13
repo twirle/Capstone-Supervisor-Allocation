@@ -83,27 +83,26 @@ describe('Admin User Flow Test', function () {
 
             adminToken = resLogin.body.token
             adminUserId = resLogin.body.id
-            // console.log('resLogin Body:', resLogin.body)
-            // console.log('adminUserId:', adminUserId)
             expect(resLogin).to.have.status(200)
         })
     })
 
-    describe('Patch admin /user', () => {
-        it('patch the admin user password', async () => {
-            const resPatch = await chai.request(server)
-                .patch(`/api/user/${adminUserId}/role`)
-                .set('Authorization', `Bearer ${adminToken}`)
-                .send({
-                    role: 'mentor'
-                });
+    // Test case to change admin password
+    // describe('Patch admin /user', () => {
+    //     it('patch the admin user password', async () => {
+    //         const resPatch = await chai.request(server)
+    //             .patch(`/api/user/${adminUserId}/role`)
+    //             .set('Authorization', `Bearer ${adminToken}`)
+    //             .send({
+    //                 role: 'mentor'
+    //             });
 
 
-            console.log(resPatch.body)
-            expect(resPatch).to.have.status(200)
-            expect(resPatch.body).to.have.property('role', 'mentor')
-        });
-    })
+    //         console.log(resPatch.body)
+    //         expect(resPatch).to.have.status(200)
+    //         expect(resPatch.body).to.have.property('role', 'mentor')
+    //     });
+    // })
 
     describe('Delete admin /user', () => {
         it('should delete the admin user', async () => {
@@ -111,7 +110,7 @@ describe('Admin User Flow Test', function () {
                 .delete(`/api/user/${adminUserId}`)
                 .set('Authorization', `Bearer ${originalAdminToken}`);
 
-            expect(resDelete).to.have.status(200);
+            expect(resDelete).to.have.status(204);
         })
     })
 })

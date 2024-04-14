@@ -22,11 +22,13 @@ async function deleteProfile(userId) {
         console.log('Deleting profile:', userId)
         const profile = await Mentor.findOneAndDelete({ user: userId })
         if (!profile) {
+            console.error('Mentor profile not found for User ID:', userId);
             throw new Error('Mentor profile not found for deletion')
         }
         console.log('Deleted mentor profile for:', userId)
         return profile
     } catch (error) {
+        console.error('Error deleting mentor profile', error)
         throw new Error('Error deleting mentor profile:', error)
     }
 }

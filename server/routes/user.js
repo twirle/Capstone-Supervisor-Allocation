@@ -3,7 +3,7 @@ const router = express.Router();
 const UserService = require('../services/userService'); // Ensure this is correctly imported
 
 // Controller functions
-const { loginUser, getAllUsers, updateUserPassword } = require('../controllers/userController');
+const { loginUser, getAllUsers, getUser, updateUserPassword, changePassword } = require('../controllers/userController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth');
 
 // Login route
@@ -21,10 +21,13 @@ router.post('/signup', requireAuth, checkRole(['admin']), async (req, res) => {
 });
 
 // Get all users, accessible only by admins
-router.get('/all', requireAuth, checkRole(['admin']), getAllUsers);
+router.get('/all', requireAuth, checkRole(['admin']), getAllUsers)
+
+// Get single user, accessible only by admins
+router.get('/:userId', requireAuth, checkRole(['admin']), getUser)
 
 // Change user password, requires authentication
-router.patch('/:id/changePassword', requireAuth, updateUserPassword);
+router.patch('/:userId/changePassword', requireAuth, changePassword);
 
 // Delete a user, accessible only by admins
 router.delete('/:userId', requireAuth, checkRole(['admin']), async (req, res) => {

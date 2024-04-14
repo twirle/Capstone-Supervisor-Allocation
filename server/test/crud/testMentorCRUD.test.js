@@ -130,25 +130,7 @@ describe('Mentor CRUD Flow Test', function () {
                     researchArea: researchAreaNew
                 });
 
-            console.log('Update', resUpdate.body)
-            expect(resUpdate).to.have.status(200);
-        });
-    });
-
-    describe('Update mentor /api/mentor/:id', () => {
-        it('should update the mentor', async () => {
-            const updateData = {
-                name: 'updated mentor name',
-                faculty: facultyId, // Assuming this is correct and exists
-                researchArea: 'Updated Research Area'
-            };
-
-            const resUpdate = await chai.request(server)
-                .patch(`/api/mentor/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`)
-                .send(updateData);
-
-            console.log('Update Response:', resUpdate.body);
+            console.log('Updated', resUpdate.body)
             expect(resUpdate).to.have.status(200);
         });
     });
@@ -156,6 +138,11 @@ describe('Mentor CRUD Flow Test', function () {
     // Test case to delete mentor user and also Mentor
     describe('Delete mentor /user', () => {
         it('delete the mentor user and ensure profile is also deleted', async () => {
+            const resCheck = await chai.request(server)
+                .get(`/api/user/${mentorId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+            expect(resCheck).to.have.status(200)
+
             const resDelete = await chai.request(server)
                 .delete(`/api/user/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
@@ -164,9 +151,10 @@ describe('Mentor CRUD Flow Test', function () {
 
             // Check if the related mentor profile is also deleted
             const checkProfile = await chai.request(server)
-                .get(`/api/mentor/user/${mentorId}`)
+                .get(`/api/mentor/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
 
+            console.log('checkprofile body:', checkProfile.body)
             expect(checkProfile.status).to.equal(404)
         })
     })

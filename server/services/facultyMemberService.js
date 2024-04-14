@@ -20,11 +20,13 @@ async function deleteProfile(userId) {
         console.log('Deleting profile:', userId)
         const profile = await FacultyMember.findOneAndDelete({ user: userId })
         if (!profile) {
+            console.error('FacultyMember profile not found for User ID:', userId);
             throw new Error('FacultyMember profile not found for deletion')
         }
         console.log('Deleted FacultyMember profile for:', userId)
         return profile
     } catch (error) {
+        console.error('Error deleting faculty member profile:', error)
         throw new Error('Error deleting faculty member profile:', error)
     }
 }

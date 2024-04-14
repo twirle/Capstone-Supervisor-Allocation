@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
-const { hashPassword, comparePassword } = require('../utils/securityUtils');
+const { comparePassword } = require('../utils/securityUtils');
 
 const userSchema = new mongoose.Schema({
     email: {

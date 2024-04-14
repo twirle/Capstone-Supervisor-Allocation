@@ -7,6 +7,7 @@
     "connectionTest": "mocha test/dbConnection.test.js",
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
     "mentorCRUDTest": "mocha test/crud/testMentorCRUD.test.js --exit",
+    "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
 

@@ -33,8 +33,21 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// get single user
+const getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 // change user password
-const updateUserPassword = async (req, res) => {
+const changePassword = async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body
         const user = await User.findById(req.params.id)
@@ -65,54 +78,5 @@ const updateUserPassword = async (req, res) => {
     }
 }
 
-// update user role NOT IN USE
-const updateUserRole = async (req, res) => {
-    const { id } = req.params;
-    const { role } = req.body;
 
-    try {
-        const user = await User.findByIdAndUpdate(id, { role }, { new: true });
-        if (!user) {
-            throw new Error('User not found');
-        }
-        res.json(user);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-// delete user
-const deleteUser = async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const user = await User.findByIdAndDelete(id);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.status(200).json({ message: 'User deleted successfully' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-// remove user using cascadeDelete
-const removeUser = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        await user.remove(); // This triggers the pre-remove middleware for cascade deletion
-
-        res.json({ message: 'User and related documents deleted successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error during user deletion' });
-    }
-};
-
-
-
-module.exports = { loginUser, getAllUsers, updateUserPassword, deleteUser, removeUser }
+module.exports = { loginUser, getAllUsers, getUser, changePassword }

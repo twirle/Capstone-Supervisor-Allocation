@@ -3,100 +3,58 @@ const mongoose = require('mongoose')
 
 // get all Faculty Members
 const getFacultyMembers = async (req, res) => {
-    const facultyMembers = await FacultyMember.find({}).sort({ createdAt: -1 })
-
-    res.status(200).json(facultyMembers)
+    try {
+        const facultyMembers = await FacultyMember.find({}).sort({ createdAt: -1 }).populate('user')
+        res.status(200).json(facultyMembers)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 }
 
-// get a single Faculty Member with access control
+// get a single Faculty Member by User ID with access control
 const getFacultyMember = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params;  // Adjusted parameter name for clarity
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such faculty member' })
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(404).json({ error: 'Invalid user ID' })
     }
 
-    const facultyMember = await FacultyMember.findById(id);
-
+    const facultyMember = await FacultyMember.findOne({ user: userId }).populate('user faculty')
     if (!facultyMember) {
-        return res.status(404).json({ error: 'No such faculty member' })
+        return res.status(404).json({ error: 'No faculty member associated with this user ID' })
     }
 
     // Check if the requesting user is the faculty member themselves or an admin
-    if (facultyMember._id.toString() !== req.user.id && req.user.role !== 'admin') {
+    if (facultyMember.user._id.toString() !== req.user.id && req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Not authorized to access this faculty member' })
     }
 
     res.status(200).json(facultyMember);
 }
 
-
-// create a new faculty member
-const createFacultyMember = async (req, res) => {
-    const { name, faculty } = req.body
-
-    let emptyFields = []
-    // check if admin
-    if (!['admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Not authorized to create a faculty member' })
-    }
-
-    if (!name) {
-        emptyFields.push('name')
-    }
-    if (!faculty) {
-        emptyFields.push('faculty')
-    }
-    if (emptyFields.length > 0) {
-        return res.status(400).json({ error: 'Please fill in all fields.', emptyFields })
-    }
-
-    // add to the database
-    try {
-        const facultyMember = await FacultyMember.create({ name, faculty })
-        res.status(200).json(facultyMember)
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-}
-
 // update a faculty member
 const updateFacultyMember = async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
+    const { userId } = req.params;
+    console.log(`Attempting to update facultymember with ID: ${userId}`);
+    const updateData = req.body
 
     try {
-        const facultyMember = await FacultyMember.findByIdAndUpdate(id, updateData, { new: true });
+        const facultyMember = await FacultyMember.findOneAndUpdate({ user: userId }, updateData, { new: true }).populate('user faculty')
         if (!facultyMember) {
+            console.error(`No faculty member found with ID: ${userId}`);
             return res.status(404).json({ error: 'No such faculty member' });
         }
+        console.log(`Updated Faculty Member: ${facultyMember}`);
         res.status(200).json(facultyMember);
     } catch (error) {
+        console.error(`Error updating facultymember: ${error}`);
         res.status(400).json({ error: error.message });
     }
 };
 
-// delete a faculty member
-const deleteFacultyMember = async (req, res) => {
-    const { id } = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'No such faculty member' })
-    }
-
-    const facultyMember = await facultyMember.findOneAndDelete({ _id: id })
-
-    if (!facultyMember) {
-        return res.status(400).json({ error: 'No such faculty member' })
-    }
-
-    res.status(200).json(facultyMember)
-}
 
 module.exports = {
-    getFacultyMember,
     getFacultyMembers,
-    createFacultyMember,
-    updateFacultyMember,
-    deleteFacultyMember
+    getFacultyMember,
+    updateFacultyMember
 }

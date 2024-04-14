@@ -2,9 +2,9 @@ const User = require('../models/userModel');
 const StudentService = require('./studentService');
 const MentorService = require('./mentorService');
 const FacultyService = require('./facultyMemberService');
-const { hashPassword, comparePassword } = require('../utils/securityUtils');
+const { hashPassword } = require('../utils/securityUtils');
 const { validateUserInput } = require('../utils/validateHelpers');
-
+{ }
 
 async function signupUser(email, password, role, additionalInfo) {
 
@@ -42,7 +42,8 @@ async function deleteUserandProfile(userId) {
     try {
         const user = await User.findById(userId);
         if (!user) {
-            throw Error('User not found.');
+            console.error(`User with ID ${userId} not found.`);
+            throw new Error('User not found.');
         }
 
         switch (user.role) {

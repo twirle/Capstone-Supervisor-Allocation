@@ -3,8 +3,6 @@ const express = require("express")
 const {
   getStudents,
   getStudent,
-  createStudent,
-  deleteStudent,
   updateStudent
 } = require('../controllers/studentController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
@@ -17,17 +15,17 @@ router.use(requireAuth);
 // GET all student
 router.get('/', getStudents);
 
-// GET a single student
-router.get('/:id', getStudent);
+// GET a single student based on their 'Profile' Id
+router.get('/user/:userId', getStudent);
 
 // POST a new student
-router.post('/', requireAuth, checkRole(['admin']), createStudent);
+// moved to userService.js to handle creation and deletion
 
 // UPDATE a student
-router.patch('/:id', requireAuth, checkRole(['admin', 'facultyMember']), updateStudent);
+router.patch('/user/:userId', requireAuth, checkRole(['admin', 'facultyMember']), updateStudent);
 
 // DELETE a student
-router.delete('/:id', deleteStudent);
+// moved to userService.js to handle creation and deletion
 
 
-module.exports = router;
+module.exports = router

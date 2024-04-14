@@ -12,8 +12,8 @@ chai.use(chaiHttp);
 
 describe('Faculty CRUD Flow Test', function () {
     this.timeout(15000);
-    let adminToken;
-    let facultyId;
+    let adminToken
+    let facultyId
 
     before(async () => {
         try {

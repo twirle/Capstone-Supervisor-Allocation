@@ -3,8 +3,6 @@ const express = require("express")
 const {
   getFacultyMembers,
   getFacultyMember,
-  createFacultyMember,
-  deleteFacultyMember,
   updateFacultyMember
 } = require('../controllers/facultyMemberController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
@@ -17,17 +15,17 @@ router.use(requireAuth);
 // GET all faculty members
 router.get('/', getFacultyMembers);
 
-// GET a single faculty member
-router.get('/:id', getFacultyMember);
+// GET a single faculty member based on their 'Profile' Id
+router.get('/user/:userId', getFacultyMember);
 
 // POST a new faculty member
-router.post('/', requireAuth, checkRole(['admin']), createFacultyMember);
+// moved to userService.js to handle creation and deletion
 
 // UPDATE a faculty member
-router.patch('/:id', requireAuth, checkRole(['admin']), updateFacultyMember);
+router.patch('/user/:userId', requireAuth, checkRole(['admin']), updateFacultyMember);
 
 // DELETE a faculty member
-router.delete('/:id', deleteFacultyMember);
+// moved to userService.js to handle creation and deletion
 
 
 module.exports = router;

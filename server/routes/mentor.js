@@ -3,8 +3,6 @@ const express = require("express")
 const {
   getMentors,
   getMentor,
-  createMentor,
-  deleteMentor,
   updateMentor
 } = require('../controllers/mentorController');
 const { requireAuth, checkRole } = require('../middleware/requireAuth')
@@ -17,17 +15,16 @@ router.use(requireAuth);
 // GET all mentors
 router.get('/', getMentors);
 
-// GET a single student
-router.get('/:id', getMentor);
+// GET a single mentor based on their 'User' Id
+router.get('/:userId', getMentor);
 
-// // POST a new mentor
-// router.post('/', requireAuth, checkRole(['admin']), createMentor);
+// POST a new mentor
+// moved to userService.js to handle creation and deletion
 
 // UPDATE a mentor
-router.patch('/:id', requireAuth, checkRole(['admin']), updateMentor);
+router.patch('/:userId', requireAuth, checkRole(['admin']), updateMentor);
 
-// // DELETE a mentor
-// router.delete('/:id', deleteMentor);
-
+// DELETE a mentor
+// moved to userService.js to handle creation and deletion
 
 module.exports = router;

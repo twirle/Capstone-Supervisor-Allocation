@@ -3,23 +3,26 @@ const mongoose = require('mongoose')
 
 // get all Students
 const getStudents = async (req, res) => {
-    const students = await Student.find({}).sort({ createdAt: -1 })
+    try {
+        const students = await Student.find({}).sort({ createdAt: -1 }).populate('user')
+        res.status(200).json(students)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 
-    res.status(200).json(students)
 }
 
 // get a single Student with access control
 const getStudent = async (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such student' })
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(404).json({ error: 'Invalid user ID' })
     }
 
-    const student = await Student.findById(id);
-
+    const student = await Student.findOne({ user: userId }).populate('user faculty')
     if (!student) {
-        return res.status(404).json({ error: 'No such student' })
+        return res.status(404).json({ error: 'No student found with this user ID' })
     }
 
     // Check if the requesting user is the student themselves or an admin
@@ -30,79 +33,29 @@ const getStudent = async (req, res) => {
     res.status(200).json(student);
 }
 
-
-// create a new Student
-const createStudent = async (req, res) => {
-    const { name, course, faculty, company, assignedMentor } = req.body
-
-    let emptyFields = []
-    // check if admin
-    if (!['admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Not authorized to create a student' })
-    }
-
-    if (!name) {
-        emptyFields.push('name')
-    }
-    if (!course) {
-        emptyFields.push('course')
-    }
-    if (!faculty) {
-        emptyFields.push('faculty')
-    }
-    if (!company) {
-        emptyFields.push('company')
-    }
-    if (emptyFields.length > 0) {
-        return res.status(400).json({ error: 'Please fill in all fields.', emptyFields })
-    }
-
-    // add to the database
-    try {
-        const student = await Student.create({ name, course, faculty, company, assignedMentor })
-        res.status(200).json(student)
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-}
-
 // update a Student
 const updateStudent = async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body; // This might include user ID, but be cautious with allowing this to change
+    const { userId } = req.params
+    console.log(`Attempting to update student with ID: ${userId}`);
+    const updateData = req.body
 
     try {
-        const student = await Student.findByIdAndUpdate(id, updateData, { new: true });
+        const student = await Student.findOneAndUpdate({ user: userId }, updateData, { new: true }).populate('user faculty')
         if (!student) {
+            console.error(`No student found with ID: ${userId}`);
             return res.status(404).json({ error: 'No such student' });
         }
+        console.log(`Updated student: ${student}`);
         res.status(200).json(student);
     } catch (error) {
+        console.error(`Error updating mentor: ${error}`);
         res.status(400).json({ error: error.message });
     }
 };
 
-// delete a Student
-const deleteStudent = async (req, res) => {
-    const { id } = req.params
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'No such Student' })
-    }
-
-    const student = await Student.findOneAndDelete({ _id: id })
-
-    if (!student) {
-        return res.status(400).json({ error: 'No such Student' })
-    }
-
-    res.status(200).json(student)
-}
 
 module.exports = {
     getStudents,
     getStudent,
-    createStudent,
-    updateStudent,
-    deleteStudent
+    updateStudent
 }

@@ -12,7 +12,7 @@ chai.use(chaiHttp);
 describe('Mentor User Flow Test', function () {
     this.timeout(15000);
     let adminToken
-    let mentorUserId
+    let mentorId
     let facultyId
     let researchArea
 
@@ -47,7 +47,7 @@ describe('Mentor User Flow Test', function () {
         // Fetch an existing faculty
         try {
             const facultyResponse = await chai.request(server)
-                .get('/api/faculty') // Adjust this endpoint as necessary
+                .get('/api/faculty') 
                 .set('Authorization', `Bearer ${adminToken}`);
 
             expect(facultyResponse).to.have.status(200);
@@ -103,7 +103,7 @@ describe('Mentor User Flow Test', function () {
         })
     })
 
-    // Test case to login to the new admin user
+    // Test case to login to the new mentor user
     describe('Login mentor /user', () => {
         it('login the mentor user and get a token', async () => {
             const resLogin = await chai.request(server)
@@ -114,7 +114,7 @@ describe('Mentor User Flow Test', function () {
                     role: 'mentor'
                 })
 
-            mentorUserId = resLogin.body.id
+            mentorId = resLogin.body.id
             expect(resLogin).to.have.status(200)
         })
     })
@@ -126,14 +126,14 @@ describe('Mentor User Flow Test', function () {
     describe('Delete mentor /user', () => {
         it('delete the mentor user and ensure profile is also deleted', async () => {
             const resDelete = await chai.request(server)
-                .delete(`/api/user/${mentorUserId}`)
+                .delete(`/api/user/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
 
             expect(resDelete).to.have.status(204);
 
             // Check if the related mentor profile is also deleted
             const checkProfile = await chai.request(server)
-                .get(`/api/mentor/user/${mentorUserId}`)
+                .get(`/api/mentor/user/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
 
             expect(checkProfile.status).to.equal(404)

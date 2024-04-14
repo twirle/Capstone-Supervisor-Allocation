@@ -9,11 +9,15 @@ const expect = chai.expect
 
 chai.use(chaiHttp);
 
-
 describe('Mentor CRUD Flow Test', function () {
     this.timeout(15000);
-    let adminToken;
-    let facultyId;
+    let adminToken
+    let mentorId
+    let faculty
+    let facultyId
+    let facultyIdNew
+    let researchArea
+    let researchAreaNew
 
     before(async () => {
         try {
@@ -46,14 +50,21 @@ describe('Mentor CRUD Flow Test', function () {
         // Fetch an existing faculty
         try {
             const facultyResponse = await chai.request(server)
-                .get('/api/faculty') // Adjust this endpoint as necessary
+                .get('/api/faculty')
                 .set('Authorization', `Bearer ${adminToken}`);
 
             expect(facultyResponse).to.have.status(200);
             expect(facultyResponse.body).to.be.an('array').that.is.not.empty;
-            facultyId = facultyResponse.body[0]._id; // Use the ID of the first faculty
-            console.log('facultyID:', facultyId)
-            console.log('faculty name:', facultyResponse.body[0].name)
+
+            faculty = facultyResponse.body[0]
+            facultyNew = facultyResponse.body[1]
+            facultyId = faculty._id
+            facultyIdNew = facultyNew._id
+            courses = faculty.courses
+            coursesNew = facultyNew.courses
+
+            researchArea = courses[0]
+            researchAreaNew = coursesNew[0]
 
         } catch (err) {
             console.error('Failed to fetch faculty', err.message);
@@ -70,24 +81,30 @@ describe('Mentor CRUD Flow Test', function () {
             throw err
         }
     });
-
-    // Test case to create a mentor
-    describe('Create mentor /api/mentor', () => {
-        it('should create a new mentor', async () => {
+    // Test case to create mentor user
+    describe('Create mentor /user', () => {
+        it('create an mentor user', async () => {
             const resCreate = await chai.request(server)
-                .post('/api/mentor')
+                .post('/api/user/signup')
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
-                    name: 'test mentor',
-                    faculty: facultyId,
-                    researchArea: 'test research area'
+                    email: 'mentortest@sit.edu.sg',
+                    password: 'testASD123!@#',
+                    role: 'mentor',
+                    additionalInfo: {
+                        name: 'Test Mentor',
+                        faculty: facultyId,
+                        researchArea: researchArea
+                    }
+                })
 
-                });
-
-            expect(resCreate).to.have.status(201);
-            mentorId = resCreate.body._id; // Assuming the response body will contain the faculty id
-        });
-    });
+            if (resCreate.status !== 201) {
+                console.error('Failed to create mentor user:', resCreate.body)
+            }
+            expect(resCreate).to.have.status(201)
+            mentorId = resCreate.body.user._id
+        })
+    })
 
     // Test case to get all mentors
     describe('Get all mentor /api/mentor', () => {
@@ -109,22 +126,48 @@ describe('Mentor CRUD Flow Test', function () {
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
                     name: 'updated mentor name',
-                    faculty: '',
-                    researchArea: 'test research area'
+                    faculty: facultyIdNew,
+                    researchArea: researchAreaNew
                 });
 
+            console.log('Update', resUpdate.body)
             expect(resUpdate).to.have.status(200);
         });
     });
 
-    // Test case to delete a mentor
-    describe('Delete faculty /api/mentor/:id', () => {
-        it('should delete the mentor', async () => {
-            const resDelete = await chai.request(server)
-                .delete(`/api/mentor/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
+    describe('Update mentor /api/mentor/:id', () => {
+        it('should update the mentor', async () => {
+            const updateData = {
+                name: 'updated mentor name',
+                faculty: facultyId, // Assuming this is correct and exists
+                researchArea: 'Updated Research Area'
+            };
 
-            expect(resDelete).to.have.status(200);
+            const resUpdate = await chai.request(server)
+                .patch(`/api/mentor/${mentorId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send(updateData);
+
+            console.log('Update Response:', resUpdate.body);
+            expect(resUpdate).to.have.status(200);
         });
     });
-});
+
+    // Test case to delete mentor user and also Mentor
+    describe('Delete mentor /user', () => {
+        it('delete the mentor user and ensure profile is also deleted', async () => {
+            const resDelete = await chai.request(server)
+                .delete(`/api/user/${mentorId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(resDelete).to.have.status(204);
+
+            // Check if the related mentor profile is also deleted
+            const checkProfile = await chai.request(server)
+                .get(`/api/mentor/user/${mentorId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+
+            expect(checkProfile.status).to.equal(404)
+        })
+    })
+})

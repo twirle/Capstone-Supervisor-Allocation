@@ -33,73 +33,76 @@ const getMentor = async (req, res) => {
 
 const UserService = require('../services/userService');
 
-// Create a new Mentor using UserService
-const createMentor = async (req, res) => {
-    const { email, password, name, faculty, researchArea } = req.body;
+// // Create a new Mentor using UserService
+// const createMentor = async (req, res) => {
+//     const { email, password, name, faculty, researchArea } = req.body;
 
-    // Check for required fields and permissions
-    if (!req.user || !['admin'].includes(req.user.role)) {
-        return res.status(403).json({ error: 'Not authorized to create a mentor' });
-    }
+//     // Check for required fields and permissions
+//     if (!req.user || !['admin'].includes(req.user.role)) {
+//         return res.status(403).json({ error: 'Not authorized to create a mentor' });
+//     }
 
-    let emptyFields = [];
-    if (!name) emptyFields.push('name');
-    if (!faculty) emptyFields.push('faculty');
-    if (!researchArea) emptyFields.push('researchArea');
-    if (!email || !password) emptyFields.push('email and password');
+//     let emptyFields = [];
+//     if (!name) emptyFields.push('name');
+//     if (!faculty) emptyFields.push('faculty');
+//     if (!researchArea) emptyFields.push('researchArea');
+//     if (!email || !password) emptyFields.push('email and password');
 
-    if (emptyFields.length > 0) {
-        return res.status(400).json({ error: 'Please fill in all fields', emptyFields });
-    }
+//     if (emptyFields.length > 0) {
+//         return res.status(400).json({ error: 'Please fill in all fields', emptyFields });
+//     }
 
-    // Use UserService to create a mentor user
-    try {
-        await UserService.signupUser(email, password, 'mentor', { name, faculty, researchArea });
-        res.status(201).json({ message: 'Mentor created successfully' });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+//     // Use UserService to create a mentor user
+//     try {
+//         await UserService.signupUser(email, password, 'mentor', { name, faculty, researchArea });
+//         res.status(201).json({ message: 'Mentor created successfully' });
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
 
 
 // update a Mentor
 const updateMentor = async (req, res) => {
-    const { id } = req.params
-    const updateData = req.body
-
-    try {
-        const mentor = await Mentor.findByIdAndUpdate(id, updateData, { new: true })
-        if (!mentor) {
-            return res.status(404).json({ error: 'No such mentor' })
-        }
-        res.status(200).json(mentor)
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-};
-
-// delete a Mentor
-const deleteMentor = async (req, res) => {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid mentor ID' });
-    }
+    console.log(`Attempting to update mentor with ID: ${id}`);
+    const updateData = req.body;
 
     try {
-        await UserService.deleteUserAndProfile(id, 'mentor'); // This method should handle both user and mentor profile deletions.
-        res.status(200).json({ message: 'Mentor deleted successfully' });
+        const mentor = await Mentor.findOneAndUpdate({ user: id }, updateData, { new: true });
+        if (!mentor) {
+            console.error(`No mentor found with ID: ${id}`);
+            return res.status(404).json({ error: 'No such mentor' });
+        }
+        console.log(`Updated Mentor: ${mentor}`);
+        res.status(200).json(mentor);
     } catch (error) {
+        console.error(`Error updating mentor: ${error}`);
         res.status(400).json({ error: error.message });
     }
-}
+};
+// // delete a Mentor
+// const deleteMentor = async (req, res) => {
+//     const { id } = req.params;
+
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//         return res.status(400).json({ error: 'Invalid mentor ID' });
+//     }
+
+//     try {
+//         await UserService.deleteUserAndProfile(id, 'mentor'); // This method should handle both user and mentor profile deletions.
+//         res.status(200).json({ message: 'Mentor deleted successfully' });
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// }
 
 
 
 module.exports = {
     getMentors,
     getMentor,
-    createMentor,
+    // createMentor,
     updateMentor,
-    deleteMentor
+    // deleteMentor
 }

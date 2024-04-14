@@ -20,14 +20,14 @@ router.get('/', getMentors);
 // GET a single student
 router.get('/:id', getMentor);
 
-// POST a new mentor
-router.post('/', requireAuth, checkRole(['admin']), createMentor);
+// // POST a new mentor
+// router.post('/', requireAuth, checkRole(['admin']), createMentor);
 
 // UPDATE a mentor
 router.patch('/:id', requireAuth, checkRole(['admin']), updateMentor);
 
-// DELETE a mentor
-router.delete('/:id', deleteMentor);
+// // DELETE a mentor
+// router.delete('/:id', deleteMentor);
 
 
 module.exports = router;

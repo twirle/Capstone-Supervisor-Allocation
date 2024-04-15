@@ -16,13 +16,13 @@ router.use(requireAuth);
 router.get('/', getFacultyMembers);
 
 // GET a single faculty member based on their 'Profile' Id
-router.get('/user/:userId', getFacultyMember);
+router.get('/:userId', getFacultyMember);
 
 // POST a new faculty member
 // moved to userService.js to handle creation and deletion
 
 // UPDATE a faculty member
-router.patch('/user/:userId', requireAuth, checkRole(['admin']), updateFacultyMember);
+router.patch('/:userId', requireAuth, checkRole(['admin']), updateFacultyMember);
 
 // DELETE a faculty member
 // moved to userService.js to handle creation and deletion

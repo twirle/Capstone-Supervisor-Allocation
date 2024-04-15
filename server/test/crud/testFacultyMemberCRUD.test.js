@@ -9,14 +9,12 @@ const expect = chai.expect
 
 chai.use(chaiHttp);
 
-
 describe('Faculty CRUD Flow Test', function () {
     this.timeout(15000);
     let adminToken
     let facultyMemberId
     let facultyId
     let facultyIdNew
-
 
     before(async () => {
         try {
@@ -91,11 +89,27 @@ describe('Faculty CRUD Flow Test', function () {
                         faculty: facultyId
                     }
                 })
+
             if (resCreate.status !== 201) {
-                console.error('Failed to create mentor user:', resCreate.body)
+                console.error('Failed to create faculty member user:', resCreate.body)
             }
-            expect(resCreate).to.have.status(201);
-            facultyId = resCreate.body._id; // Assuming the response body will contain the faculty id
+            expect(resCreate).to.have.status(201)
+            facultyMemberId = resCreate.body.user._id
+        })
+    })
+
+    // test case to try get created faculty member's profile
+    describe('Get faculty member /user', () => {
+        it('should get the faculty member profile', async () => {
+            const res = await chai.request(server)
+                .get(`/api/facultyMember/${facultyMemberId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+
+            console.log('body', res.body)
+            // facultyMemberId = res.body
+            expect(res).to.have.status(200)
+            expect(res.body).to.have.property('name');
+            expect(res.body).to.have.property('faculty');
         })
     })
 
@@ -120,11 +134,11 @@ describe('Faculty CRUD Flow Test', function () {
                 .send({
                     name: 'Updated Test Faculty Member',
                     faculty: facultyIdNew
-                });
+                })
             console.log('Updated', resUpdate.body)
             expect(resUpdate).to.have.status(200);
-        });
-    });
+        })
+    })
 
     // Test case to delete a faculty member and profile
     describe('Delete faculty user', () => {
@@ -133,11 +147,11 @@ describe('Faculty CRUD Flow Test', function () {
                 .delete(`/api/user/${facultyMemberId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
 
-            expect(resDelete).to.have.status(200);
+            expect(resDelete).to.have.status(204);
 
             // Check if the related faculty member profile is also deleted
             const checkProfile = await chai.request(server)
-                .get(`/api/facultyMember/user/${facultyMemberId}`)
+                .get(`/api/facultyMember/${facultyMemberId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
 
             console.log('checkprofile body:', checkProfile.body)

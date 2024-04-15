@@ -70,7 +70,7 @@ describe('Mentor CRUD Flow Test', function () {
             console.error('Failed to fetch faculty', err.message);
             throw err;
         }
-    });
+    })
 
     after(async () => {
         try {
@@ -83,7 +83,7 @@ describe('Mentor CRUD Flow Test', function () {
     });
     // Test case to create mentor user
     describe('Create mentor /user', () => {
-        it('create an mentor user', async () => {
+        it('should create an mentor user', async () => {
             const resCreate = await chai.request(server)
                 .post('/api/user/signup')
                 .set('Authorization', `Bearer ${adminToken}`)
@@ -112,11 +112,22 @@ describe('Mentor CRUD Flow Test', function () {
             const resGetAll = await chai.request(server)
                 .get('/api/mentor')
                 .set('Authorization', `Bearer ${adminToken}`);
-
             expect(resGetAll).to.have.status(200);
             expect(resGetAll.body.length).to.be.greaterThan(0);
-        });
-    });
+        })
+    })
+
+    // Test case to get the created mentor profile
+    describe('Get the created mentor /user', () => {
+        it('should get the created mentor profile', async () => {
+            const res = await chai.request(server)
+                .get(`/api/mentor/${mentorId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+            expect(res).to.have.status(200)
+            expect(res.body).to.have.property('name');
+            expect(res.body).to.have.property('faculty');
+        })
+    })
 
     // Test case to update a mentor
     describe('Update mentor /api/mentor/:id', () => {
@@ -128,33 +139,23 @@ describe('Mentor CRUD Flow Test', function () {
                     name: 'updated mentor name',
                     faculty: facultyIdNew,
                     researchArea: researchAreaNew
-                });
-
-            console.log('Updated', resUpdate.body)
+                })
             expect(resUpdate).to.have.status(200);
-        });
-    });
+        })
+    })
 
-    // Test case to delete mentor user and also Mentor
+    // Test case to delete mentor user and profile
     describe('Delete mentor /user', () => {
         it('delete the mentor user and ensure profile is also deleted', async () => {
-            const resCheck = await chai.request(server)
-                .get(`/api/user/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(resCheck).to.have.status(200)
-
             const resDelete = await chai.request(server)
                 .delete(`/api/user/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-
+                .set('Authorization', `Bearer ${adminToken}`)
             expect(resDelete).to.have.status(204);
 
             // Check if the related mentor profile is also deleted
             const checkProfile = await chai.request(server)
                 .get(`/api/mentor/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
-
-            console.log('checkprofile body:', checkProfile.body)
             expect(checkProfile.status).to.equal(404)
         })
     })

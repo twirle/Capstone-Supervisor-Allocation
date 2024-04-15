@@ -44,7 +44,7 @@ const updateMentor = async (req, res) => {
             console.error(`No mentor found with ID: ${userId}`);
             return res.status(404).json({ error: 'No such mentor' });
         }
-        console.log(`Updated Mentor: ${mentor}`);
+        // console.log(`Updated Mentor: ${mentor}`);
         res.status(200).json(mentor);
     } catch (error) {
         console.error(`Error updating mentor: ${error}`);

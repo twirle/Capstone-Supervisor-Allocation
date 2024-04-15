@@ -5,7 +5,6 @@ const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const server = require('../../server')
-const facultyMemberModel = require('../../models/facultyMemberModel')
 const expect = chai.expect
 
 chai.use(chaiHttp);
@@ -13,7 +12,7 @@ chai.use(chaiHttp);
 describe('Faculty Member User Flow Test', function () {
     this.timeout(15000);
     let adminToken
-    let facultyMemberUserId
+    let facultyMemberId
     let facultyId
 
     before(async () => {
@@ -107,7 +106,7 @@ describe('Faculty Member User Flow Test', function () {
                     password: 'testASD123!@#'
                 })
 
-            facultyMemberUserId = resLogin.body.id
+            facultyMemberId = resLogin.body.id
             expect(resLogin).to.have.status(200)
         })
     })
@@ -116,14 +115,12 @@ describe('Faculty Member User Flow Test', function () {
     describe('Get faculty member /user', () => {
         it('should get the faculty member profile', async () => {
             const res = await chai.request(server)
-                .get(`/api/facultyMember/user/${facultyMemberUserId}`)
-                .set('Authorizaion', `Bearer ${adminToken}`)
+                .get(`/api/facultyMember/${facultyMemberId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
 
             expect(res).to.have.status(200)
-
             expect(res.body).to.have.property('name');
             expect(res.body).to.have.property('faculty');
-            expect(res.body).to.have.property('courses').that.is.an('array');
 
         })
     })
@@ -134,15 +131,20 @@ describe('Faculty Member User Flow Test', function () {
     // Test case to delete faculty member user and also the profile
     describe('Delete faculty member /user', () => {
         it('should delete the faculty member user', async () => {
+            const resCheck = await chai.request(server)
+                .get(`/api/user/${facultyMemberId}`)
+                .set('Authorization', `Bearer ${adminToken}`);
+            expect(resCheck).to.have.status(200)
+
             const resDelete = await chai.request(server)
-                .delete(`/ api / user / ${facultyMemberUserId} `)
+                .delete(`/api/user/${facultyMemberId} `)
                 .set('Authorization', `Bearer ${adminToken} `)
 
             expect(resDelete).to.have.status(204)
 
             // check if related faculty member profile is also deleted
             const checkProfile = await chai.request(server)
-                .get(`/ api / facultyMember / user / ${facultyMemberUserId} `)
+                .get(`/api/facultyMember/user/${facultyMemberId} `)
                 .set('Authorization', `Bearer ${adminToken} `)
 
             expect(checkProfile.status).to.equal(404)

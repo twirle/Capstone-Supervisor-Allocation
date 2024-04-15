@@ -126,9 +126,7 @@ describe('Mentor User Flow Test', function () {
                 .get(`/api/mentor/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
 
-            console.log('resbody:', res.body)
             expect(res).to.have.status(200)
-
             expect(res.body).to.have.property('name');
             expect(res.body).to.have.property('faculty');
         })
@@ -140,11 +138,6 @@ describe('Mentor User Flow Test', function () {
     // Test case to delete mentor user and also Mentor
     describe('Delete mentor /user', () => {
         it('delete the mentor user and ensure profile is also deleted', async () => {
-            const resCheck = await chai.request(server)
-                .get(`/api/user/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-            expect(resCheck).to.have.status(200)
-
             const resDelete = await chai.request(server)
                 .delete(`/api/user/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
@@ -156,7 +149,6 @@ describe('Mentor User Flow Test', function () {
                 .get(`/api/mentor/${mentorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
 
-            console.log('profile:', checkProfile.body)
             expect(checkProfile.status).to.equal(404)
         });
     });

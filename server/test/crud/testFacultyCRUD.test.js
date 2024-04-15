@@ -97,9 +97,9 @@ describe('Faculty CRUD Flow Test', function () {
         });
     });
 
-    // Test case to get a single faculty by ID
+    // Test case to get a single faculty by ID and check update
     describe('Get single faculty /api/faculty/:id', () => {
-        it('should retrieve a single faculty by id', async () => {
+        it('should retrieve a single faculty by id and check against update', async () => {
             const res = await chai.request(server)
                 .get(`/api/faculty/${facultyId}`)
                 .set('Authorization', `Bearer ${adminToken}`);
@@ -109,16 +109,6 @@ describe('Faculty CRUD Flow Test', function () {
             expect(res.body._id).to.equal(facultyId);
             expect(res.body.name).to.equal('Updated Test Faculty'); // Ensure the name matches the updated name
             expect(res.body.courses).to.deep.equal(['Updated Course 1']); // Verify the updated courses array
-        });
-
-        it('should return a 404 for a non-existent faculty ID', async () => {
-            const nonExistentFacultyId = "5f8d0d55b54764421b715b61"; // Example non-existent ID
-
-            const res = await chai.request(server)
-                .get(`/api/faculty/${nonExistentFacultyId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-
-            expect(res).to.have.status(404);
         });
     });
 

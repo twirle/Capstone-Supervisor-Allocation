@@ -10,7 +10,12 @@ const expect = chai.expect
 
 chai.use(chaiHttp)
 
-let authToken
+let adminToken
+let studentId
+let facultyId
+let facultyIdNew
+let courses
+let courseNew
 
 describe('Student CRUD Flow Test', function () {
     this.timeout(15000);
@@ -26,18 +31,49 @@ describe('Student CRUD Flow Test', function () {
             console.error('Database connection error', err.message)
             throw err
         }
+        try {
+            // admin login to obtain authtoken
+            const loginResponse = await chai.request(server)
+                .post('/api/user/login')
+                .send({
+                    email: process.env.TEST_USER_EMAIL,
+                    password: process.env.TEST_USER_PASSWORD
+                })
 
-        // Login before tests run to obtain authToken
-        const loginResponse = await chai.request(server)
-            .post('/api/user/login')
-            .send({
-                email: process.env.TEST_USER_EMAIL,
-                password: process.env.TEST_USER_PASSWORD
-            })
+            expect(loginResponse).to.have.status(200)
+            adminToken = loginResponse.body.token
+        } catch (err) {
+            console.error('Failed to login', err.message)
+            throw err
+        }
 
-        expect(loginResponse).to.have.status(200)
-        authToken = loginResponse.body.token
-    });
+        // Fetch an existing faculty
+        try {
+            const facultyResponse = await chai.request(server)
+                .get('/api/faculty')
+                .set('Authorization', `Bearer ${adminToken}`);
+
+            expect(facultyResponse).to.have.status(200);
+            expect(facultyResponse.body).to.be.an('array').that.is.not.empty;
+
+            faculty = facultyResponse.body[0]
+            facultyId = faculty._id
+            facultyIdNew = facultyResponse.body[1]._id
+
+            courses = faculty.courses
+
+            console.log('facultyID:', facultyId)
+            console.log('faculty name:', faculty.name)
+            console.log('faculty courses:', courses)
+
+            course = courses[0]
+            courseNew = courses[1]
+
+        } catch (err) {
+            console.error('Failed to fetch faculty', err.message);
+            throw err;
+        }
+    })
 
     after(async () => {
         try {
@@ -49,91 +85,85 @@ describe('Student CRUD Flow Test', function () {
         }
     });
 
+    // Test case to create student user
+    describe('Create student /user', () => {
+        it('should create a student user', async () => {
+            const resCreate = await chai.request(server)
+                .post('/api/user/signup')
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({
+                    email: 'studenttest@sit.edu.sg',
+                    password: 'testASD123!@#',
+                    role: 'student',
+                    additionalInfo: {
+                        name: 'Test Student',
+                        faculty: facultyId,
+                        course: course,
+                        company: 'Nestle'
+                    }
+                })
+
+            if (resCreate.status !== 201) {
+                console.error('Failed to create mentor user:', resCreate.body)
+            }
+            expect(resCreate).to.have.status(201)
+            studentId = resCreate.body.user._id
+        })
+    })
+
 
     // Test case for GET all students
-    describe('GET /student', () => {
-        it('GET all students', async () => {
+    describe('get all students /api/student', () => {
+        it('should get all students', async () => {
             const resGet = await chai.request(server)
                 .get('/api/student')
-                .set('Authorization', `Bearer ${authToken}`)
+                .set('Authorization', `Bearer ${adminToken}`)
             expect(resGet).to.have.status(200)
             expect(resGet.body).to.be.an('array')
         })
     })
 
-
-    // Test case for creating a new student
-    let studentID
-    describe('POST /student', () => {
-        it('POST a student and save id', async () => {
-            const resPOST = await chai.request(server)
-                .post('/api/student')
-                .set('Authorization', `Bearer ${authToken}`)
-                .send({
-                    name: "John Doe",
-                    course: "Mechanical Engineering",
-                    faculty: "Engineering",
-                    company: "Keppel"
-                })
-
-            expect(resPOST).to.have.status(200)
-            expect(resPOST.body).to.be.a('object')
-            expect(resPOST.body).to.include({
-                name: "John Doe",
-                course: "Mechanical Engineering",
-                faculty: "Engineering",
-                company: "Keppel"
-            })
-            studentID = resPOST.body._id
-            console.log("studentID", studentID)
+    // test case to try get created student's profile
+    describe('Get student /user', () => {
+        it('should get the student profile', async () => {
+            const res = await chai.request(server)
+                .get(`/api/student/${studentId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+            expect(res).to.have.status(200)
+            expect(res.body).to.have.property('name')
+            expect(res.body).to.have.property('faculty')
         })
     })
 
     // Test case for updating a student
-    describe('PATCH /student', () => {
-        it('UPDATE a student', async () => {
-            const resPATCH = await chai.request(server)
-                .patch(`/api/student/${studentID}`)
-                .set('Authorization', `Bearer ${authToken}`)
+    describe('Update student /api/student/:id', () => {
+        it('should update the student', async () => {
+            const resUpdate = await chai.request(server)
+                .patch(`/api/student/${studentId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
                 .send({
-                    name: "Jane Doe",
-                    course: "Food Technology",
-                    faculty: "Food, Chemical and Biotechnology",
+                    name: "updated student name",
+                    course: courseNew,
+                    faculty: facultyIdNew,
                     company: "Nissin"
                 })
-            expect(resPATCH).to.have.status(200)
-            expect(resPATCH.body).to.be.an('object')
-        })
-
-        // retrieve and check PATCH success
-        it('check PATCH success', async () => {
-            const resGet = await chai.request(server)
-                .get(`/api/student/${studentID}`)
-                .set('Authorization', `Bearer ${authToken}`)
-            expect(resGet).to.have.status(200);
-            expect(resGet.body).to.include({
-                name: "Jane Doe",
-                course: "Food Technology",
-                faculty: "Food, Chemical and Biotechnology",
-                company: "Nissin"
-            })
+            expect(resUpdate).to.have.status(200)
         })
     })
 
-    // Test case for deleting a student
-    describe('DELETE /student', () => {
-        it('DELETE a student', async () => {
-            const resDEL = await chai.request(server)
-                .delete(`/api/student/${studentID}`)
-                .set('Authorization', `Bearer ${authToken}`)
-            expect(resDEL).to.have.status(200)
-            expect(resDEL.body).to.be.an('object')
-            expect(resDEL.body).to.include({
-                name: "Jane Doe",
-                course: "Food Technology",
-                faculty: "Food, Chemical and Biotechnology",
-                company: "Nissin"
-            })
+    // Test case for deleting a student and profile
+    describe('DELETE student /user', () => {
+        it('delete student user and ensure profile is also deleted', async () => {
+            const resDelete = await chai.request(server)
+                .delete(`/api/user/${studentId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+            expect(resDelete).to.have.status(204)
+
+            // check if related mentor profile is also successfully deleted
+            const checkProfile = await chai.request(server)
+                .get(`/api/mentor/${studentId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+            expect(checkProfile.status).to.equal(404)
         })
     })
 })

@@ -4,8 +4,12 @@ const mongoose = require('mongoose')
 // get all Mentors
 const getMentors = async (req, res) => {
     try {
-        const mentors = await Mentor.find({}).sort({ createdAt: -1 }).populate('user')
+        const mentors = await Mentor.find({}).sort({ createdAt: -1 })
+            .populate('faculty', 'name')
+            .populate('user', 'email')
+            .populate('assignedStudents', 'name')
         res.status(200).json(mentors)
+        console.log("Mentors with populated data:", mentors);
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -19,7 +23,10 @@ const getMentor = async (req, res) => {
         return res.status(404).json({ error: 'Invalid user ID' })
     }
 
-    const mentor = await Mentor.findOne({ user: userId }).populate('user faculty')
+    const mentor = await Mentor.findOne({ user: userId })
+        .populate('faculty', 'name')
+        .populate('user', 'email')
+        .populate('assignedStudents', 'name')
     if (!mentor) {
         return res.status(404).json({ error: 'No mentor found with this user ID' })
     }

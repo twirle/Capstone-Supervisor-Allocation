@@ -4,7 +4,12 @@ const mongoose = require('mongoose')
 // get all Students
 const getStudents = async (req, res) => {
     try {
-        const students = await Student.find({}).sort({ createdAt: -1 }).populate('user')
+        const students = await Student.find({}).sort({ createdAt: -1 })
+            .populate('user', 'email')
+            .populate('faculty', 'name')
+            .populate('assignedMentor', 'name')
+
+        console.log("Students with populated data:", students);
         res.status(200).json(students)
     } catch (error) {
         res.status(500).json({ error: error.message })
@@ -20,7 +25,16 @@ const getStudent = async (req, res) => {
         return res.status(404).json({ error: 'Invalid user ID' })
     }
 
-    const student = await Student.findOne({ user: userId }).populate('user faculty')
+    const student = await Student.findOne({ user: userId })
+        .populate('user', 'email')
+        .populate({
+            path: 'faculty',
+            select: 'name'
+        })
+        .populate({
+            path: 'assignedMentor',
+            select: 'name',
+        })
     if (!student) {
         return res.status(404).json({ error: 'No student found with this user ID' })
     }

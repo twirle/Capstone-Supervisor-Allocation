@@ -1,86 +1,36 @@
-import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-const UserDetails = ({ userDetail, onDelete }) => {
-    const { user } = useAuthContext();
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedRole, setEditedRole] = useState(userDetail.role);
-    // Assuming userDetail now contains facultyName, researchArea for mentors, and course for students
-    const [editedFacultyName, setEditedFacultyName] = useState(userDetail.facultyName || '');
-    const [editedResearchArea, setEditedResearchArea] = useState(userDetail.researchArea || '');
-    const [editedCourse, setEditedCourse] = useState(userDetail.course || '');
-    const handleEdit = async () => {
-        if (!user) {
-            return;
-        }
-
-        const response = await fetch(`/api/user/${userDetail._id}/role`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user.token}`
-            },
-            body: JSON.stringify({ role: editedRole })
-        });
-        const json = await response.json();
-
-        if (response.ok) {
-            setIsEditing(false);
-            // Update the user list context or state as needed
-            // dispatch({ type: 'UPDATE_USER', payload: json });
-        }
-    };
+const UserDetails = ({ userDetail, onDelete, role }) => {
+    const { user } = useAuthContext(); // Using AuthContext to get the user and token
 
     const handleDelete = async () => {
-        if (!user) {
-            return;
-        }
-
-        const response = await fetch(`/api/user/${userDetail._id}`, {
+        if (!user) return; // Guard clause to ensure there is a user
+        const response = await fetch(`/api/user/${userDetail.user._id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
+            headers: { 'Authorization': `Bearer ${user.token}` },
         });
-
         if (response.ok) {
-            onDelete(userDetail._id);
+            onDelete(userDetail.user._id);
+            console.log('User deleted successfully');
+        } else {
+            console.error('Failed to delete user');
         }
     };
 
-
     return (
-        <div className="user-details">
-            <h4>{userDetail.email}</h4>
-            <p>
-                <strong>Role: </strong>
-                {isEditing ? (
-                    <select
-                        value={editedRole}
-                        onChange={(e) => setEditedRole(e.target.value)}
-                    >
-                        <option value="student">Student</option>
-                        <option value="mentor">Mentor</option>
-                        <option value="admin">Admin</option>
-                        {/* Add other roles as needed */}
-                    </select>
-                ) : (
-                    userDetail.role
-                )}
-            </p>
-            {user && user.role === 'admin' && (
-                <div>
-                    {isEditing ? (
-                        <button onClick={handleEdit}>Save</button>
-                    ) : (
-                        <button onClick={() => setIsEditing(true)}>Edit</button>
-                    )}
-                    {/* Add delete functionality if needed */}
-                    <button onClick={handleDelete}>Delete</button>
-                    
-                </div>
-            )}
-        </div>
+        <tr>
+            <td>{userDetail.name}</td>
+            <td>{userDetail.facultyName || '-'}</td>
+            {role === 'mentor' && <td>{userDetail.researchArea || '-'}</td>}
+            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
+            {role === 'student' && <td>{userDetail.course || '-'}</td>}
+            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
+            <td>{userDetail.email}</td>
+            <td>
+                <button onClick={() => console.log('Edit user')}>Edit</button>
+                <button onClick={handleDelete}>Delete</button>
+            </td>
+        </tr>
     );
 };
 

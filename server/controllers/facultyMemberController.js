@@ -4,7 +4,8 @@ const mongoose = require('mongoose')
 // get all Faculty Members
 const getFacultyMembers = async (req, res) => {
     try {
-        const facultyMembers = await FacultyMember.find({}).sort({ createdAt: -1 }).populate('user')
+        const facultyMembers = await FacultyMember.find({}).sort({ createdAt: -1 })
+            .populate('user faculty')
         res.status(200).json(facultyMembers)
     } catch (error) {
         res.status(500).json({ error: error.message })
@@ -19,7 +20,8 @@ const getFacultyMember = async (req, res) => {
         return res.status(404).json({ error: 'Invalid user ID' })
     }
 
-    const facultyMember = await FacultyMember.findOne({ user: userId }).populate('user faculty')
+    const facultyMember = await FacultyMember.findOne({ user: userId })
+        .populate('user faculty')
     if (!facultyMember) {
         return res.status(404).json({ error: 'No faculty member associated with this user ID' })
     }

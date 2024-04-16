@@ -132,19 +132,22 @@ const AdminUsersPage = () => {
         <div className="admin-users-page">
             <h1>{activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Users</h1>
             <div className="role-buttons">
-                {['student', 'mentor', 'facultyMember', 'admin'].map(role => (
-                    <button
-                        key={role}
-                        className={role === activeRole ? "role-button active" : "role-button"}
-                        onClick={() => setActiveRole(role)}
-                    >
-                        {role.charAt(0).toUpperCase() + role.slice(1)}
-                    </button>
-                ))}
+
+                <div className="role-controls">
+                    {['student', 'mentor', 'facultyMember', 'admin'].map(role => (
+                        <button
+                            key={role}
+                            className={role === activeRole ? "role-button active" : "role-button"}
+                            onClick={() => setActiveRole(role)}
+                        >
+                            {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </button>
+                    ))}
+                </div>
                 <div>
-                    <div className="action-buttons">
-                        <button className="action-button" onClick={resetAssignments}>Reset Assignments</button>
-                        <button className="action-button" onClick={testMatch}>Test Match</button>
+                    <div className="match-buttons">
+                        <button className="match-button" onClick={resetAssignments}>Reset Assignments</button>
+                        <button className="match-button" onClick={testMatch}>Test Match</button>
                     </div>
                 </div>
             </div>

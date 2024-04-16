@@ -44,22 +44,22 @@
 
 /* Action buttons styling */
 
-.action-buttons {
+.match-buttons {
     display: flex;
     gap: 10px;
 }
 
-.action-button.active {
+.match-button.active {
     background-color: #007bff;
     color: white;
 }
 
-.action-button {
+.match-button {
     background-color: #007bff;
     color: white;
 }
 
-.action-button:hover {
+.match-button:hover {
     background-color: #0056b3;
 }
 

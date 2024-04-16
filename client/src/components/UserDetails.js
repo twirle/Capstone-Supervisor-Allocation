@@ -1,84 +1,178 @@
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-const UserDetails = ({ userDetail, onDelete }) => {
+const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
     const { user } = useAuthContext();
     const [isEditing, setIsEditing] = useState(false);
-    const [editedRole, setEditedRole] = useState(userDetail.role);
+    const [editedName, setEditedName] = useState(userDetail.name);
+    const [editedEmail, setEditedEmail] = useState(userDetail.email);
+    const [editedFaculty, setEditedFaculty] = useState(userDetail.faculty ? userDetail.faculty._id : '');
+    const [editedCourse, setEditedCourse] = useState(userDetail.course || '');
+    const [editedCompany, setEditedCompany] = useState(userDetail.company || '');
+    const [editedResearchArea, setEditedResearchArea] = useState(userDetail.company || '');
 
-    const handleEdit = async () => {
-        if (!user) {
-            return;
+
+    const handleSave = async () => {
+        if (!user) return;
+
+        let patchUrl;
+        let requestBody = {};
+
+        switch (role) {
+            case 'student':
+                patchUrl = `/api/student/${userDetail.user._id}`;
+                requestBody = {
+                    name: editedName,
+                    faculty: editedFaculty,
+                    course: editedCourse,
+                    company: editedCompany,
+                    // assignedMentor: editedMentor
+                };
+                break;
+            case 'mentor':
+                patchUrl = `/api/mentor/${userDetail.user._id}`;
+                requestBody = {
+                    name: editedName,
+                    faculty: editedFaculty,
+                    researchArea: editedResearchArea, // Assuming you manage researchArea state
+                };
+                break;
+            case 'facultyMember':
+                patchUrl = `/api/facultyMember/${userDetail.user._id}`;
+                requestBody = {
+                    name: editedName,
+                    faculty: editedFaculty,
+                };
+                break;
+            default:
+                console.error('Unsupported role for updating:', role);
+                return;
         }
 
-        const response = await fetch(`/api/user/${userDetail._id}`, {
+        const response = await fetch(patchUrl, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
             },
-            body: JSON.stringify({ role: editedRole })
+            body: JSON.stringify(requestBody),
         });
-        const json = await response.json();
 
         if (response.ok) {
+            const updatedData = await response.json();
+            onSave(updatedData); // Update the local state to reflect the changes
             setIsEditing(false);
-            // Update the user list context or state as needed
-            // dispatch({ type: 'UPDATE_USER', payload: json });
+        } else {
+            console.error('Failed to save user:', await response.json());
         }
     };
 
     const handleDelete = async () => {
-        if (!user) {
-            return;
-        }
-
-        const response = await fetch(`/api/user/${userDetail._id}`, {
+        if (!user) return; // Guard clause to ensure there is a user
+        const response = await fetch(`/api/user/${userDetail.user._id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
+            headers: { 'Authorization': `Bearer ${user.token}` },
         });
-
         if (response.ok) {
-            onDelete(userDetail._id);
+            onDelete(userDetail.user._id);
+            console.log('User deleted successfully');
+        } else {
+            console.error('Failed to delete user');
         }
     };
 
+    return (
+        <tr>
+            <td>{isEditing ? <input type="text" value={editedName} onChange={e => setEditedName(e.target.value)} /> : userDetail.name}</td>
+            <td>{isEditing ? (
+                <select value={editedFaculty} onChange={e => setEditedFaculty(e.target.value)}>
+                    {/* Add options for faculties here */}
+                </select>
+            ) : userDetail.facultyName || '-'}</td>
+            {role === 'mentor' && <td>{isEditing ? <input type="text" value={userDetail.researchArea} onChange={e => setEditedResearchArea(e.target.value)} /> : userDetail.researchArea || '-'}</td>}
+            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
+
+            {role === 'student' && <td>{isEditing ? <input type="text" value={editedCourse} onChange={e => setEditedCourse(e.target.value)} /> : userDetail.course || '-'}</td>}
+            {role === 'student' && <td>{isEditing ? <input type="text" value={editedCompany} onChange={e => setEditedCompany(e.target.value)} /> : userDetail.company || 'No Company'}</td>}
+            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
+            <td>{isEditing ? <input type="email" value={editedEmail} onChange={e => setEditedEmail(e.target.value)} /> : userDetail.email}</td>
+            <td>
+                {isEditing ? (
+                    <>
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={() => setIsEditing(false)}>Cancel</button>
+                    </>
+                ) : (
+                    <>
+                        <button onClick={() => setIsEditing(true)}>Edit</button>
+                        <button onClick={handleDelete}>Delete</button>
+                    </>
+                )}
+            </td>
+        </tr>
+    );
 
     return (
-        <div className="user-details">
-            <h4>{userDetail.email}</h4>
-            <p>
-                <strong>Role: </strong>
+        <tr>
+            <td>
+                {isEditing ? <input type="text" value={editedName} onChange={e => setEditedName(e.target.value)} /> : userDetail.name}
+            </td>
+            <td>
                 {isEditing ? (
-                    <select
-                        value={editedRole}
-                        onChange={(e) => setEditedRole(e.target.value)}
-                    >
-                        <option value="student">Student</option>
-                        <option value="mentor">Mentor</option>
-                        <option value="admin">Admin</option>
-                        {/* Add other roles as needed */}
+                    <select value={editedFaculty} onChange={e => setEditedFaculty(e.target.value)}>
+                        {/* Map through faculties here */}
                     </select>
                 ) : (
-                    userDetail.role
+                    userDetail.facultyName || '-'
                 )}
-            </p>
-            {user && user.role === 'admin' && (
-                <div>
-                    {isEditing ? (
-                        <button onClick={handleEdit}>Save</button>
-                    ) : (
-                        <button onClick={() => setIsEditing(true)}>Edit</button>
-                    )}
-                    {/* Add delete functionality if needed */}
-                    <button onClick={handleDelete}>Delete</button>
-                    
-                </div>
+            </td>
+            {role === 'mentor' && <td>{userDetail.researchArea || '-'}</td>}
+            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
+            {role === 'student' && (
+                <td>
+                    {isEditing ? <input type="text" value={editedCourse} onChange={e => setEditedCourse(e.target.value)} /> : userDetail.course || '-'}
+                </td>
             )}
-        </div>
+            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
+            <td>
+                {isEditing ? <input type="email" value={editedEmail} onChange={e => setEditedEmail(e.target.value)} /> : userDetail.email}
+            </td>
+            <td>
+                {isEditing ? (
+                    <>
+                        <button onClick={handleSave}>Save</button>
+                        <button onClick={() => setIsEditing(false)}>Cancel</button>
+                    </>
+                ) : (
+                    <>
+                        <button onClick={() => setIsEditing(true)}>Edit</button>
+                        <button onClick={handleDelete}>Delete</button>
+                    </>
+                )}
+            </td>
+        </tr>
+    );
+
+
+    return (
+        <tr>
+            <td>{userDetail.name}</td>
+            <td>{userDetail.facultyName || '-'}</td>
+            {role === 'mentor' && <td>{userDetail.researchArea || '-'}</td>}
+            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
+            {role === 'student' && <td>{userDetail.course || '-'}</td>}
+            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
+            <td>{userDetail.email}</td>
+            <td>
+                <button onClick={() => console.log('Edit user')}>Edit</button>
+                <button onClick={handleDelete}>Delete</button>
+            </td>
+        </tr>
     );
 };
 
 export default UserDetails;
+// { activeRole === 'mentor' && <th>Research Area</th> }
+// { activeRole === 'mentor' && <th>Assigned Students</th> }
+// { activeRole === 'student' && <th>Course</th> }
+// { activeRole === 'student' && <th>Mentor</th> }

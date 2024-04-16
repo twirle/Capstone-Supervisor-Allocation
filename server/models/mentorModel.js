@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const studentSchema = new mongoose.Schema({
+const mentorSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -15,23 +15,15 @@ const studentSchema = new mongoose.Schema({
         ref: 'Faculty',
         required: true
     },
-    course: {
+    researchArea: {
         type: String,
-        required: true
-    },
-    company: {
-        type: String,
-        require: true
-    },
-    assignedMentor: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Mentor',
         default: null
     },
-    assignedMentorName: {
-        type: String,
-        default: ''
-    }
+    assignedStudents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student',
+        default: []
+    }]
 });
 
-module.exports = mongoose.model('Student', studentSchema)
+module.exports = mongoose.model('Mentor', mentorSchema)

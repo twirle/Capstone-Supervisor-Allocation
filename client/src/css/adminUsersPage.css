@@ -1,0 +1,90 @@
+/* General styles for admin-users-page */
+.admin-users-page {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Role buttons and actions aligned together */
+.role-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.role-controls {
+    display: flex;
+}
+
+/* Common styles for all buttons within admin-users-page */
+.admin-users-page button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+/* Role buttons styling */
+.role-button {
+    background-color: #f8f9fa;
+    color: #333;
+    margin-right: 10px;
+}
+
+.role-button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.role-button:hover {
+    background-color: #e2e6ea;
+}
+
+/* Action buttons styling */
+
+.match-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.match-button.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.match-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.match-button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles for table layout */
+.admin-users-page table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-users-page th,
+.admin-users-page td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Styles for filters */
+.filters {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}

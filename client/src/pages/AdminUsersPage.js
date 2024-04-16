@@ -17,7 +17,6 @@ const AdminUsersPage = () => {
     }, []); // Fetch faculties on component mount
 
     useEffect(() => {
-
         fetchUsers(activeRole);
     }, [activeRole, user.token]);
 
@@ -179,7 +178,6 @@ const AdminUsersPage = () => {
                             key={user._id}
                             userDetail={user}
                             role={activeRole}
-                            // onDelete={() => setUsers(users.filter(u => u._id !== user._id))}
                             onSave={(handleUserSave)}
                             onDelete={(handleUserDelete)}
                         />

@@ -52,7 +52,7 @@ const createStudentUser = async (fullName, facultyId, course, companyName) => {
 const seedStudents = async () => {
     await clearExistingStudentsAndUsers();
     const faculties = await fetchFaculties();
-    const totalStudents = 10; // Total number of students you want to create
+    const totalStudents = 15; // Total number of students you want to create
     const allCourses = faculties.reduce((acc, faculty) => acc.concat(faculty.courses.map(course => ({ faculty: faculty._id, course }))), []);
 
     for (let i = 0; i < totalStudents; i++) {

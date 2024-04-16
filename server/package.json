@@ -19,11 +19,12 @@
     "seedStudents": "node ./scripts/seedStudents.js",
     "seedMentors": "node ./scripts/seedMentors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
+    "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
     "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
     
-    "matchTest": "mocha test/testMatch.test.js --exit"
-
+    "matchTest": "mocha test/testMatch.test.js --exit",
+    "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents seedMentors seedFacultyMembers matchTest"
   },
   "keywords": [],
   "author": "",

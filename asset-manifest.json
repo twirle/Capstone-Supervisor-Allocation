@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Capstone-Supervisor-Allocation/static/css/main.832fd04d.css",
+    "main.js": "/Capstone-Supervisor-Allocation/static/js/main.aa4213f5.js",
+    "index.html": "/Capstone-Supervisor-Allocation/index.html",
+    "main.832fd04d.css.map": "/Capstone-Supervisor-Allocation/static/css/main.832fd04d.css.map",
+    "main.aa4213f5.js.map": "/Capstone-Supervisor-Allocation/static/js/main.aa4213f5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.832fd04d.css",
+    "static/js/main.aa4213f5.js"
+  ]
+}

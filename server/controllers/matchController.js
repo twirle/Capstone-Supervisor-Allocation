@@ -1,6 +1,6 @@
 const Student = require('../models/studentModel');
 const Mentor = require('../models/mentorModel');
-const { calculateCompatibilityScores, findOptimalAssignments, updateMatches, logMatchesWithoutUpdating } = require('../matching')
+const { calculateCompatibilityScores, findOptimalAssignments, updateMatches } = require('../matching')
 
 async function fetchStudents() {
     return await Student.find({
@@ -41,4 +41,19 @@ const runMatchingProcess = async (req, res) => {
     }
 }
 
-module.exports = { runMatchingProcess }
+const resetMatching = async (req, res) => {
+    try {
+        // Reset assignedMentor for all students
+        await Student.updateMany({}, { $set: { assignedMentor: null } });
+
+        // Reset assignedStudents for all mentors
+        await Mentor.updateMany({}, { $set: { assignedStudents: [] } });
+
+        res.status(200).json({ message: "All assignments have been reset." });
+    } catch (error) {
+        console.error('Resetting error:', error);
+        res.status(500).json({ error: 'Failed to reset assignments.' });
+    }
+}
+
+module.exports = { runMatchingProcess, resetMatching }

@@ -9,7 +9,6 @@ const facultyMemberRoutes = require('./routes/facultyMember')
 const facultyRoutes = require('./routes/faculty')
 const matchRoutes = require('./routes/match')
 
-
 const app = express();
 
 // Parse JSON requests

@@ -92,7 +92,7 @@ describe('Student User Flow Test', function () {
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
                     email: 'studenttest@sit.edu.sg',
-                    password: 'testASD123!@#',
+                    password: process.env.TEST_USER_PASSWORD,
                     role: 'student',
                     additionalInfo: {
                         name: 'Test Student',

@@ -82,7 +82,7 @@ describe('Faculty CRUD Flow Test', function () {
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
                     email: 'facultymembertest@sit.edu.sg',
-                    password: 'testASD123!@#',
+                    password: process.env.TEST_USER_PASSWORD,
                     role: 'facultyMember',
                     additionalInfo: {
                         name: 'Test faculty member',

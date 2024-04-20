@@ -62,7 +62,7 @@ describe('Admin User Flow Test', function () {
                 .set('Authorization', `Bearer ${originalAdminToken}`)
                 .send({
                     email: 'admintest@sit.edu.sg',
-                    password: 'testASD123!@#',
+                    password: process.env.TEST_USER_PASSWORD,
                     role: 'admin'
                 })
 
@@ -78,7 +78,7 @@ describe('Admin User Flow Test', function () {
                 .post('/api/user/login')
                 .send({
                     email: 'admintest@sit.edu.sg',
-                    password: 'testASD123!@#'
+                    password: process.env.TEST_USER_PASSWORD,
                 })
 
             adminToken = resLogin.body.token

@@ -111,68 +111,6 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
             </td>
         </tr>
     );
-
-    return (
-        <tr>
-            <td>
-                {isEditing ? <input type="text" value={editedName} onChange={e => setEditedName(e.target.value)} /> : userDetail.name}
-            </td>
-            <td>
-                {isEditing ? (
-                    <select value={editedFaculty} onChange={e => setEditedFaculty(e.target.value)}>
-                        {/* Map through faculties here */}
-                    </select>
-                ) : (
-                    userDetail.facultyName || '-'
-                )}
-            </td>
-            {role === 'mentor' && <td>{userDetail.researchArea || '-'}</td>}
-            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
-            {role === 'student' && (
-                <td>
-                    {isEditing ? <input type="text" value={editedCourse} onChange={e => setEditedCourse(e.target.value)} /> : userDetail.course || '-'}
-                </td>
-            )}
-            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
-            <td>
-                {isEditing ? <input type="email" value={editedEmail} onChange={e => setEditedEmail(e.target.value)} /> : userDetail.email}
-            </td>
-            <td>
-                {isEditing ? (
-                    <>
-                        <button onClick={handleSave}>Save</button>
-                        <button onClick={() => setIsEditing(false)}>Cancel</button>
-                    </>
-                ) : (
-                    <>
-                        <button onClick={() => setIsEditing(true)}>Edit</button>
-                        <button onClick={handleDelete}>Delete</button>
-                    </>
-                )}
-            </td>
-        </tr>
-    );
-
-
-    return (
-        <tr>
-            <td>{userDetail.name}</td>
-            <td>{userDetail.facultyName || '-'}</td>
-            {role === 'mentor' && <td>{userDetail.researchArea || '-'}</td>}
-            {role === 'mentor' && <td>{userDetail.studentNames || 'No Students Assigned'}</td>}
-            {role === 'student' && <td>{userDetail.course || '-'}</td>}
-            {role === 'student' && <td>{userDetail.mentorName || 'No Mentor Assigned'}</td>}
-            <td>{userDetail.email}</td>
-            <td>
-                <button onClick={() => console.log('Edit user')}>Edit</button>
-                <button onClick={handleDelete}>Delete</button>
-            </td>
-        </tr>
-    );
 };
 
-export default UserDetails;
-// { activeRole === 'mentor' && <th>Research Area</th> }
-// { activeRole === 'mentor' && <th>Assigned Students</th> }
-// { activeRole === 'student' && <th>Course</th> }
-// { activeRole === 'student' && <th>Mentor</th> }
+export default UserDetails

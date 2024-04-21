@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "connectionTest": "mocha test/dbConnection.test.js",
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",

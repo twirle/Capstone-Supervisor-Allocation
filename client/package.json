@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "proxy": "https://server-bug6qlb1b-twirles-projects.vercel.app",
+  "proxy": "https://server-twirles-projects.vercel.app/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

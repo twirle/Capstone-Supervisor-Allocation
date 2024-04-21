@@ -14,7 +14,7 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin: ["https://capstone-supervisor-allocation.vercel.app"],
+    origin: ["https://server-twirles-projects.vercel.app"],
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })

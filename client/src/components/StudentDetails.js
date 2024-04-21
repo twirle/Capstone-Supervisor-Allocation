@@ -2,9 +2,6 @@ import { useStudentsContext } from "../hooks/useStudentsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState } from "react"
 
-// date fns
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-
 const StudentDetails = ({ student }) => {
     const { dispatch } = useStudentsContext()
     const { user } = useAuthContext()
@@ -66,17 +63,16 @@ const StudentDetails = ({ student }) => {
             ) : (
                 assignedMentor || 'Not assigned'
             )}</p>
-            {/* <p>{formatDistanceToNow(new Date(student.createdAt), { addSuffix: true })}</p> */}
-            {user && user.role === 'admin' || user.role === 'mentor' && (
-                <div>
-                    {isEditing ? (
-                        <button onClick={handleEdit}>Save</button>
-                    ) : (
-                        <button onClick={() => setIsEditing(true)}>Edit</button>
-                    )}
-                    <span className="material-symbols-outlined" onClick={handleClick}>Delete</span>
-                </div>
-            )}
+            (user && user.role === 'admin' || user.role === 'mentor' && (
+            <div>
+                {isEditing ? (
+                    <button onClick={handleEdit}>Save</button>
+                ) : (
+                    <button onClick={() => setIsEditing(true)}>Edit</button>
+                )}
+                <span className="material-symbols-outlined" onClick={handleClick}>Delete</span>
+            </div>
+            ))
         </div >
     )
 }

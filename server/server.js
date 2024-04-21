@@ -14,7 +14,7 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin: ["https://server-twirles-projects.vercel.app"],
+    origin: ["https://server-kohl-eight.vercel.app"],
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })

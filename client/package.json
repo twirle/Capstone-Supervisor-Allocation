@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "proxy": "https://server-kohl-eight.vercel.app/",
+  "proxy": "http://server-kohl-eight.vercel.app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

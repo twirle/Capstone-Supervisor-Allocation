@@ -24,14 +24,15 @@ app.use(
 app.use(express.json());
 
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    autoReconnect: true, // Automatically try to reconnect when it loses connection to MongoDB
-    reconnectTries: Number.MAX_VALUE,
-    reconnectInterval: 1000, // Reconnect every 1000ms
-  })
-  .catch((err) => console.error("MongoDB connection error:", err));
+.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.catch((err) => console.error("MongoDB connection error:", err));
+
+app.get("/", (req, res) => {
+  res.json("Welcome to the API!");
+});
 
 app.use((req, res, next) => {
   console.log(`Incoming request: ${req.method} ${req.path}`);
@@ -53,22 +54,9 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
-app.get("*", (req, res) => {
-  res.send("Welcome to the API!");
-});
-
-fetch(url, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include", // Include cookies with requests
-  body: JSON.stringify(data),
-});
-
 app.listen(process.env.PORT),
-  () => {
-    console.log("server is running", process.env.PORT);
-  };
+() => {
+  console.log("server is running", process.env.PORT);
+};
 
 module.exports = app;

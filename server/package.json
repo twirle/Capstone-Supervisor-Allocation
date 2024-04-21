@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
 
     "connectionTest": "mocha test/dbConnection.test.js",
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",

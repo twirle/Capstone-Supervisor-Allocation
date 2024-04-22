@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 import { useStudentsContext } from "../hooks/useStudentsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState } from "react"

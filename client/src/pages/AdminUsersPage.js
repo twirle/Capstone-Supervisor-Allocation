@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 import { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
 import { useAuthContext } from "../hooks/useAuthContext";

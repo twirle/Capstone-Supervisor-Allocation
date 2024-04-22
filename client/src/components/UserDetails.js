@@ -10,6 +10,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
     const [editedCourse, setEditedCourse] = useState(userDetail.course || '');
     const [editedCompany, setEditedCompany] = useState(userDetail.company || '');
     const [editedResearchArea, setEditedResearchArea] = useState(userDetail.company || '');
+    const apiUrl = process.env.REACT_APP_API_URL
 
 
     const handleSave = async () => {
@@ -20,7 +21,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
 
         switch (role) {
             case 'student':
-                patchUrl = `/api/student/${userDetail.user._id}`;
+                patchUrl = `${apiUrl}/api/student/${userDetail.user._id}`;
                 requestBody = {
                     name: editedName,
                     faculty: editedFaculty,
@@ -30,7 +31,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
                 };
                 break;
             case 'mentor':
-                patchUrl = `/api/mentor/${userDetail.user._id}`;
+                patchUrl = `${apiUrl}/api/mentor/${userDetail.user._id}`;
                 requestBody = {
                     name: editedName,
                     faculty: editedFaculty,
@@ -38,7 +39,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
                 };
                 break;
             case 'facultyMember':
-                patchUrl = `/api/facultyMember/${userDetail.user._id}`;
+                patchUrl = `${apiUrl}/api/facultyMember/${userDetail.user._id}`;
                 requestBody = {
                     name: editedName,
                     faculty: editedFaculty,
@@ -69,7 +70,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
 
     const handleDelete = async () => {
         if (!user) return; // Guard clause to ensure there is a user
-        const response = await fetch(`/api/user/${userDetail.user._id}`, {
+        const response = await fetch(`${apiUrl}/api/user/${userDetail.user._id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${user.token}` },
         });

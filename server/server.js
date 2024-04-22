@@ -12,6 +12,7 @@ const matchRoutes = require("./routes/match");
 const app = express();
 
 const cors = require("cors");
+
 app.use(
   cors({
     origin: ["https://server-kohl-eight.vercel.app"],

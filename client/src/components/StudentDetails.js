@@ -1,6 +1,10 @@
+require("dotenv").config();
+
 import { useStudentsContext } from "../hooks/useStudentsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 import { useState } from "react"
+
+const baseUrl = process.env.REACT_APP_API_URL;
 
 const StudentDetails = ({ student }) => {
     const { dispatch } = useStudentsContext()
@@ -14,7 +18,7 @@ const StudentDetails = ({ student }) => {
             return
         }
 
-        const response = await fetch('/api/students/' + student._id,
+        const response = await fetch(`${baseUrl}/api/students/` + student._id,
             {
                 method: 'DELETE',
                 headers: {
@@ -28,7 +32,7 @@ const StudentDetails = ({ student }) => {
         }
     }
     const handleEdit = async () => {
-        const response = await fetch('/api/students/' + student._id, {
+        const response = await fetch(`${baseUrl}/api/students/` + student._id, {
             method: 'PATCH',
             body: JSON.stringify({ assignedMentor }),
             headers: {

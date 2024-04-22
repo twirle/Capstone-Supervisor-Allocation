@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 import { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -11,6 +13,7 @@ const AdminUsersPage = () => {
   const [selectedCourse, setSelectedCourse] = useState("All");
   const { user } = useAuthContext();
   const [activeRole, setActiveRole] = useState("student");
+  const baseUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchFaculties(user.token);
@@ -26,7 +29,7 @@ const AdminUsersPage = () => {
       return;
     }
     try {
-      const response = await fetch(`/api/${role}`, {
+      const response = await fetch(`${baseUrl}/api/${role}`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const data = await response.json();
@@ -42,7 +45,7 @@ const AdminUsersPage = () => {
 
   const fetchFaculties = async () => {
     try {
-      const res = await fetch("/api/faculty", {
+      const res = await fetch(`${baseUrl}/api/faculty`, {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const data = await res.json();
@@ -95,7 +98,7 @@ const AdminUsersPage = () => {
 
   const resetAssignments = async () => {
     // Call endpoint to reset assignments
-    const response = await fetch("/api/match/reset", {
+    const response = await fetch(`${baseUrl}/api/match/reset`, {
       method: "POST",
       headers: { Authorization: `Bearer ${user.token}` },
     });
@@ -108,7 +111,7 @@ const AdminUsersPage = () => {
   };
 
   const testMatch = async () => {
-    const response = await fetch("/api/match/match", {
+    const response = await fetch(`${baseUrl}/api/match/match`, {
       method: "POST",
       headers: { Authorization: `Bearer ${user.token}` },
     });

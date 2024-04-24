@@ -81,7 +81,7 @@ const aggregateStudents = async (req, res) => {
     const aggregation = await Student.aggregate([
       {
         $lookup: {
-          from: Faculty.collection.name, // 'faculties' typically, but check your DB
+          from: Faculties.collection.name, // 'faculties' typically, but check your DB
           localField: "faculty",
           foreignField: "_id",
           as: "facultyDetails",

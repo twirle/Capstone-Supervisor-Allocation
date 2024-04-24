@@ -61,30 +61,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
-});
-
-// Only connect to DB and listen on port if NOT in test environment
-if (process.env.NODE_ENV !== "test") {
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => {
-      app.listen(process.env.PORT, () => {
-        console.log(`Server listening on port ${process.env.PORT}`);
-      });
-    })
-    .catch((error) => {
-      console.error("Connection error:", error);
-    });
-}
-
-module.exports = app;
-
-  console.error(err.stack);
-  res.status(500).send("Something went wrong!");
-});
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

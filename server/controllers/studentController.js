@@ -81,14 +81,17 @@ const aggregateStudents = async (req, res) => {
     const aggregation = await Student.aggregate([
       {
         $lookup: {
-          from: Faculty.collection.name, // 'faculties' typically, but check your DB
+          from: "faculties",
           localField: "faculty",
           foreignField: "_id",
           as: "facultyDetails",
         },
       },
       {
-        $unwind: "$facultyDetails", // Flatten the array
+        $unwind: {
+          path: "$facultyDetails",
+          preserveNullAndEmptyArrays: true, // This will include students without faculty in the result
+        },
       },
       {
         $group: {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
 import { useAuthContext } from "../hooks/useAuthContext";
 import "../css/adminUsersPage.css";
@@ -9,14 +9,14 @@ const AdminUsersPage = () => {
   const [courses, setCourses] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("All");
   const [selectedCourse, setSelectedCourse] = useState("All");
-  const { user } = useAuthContext();
   const [activeRole, setActiveRole] = useState("student");
 
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const { user } = useAuthContext();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchFaculties(user.token);
-  }, []); // Fetch faculties on component mount
+  }, [user.token]); // Fetch faculties on component mount
 
   useEffect(() => {
     fetchUsers(activeRole, user.token);
@@ -28,7 +28,7 @@ const AdminUsersPage = () => {
       return;
     }
     try {
-      const response = await fetch(`${baseUrl}/api/${role}`, {
+      const response = await fetch(`${apiUrl}/api/${role}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const AdminUsersPage = () => {
 
   const fetchFaculties = async () => {
     try {
-      const res = await fetch(`${baseUrl}/api/faculty`, {
+      const res = await fetch(`${apiUrl}/api/faculty`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
           "Content-Type": "application/json",
@@ -105,7 +105,7 @@ const AdminUsersPage = () => {
 
   const resetAssignments = async () => {
     // Call endpoint to reset assignments
-    const response = await fetch(`${baseUrl}/api/match/reset`, {
+    const response = await fetch(`${apiUrl}/api/match/reset`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -122,7 +122,7 @@ const AdminUsersPage = () => {
   };
 
   const testMatch = async () => {
-    const response = await fetch(`${baseUrl}/api/match/match`, {
+    const response = await fetch(`${apiUrl}/api/match/match`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -189,7 +189,7 @@ const AdminUsersPage = () => {
           ))}
         </select>
       </div>
-      <table>
+      <table className="table-style">
         <thead>
           <tr>
             <th>Name</th>

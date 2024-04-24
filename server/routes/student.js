@@ -16,6 +16,14 @@ router.use(requireAuth);
 // GET all student
 router.get("/", getStudents);
 
+// aggregate students
+router.get(
+  "/aggregate",
+  requireAuth,
+  checkRole(["admin", "facultyMember"]),
+  aggregateStudents
+);
+
 // GET a single student based on their 'Profile' Id
 router.get("/:userId", getStudent);
 
@@ -25,14 +33,6 @@ router.patch(
   requireAuth,
   checkRole(["admin", "facultyMember"]),
   updateStudent
-);
-
-// aggregate students
-router.get(
-  "/aggregate",
-  requireAuth,
-  checkRole(["admin", "facultyMember"]),
-  aggregateStudents
 );
 
 module.exports = router;

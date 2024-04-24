@@ -15,7 +15,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
     userDetail.company || ""
   );
 
-  const baseUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleSave = async () => {
     if (!user) return;
@@ -54,7 +54,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         return;
     }
 
-    const response = await fetch(`${baseUrl}${patchUrl}`, {
+    const response = await fetch(`${apiUrl}${patchUrl}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${user.token}`,

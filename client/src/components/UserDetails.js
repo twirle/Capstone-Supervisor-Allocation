@@ -15,7 +15,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
     userDetail.company || ""
   );
 
-  const baseUrl = process.env.REACT_APP_BASE_URL;
+  const baseUrl = process.env.REACT_APP_API_URL;
 
   const handleSave = async () => {
     if (!user) return;

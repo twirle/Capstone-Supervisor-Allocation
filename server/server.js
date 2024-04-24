@@ -13,7 +13,7 @@ const app = express();
 const cors = require("cors");
 
 const corsOptions = {
-  origin: ["http://localhost:4000"], // Change this to match your frontend URL
+  origin: ["http://localhost:3000"], // Change this to match your frontend URL
   credentials: true,
 };
 

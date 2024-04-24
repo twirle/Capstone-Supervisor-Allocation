@@ -12,6 +12,8 @@ const AdminUsersPage = () => {
   const { user } = useAuthContext();
   const [activeRole, setActiveRole] = useState("student");
 
+  const baseUrl = process.env.REACT_APP_BASE_URL;
+
   useEffect(() => {
     fetchFaculties(user.token);
   }, []); // Fetch faculties on component mount
@@ -26,8 +28,12 @@ const AdminUsersPage = () => {
       return;
     }
     try {
-      const response = await fetch(`/api/${role}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
+      const response = await fetch(`${baseUrl}/api/${role}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       });
       const data = await response.json();
       if (response.ok) {
@@ -42,8 +48,12 @@ const AdminUsersPage = () => {
 
   const fetchFaculties = async () => {
     try {
-      const res = await fetch("/api/faculty", {
-        headers: { Authorization: `Bearer ${user.token}` },
+      const res = await fetch(`${baseUrl}/api/faculty`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       });
       const data = await res.json();
       if (res.ok) {
@@ -95,9 +105,13 @@ const AdminUsersPage = () => {
 
   const resetAssignments = async () => {
     // Call endpoint to reset assignments
-    const response = await fetch("/api/match/reset", {
+    const response = await fetch(`${baseUrl}/api/match/reset`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset
@@ -108,9 +122,13 @@ const AdminUsersPage = () => {
   };
 
   const testMatch = async () => {
-    const response = await fetch("/api/match/match", {
+    const response = await fetch(`${baseUrl}/api/match/match`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset

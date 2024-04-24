@@ -1,6 +1,7 @@
 process.env.NODE_ENV = 'test'
 
 require('dotenv').config()
+
 const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')

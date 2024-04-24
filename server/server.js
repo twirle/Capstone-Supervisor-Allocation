@@ -10,18 +10,16 @@ const facultyRoutes = require("./routes/faculty");
 const matchRoutes = require("./routes/match");
 
 const app = express();
-
 const cors = require("cors");
 
-app.use(
-  cors({
-    origin: ["https://server-kohl-eight.vercel.app"],
-    methods: ["POST", "GET", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: ["http://localhost:3000"], // Change this to match your frontend URL
+  credentials: true,
+};
 
-// Parse JSON requests
+app.use(cors(corsOptions));
+
+// Parse JSON requests‰
 app.use(express.json());
 
 mongoose
@@ -36,6 +34,8 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res, next) => {
+  console.log(req.path, req.method);
+  next();
   console.log(`Incoming request: ${req.method} ${req.path}`);
   next();
 });
@@ -48,9 +48,39 @@ app.use("/api/mentor", mentorRoutes);
 app.use("/api/facultyMember", facultyMemberRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/student", studentRoutes);
+app.use("/api/mentor", mentorRoutes);
+app.use("/api/facultyMember", facultyMemberRoutes);
+app.use("/api/faculty", facultyRoutes);
+app.use("/api/match", matchRoutes);
 
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+});
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the API!");
+});
+
+// Only connect to DB and listen on port if NOT in test environment
+if (process.env.NODE_ENV !== "test") {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+      app.listen(process.env.PORT, () => {
+        console.log(`Server listening on port ${process.env.PORT}`);
+      });
+    })
+    .catch((error) => {
+      console.error("Connection error:", error);
+    });
+}
+
+module.exports = app;
+
   console.error(err.stack);
   res.status(500).send("Something went wrong!");
 });

@@ -9,7 +9,7 @@ const getMentors = async (req, res) => {
             .populate('user', 'email')
             .populate('assignedStudents', 'name')
         res.status(200).json(mentors)
-        console.log("Mentors with populated data:", mentors);
+        // console.log("Mentors with populated data:", mentors);
     } catch (error) {
         res.status(500).json({ error: error.message })
     }

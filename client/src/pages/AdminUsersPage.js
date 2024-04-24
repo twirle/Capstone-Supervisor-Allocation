@@ -11,7 +11,8 @@ const AdminUsersPage = () => {
   const [selectedCourse, setSelectedCourse] = useState("All");
   const { user } = useAuthContext();
   const [activeRole, setActiveRole] = useState("student");
-  const baseUrl = process.env.REACT_APP_API_URL;
+
+  const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     fetchFaculties(user.token);
@@ -28,7 +29,11 @@ const AdminUsersPage = () => {
     }
     try {
       const response = await fetch(`${baseUrl}/api/${role}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       });
       const data = await response.json();
       if (response.ok) {
@@ -44,7 +49,11 @@ const AdminUsersPage = () => {
   const fetchFaculties = async () => {
     try {
       const res = await fetch(`${baseUrl}/api/faculty`, {
-        headers: { Authorization: `Bearer ${user.token}` },
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       });
       const data = await res.json();
       if (res.ok) {
@@ -98,7 +107,11 @@ const AdminUsersPage = () => {
     // Call endpoint to reset assignments
     const response = await fetch(`${baseUrl}/api/match/reset`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset
@@ -111,7 +124,11 @@ const AdminUsersPage = () => {
   const testMatch = async () => {
     const response = await fetch(`${baseUrl}/api/match/match`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${user.token}` },
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset

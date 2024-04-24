@@ -5,26 +5,22 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-
     "connectionTest": "mocha test/dbConnection.test.js",
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
     "mentorCRUDTest": "mocha test/crud/testMentorCRUD.test.js --exit",
     "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
     "mentorUserTest": "mocha test/users/testMentorUser.test.js --exit",
     "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
-    
     "seedStudents": "node ./scripts/seedStudents.js",
     "seedMentors": "node ./scripts/seedMentors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
     "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
     "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
-    
     "matchTest": "mocha test/testMatch.test.js --exit",
     "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents seedMentors seedFacultyMembers matchTest"
   },
@@ -33,16 +29,18 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "chai": "^4.3.10",
+    "chai": "^5.1.0",
     "chai-http": "^4.4.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "formidable": "^3.5.1",
     "jsonwebtoken": "^9.0.2",
-    "mocha": "^10.2.0",
-    "mongodb": "^6.2.0",
-    "mongoose": "^7.6.3",
+    "mocha": "^10.4.0",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.2",
     "munkres-js": "^1.2.2",
+    "superagent": "^9.0.1",
     "validator": "^13.11.0"
   }
 }

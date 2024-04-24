@@ -10,6 +10,7 @@
   .nav-links {
     display: flex;
     gap: 20px;  /* Provides consistent spacing between links */
+    margin: 20px;
   }
   
   /* User info styling */

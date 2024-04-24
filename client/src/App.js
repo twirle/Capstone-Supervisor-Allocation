@@ -62,7 +62,8 @@ function App() {
               path="/facultyRating"
               element={
                 !loading &&
-                (user && user.role === "facultyMember" || "admin" ? (
+                (user &&
+                (user.role === "facultyMember" || user.role === "admin") ? (
                   <FacultyRatingPage />
                 ) : (
                   <Navigate to="/" />

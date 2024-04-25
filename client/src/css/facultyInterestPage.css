@@ -1,5 +1,5 @@
-/* facultyRatingPage.css */
-.faculty-rating-container {
+/* facultyInterestPage.css */
+.faculty-interest-container {
     font-family: 'Poppins', sans-serif;
     padding: 20px;
     max-width: 1200px;
@@ -16,7 +16,7 @@
 .faculty-button {
     background-color: #f8f9fa;
     color: #333;
-    border: 2px solid #ccc;
+    border: 1px solid #ccc;
     padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
@@ -26,7 +26,10 @@
 .faculty-button.active {
     background-color: #007bff;
     color: white;
-    border-color: #007bff;
+}
+
+.faculty-button:hover {
+    background-color: #e2e6ea;
 }
 
 .filters select {

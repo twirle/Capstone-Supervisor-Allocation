@@ -14,7 +14,7 @@ const Navbar = () => {
     <header>
       <div className="container navbar-container">
         <Link to="/">
-          <h1>Capstone Mentor-Student Assignments</h1>
+          <h1>Capstone Supervisor-Student Matching</h1>
         </Link>
         <nav>
           {user && (user.role === "admin" || user.role === "facultyMember") && (
@@ -23,7 +23,7 @@ const Navbar = () => {
               {user.role === "admin" && (
                 <Link to="/adminUsersPage">Manage Users</Link>
               )}
-              <Link to="/facultyRating">Faculty Rating</Link>
+              <Link to="/facultyInterest">Faculty Interest</Link>
             </div>
           )}
           {user && (

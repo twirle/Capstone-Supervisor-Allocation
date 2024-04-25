@@ -16,19 +16,32 @@ const AdminUsersPage = () => {
 
   useEffect(() => {
     fetchFaculties(user.token);
+    fetchAllCourses();
   }, [user.token]); // Fetch faculties on component mount
 
   useEffect(() => {
     fetchUsers(activeRole, user.token);
   }, [activeRole, user.token]);
 
-  const fetchUsers = async (role) => {
-    if (!role) {
-      console.error("Role is undefined");
-      return;
+  useEffect(() => {
+    if (selectedFaculty !== "All") {
+      updateCoursesForFaculty(selectedFaculty);
+    } else {
+      fetchAllCourses();
     }
+  }, [selectedFaculty]); //
+
+  const changeActiveRole = (newRole) => {
+    if (newRole !== activeRole) {
+      setActiveRole(newRole);
+      setSelectedFaculty("All");
+      setSelectedCourse("All");
+    }
+  };
+
+  const fetchUsers = async (role) => {
     try {
-      const response = await fetch(`${apiUrl}/api/${role}`, {
+      const response = await fetch(`${apiUrl}/api/${activeRole}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
           "Content-Type": "application/json",
@@ -66,6 +79,25 @@ const AdminUsersPage = () => {
     }
   };
 
+  const fetchAllCourses = async () => {
+    const uniqueCourses = [
+      "All",
+      ...new Set(
+        users.map((user) => user.courseName).filter((course) => course)
+      ),
+    ];
+    setCourses(uniqueCourses);
+  };
+
+  const updateCoursesForFaculty = (faculty) => {
+    const relevantUsers = users.filter((user) => user.facultyName === faculty);
+    const uniqueCourses = [
+      "All",
+      ...new Set(relevantUsers.map((user) => user.courseName)),
+    ];
+    setCourses(uniqueCourses);
+  };
+
   const formatUserData = (data) => {
     const formattedData = data.map((u) => ({
       ...u,
@@ -82,7 +114,10 @@ const AdminUsersPage = () => {
           : undefined,
     }));
     setUsers(formattedData);
-    setCourses(["All", ...new Set(formattedData.map((u) => u.courseName))]); // Extract unique courses
+    // setCourses([
+    //   "All Courses",
+    //   ...new Set(formattedData.map((u) => u.courseName)),
+    // ]); // Extract unique courses
   };
 
   const filteredUsers = users.filter(
@@ -143,13 +178,14 @@ const AdminUsersPage = () => {
       <h1>{activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Users</h1>
       <div className="role-buttons">
         <div className="role-controls">
-          {["student", "mentor", "facultyMember", "admin"].map((role) => (
+          {/* {["student", "mentor", "facultyMember", "admin"].map((role) => ( */}
+          {["student", "mentor", "facultyMember"].map((role) => (
             <button
               key={role}
               className={
                 role === activeRole ? "role-button active" : "role-button"
               }
-              onClick={() => setActiveRole(role)}
+              onClick={() => changeActiveRole(role)}
             >
               {role.charAt(0).toUpperCase() + role.slice(1)}
             </button>
@@ -180,7 +216,8 @@ const AdminUsersPage = () => {
         <select
           value={selectedCourse}
           onChange={(e) => setSelectedCourse(e.target.value)}
-          disabled={activeRole !== "student"}
+          disabled={selectedFaculty === "All"} // Disable course selection when "All" faculties are selected
+          hidden={activeRole != "student"}
         >
           {courses.map((course) => (
             <option key={course} value={course}>

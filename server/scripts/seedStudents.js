@@ -52,7 +52,7 @@ const createStudentUser = async (fullName, facultyId, course, companyName) => {
 const seedStudents = async () => {
     await clearExistingStudentsAndUsers();
     const faculties = await fetchFaculties();
-    const totalStudents = 15; // Total number of students you want to create
+    const totalStudents = 20; // Total number of students you want to create
     const allCourses = faculties.reduce((acc, faculty) => acc.concat(faculty.courses.map(course => ({ faculty: faculty._id, course }))), []);
 
     for (let i = 0; i < totalStudents; i++) {
@@ -65,8 +65,19 @@ const seedStudents = async () => {
         const companyName = companies[facultyName][Math.floor(Math.random() * companies[facultyName].length)];
 
         // Generate a unique name
-        const firstNames = ["Jason", "Maria", "Kevin", "Sarah", "James", "Emily", "Michael", "Rachel", "David", "Anna"]
-        const lastNames = ["Teo", "Lim", "Tan", "Lee", "Ong", "Ng", "Wong", "Koh", "Goh", "Chen"]
+        const firstNames = [
+            "Jason", "Maria", "Kevin", "Sarah", "James",
+            "Emily", "Michael", "Rachel", "David", "Anna",
+            "Ella", "George", "Natalie", "Liam", "Sophia",
+            "John", "Amelia", "Oliver", "Megan", "Noah",
+            "Emma", "Lucas", "Chloe", "Aiden", "Lily",
+            "Gabriel", "Zoe", "Benjamin", "Charlotte", "Ethan"
+        ];
+        
+        const lastNames = [
+            "Teo", "Lim", "Tan", "Lee", "Ong", "Ng", "Wong", "Koh", "Goh", "Chen", "Ho", "Low", "Yeo", "Yeoh", "Choo", "Foo", "Cheong", "Soh", "Toh", "Ang", "Kwan", "Lau", "Phua", "Quek", "Sia", "Tay", "Heng", "Loh", "Chia", "Lim"
+        ];
+        
 
         const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
         const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];

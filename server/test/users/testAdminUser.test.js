@@ -94,13 +94,13 @@ describe('Admin User Flow Test', function () {
     //             .patch(`/api/user/${adminUserId}/role`)
     //             .set('Authorization', `Bearer ${adminToken}`)
     //             .send({
-    //                 role: 'mentor'
+    //                 role: 'supervisor'
     //             });
 
 
     //         console.log(resPatch.body)
     //         expect(resPatch).to.have.status(200)
-    //         expect(resPatch.body).to.have.property('role', 'mentor')
+    //         expect(resPatch.body).to.have.property('role', 'supervisor')
     //     });
     // })
 

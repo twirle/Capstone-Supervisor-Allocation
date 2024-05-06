@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/user");
 const studentRoutes = require("./routes/student");
-const mentorRoutes = require("./routes/mentor");
+const supervisorRoutes = require("./routes/supervisor");
 const facultyMemberRoutes = require("./routes/facultyMember");
 const facultyRoutes = require("./routes/faculty");
 const matchRoutes = require("./routes/match");
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
 // app.use('/api/admin', adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/student", studentRoutes);
-app.use("/api/mentor", mentorRoutes);
+app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/facultyMember", facultyMemberRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/match", matchRoutes);

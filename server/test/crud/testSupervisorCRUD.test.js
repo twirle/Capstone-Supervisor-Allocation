@@ -4,28 +4,31 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const server = require('../../server')
+const server = require('../../server') // Adjust the path as necessary
 const expect = chai.expect
 
 chai.use(chaiHttp);
 
-describe('Mentor User Flow Test', function () {
+describe('Supervisor CRUD Flow Test', function () {
     this.timeout(15000);
     let adminToken
-    let mentorId
+    let supervisorId
+    let faculty
     let facultyId
+    let facultyIdNew
     let researchArea
+    let researchAreaNew
 
     before(async () => {
         try {
             await mongoose.connect(process.env.MONGO_URI, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
-            });
+            })
             console.log('Connected to MongoDB for testing');
         } catch (err) {
             console.error('Database connection error', err.message);
-            throw err;
+            throw err
         }
 
         // Admin login to obtain authToken
@@ -54,20 +57,20 @@ describe('Mentor User Flow Test', function () {
             expect(facultyResponse.body).to.be.an('array').that.is.not.empty;
 
             faculty = facultyResponse.body[0]
+            facultyNew = facultyResponse.body[1]
             facultyId = faculty._id
+            facultyIdNew = facultyNew._id
             courses = faculty.courses
-
-            console.log('facultyID:', facultyId)
-            console.log('faculty name:', faculty.name)
-            console.log('faculty courses:', courses)
+            coursesNew = facultyNew.courses
 
             researchArea = courses[0]
+            researchAreaNew = coursesNew[0]
 
         } catch (err) {
             console.error('Failed to fetch faculty', err.message);
             throw err;
         }
-    });
+    })
 
     after(async () => {
         try {
@@ -78,79 +81,82 @@ describe('Mentor User Flow Test', function () {
             throw err
         }
     });
-
-    // Test case to create mentor user
-    describe('Create mentor /user', () => {
-        it('create an mentor user', async () => {
+    // Test case to create supervisor user
+    describe('Create supervisor /user', () => {
+        it('should create an supervisor user', async () => {
             const resCreate = await chai.request(server)
                 .post('/api/user/signup')
                 .set('Authorization', `Bearer ${adminToken}`)
                 .send({
-                    email: 'mentortest@sit.edu.sg',
+                    email: 'supervisortest@sit.edu.sg',
                     password: 'testASD123!@#',
-                    role: 'mentor',
+                    role: 'supervisor',
                     additionalInfo: {
-                        name: 'Test Mentor',
+                        name: 'Test Supervisor',
                         faculty: facultyId,
                         researchArea: researchArea
                     }
                 })
 
             if (resCreate.status !== 201) {
-                console.error('Failed to create mentor user:', resCreate.body)
+                console.error('Failed to create supervisor user:', resCreate.body)
             }
             expect(resCreate).to.have.status(201)
+            supervisorId = resCreate.body.user._id
         })
     })
 
-    // Test case to login to the new mentor user
-    describe('Login mentor /user', () => {
-        it('login the mentor user and get a token', async () => {
-            const resLogin = await chai.request(server)
-                .post('/api/user/login')
-                .send({
-                    email: 'mentortest@sit.edu.sg',
-                    password: 'testASD123!@#',
-                    role: 'mentor'
-                })
-
-            mentorId = resLogin.body.id
-            expect(resLogin).to.have.status(200)
+    // Test case to get all supervisors
+    describe('Get all supervisor /api/supervisor', () => {
+        it('should get all supervisors', async () => {
+            const resGetAll = await chai.request(server)
+                .get('/api/supervisor')
+                .set('Authorization', `Bearer ${adminToken}`);
+            expect(resGetAll).to.have.status(200);
+            expect(resGetAll.body.length).to.be.greaterThan(0);
         })
     })
 
-    // test case to try get created mentor's profile
-    describe('Get mentor /user', () => {
-        it('should get the mentor profile', async () => {
+    // Test case to get the created supervisor profile
+    describe('Get the created supervisor /user', () => {
+        it('should get the created supervisor profile', async () => {
             const res = await chai.request(server)
-                .get(`/api/mentor/${mentorId}`)
+                .get(`/api/supervisor/${supervisorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
-
             expect(res).to.have.status(200)
             expect(res.body).to.have.property('name');
             expect(res.body).to.have.property('faculty');
         })
     })
 
-    // Test case to amend mentor user password
-    // WIP to allow password amendments
+    // Test case to update a supervisor
+    describe('Update supervisor /api/supervisor/:id', () => {
+        it('should update the supervisor', async () => {
+            const resUpdate = await chai.request(server)
+                .patch(`/api/supervisor/${supervisorId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
+                .send({
+                    name: 'updated supervisor name',
+                    faculty: facultyIdNew,
+                    researchArea: researchAreaNew
+                })
+            expect(resUpdate).to.have.status(200);
+        })
+    })
 
-    // Test case to delete mentor user and also Mentor
-    describe('Delete mentor /user', () => {
-        it('delete the mentor user and ensure profile is also deleted', async () => {
+    // Test case to delete supervisor user and profile
+    describe('Delete supervisor /user', () => {
+        it('delete the supervisor user and ensure profile is also deleted', async () => {
             const resDelete = await chai.request(server)
-                .delete(`/api/user/${mentorId}`)
-                .set('Authorization', `Bearer ${adminToken}`);
-
+                .delete(`/api/user/${supervisorId}`)
+                .set('Authorization', `Bearer ${adminToken}`)
             expect(resDelete).to.have.status(204);
 
-            // Check if the related mentor profile is also deleted
+            // Check if the related supervisor profile is also deleted
             const checkProfile = await chai.request(server)
-                .get(`/api/mentor/${mentorId}`)
+                .get(`/api/supervisor/${supervisorId}`)
                 .set('Authorization', `Bearer ${adminToken}`)
-
             expect(checkProfile.status).to.equal(404)
-        });
-    });
-
+        })
+    })
 })

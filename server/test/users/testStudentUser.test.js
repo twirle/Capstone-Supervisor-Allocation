@@ -103,7 +103,7 @@ describe('Student User Flow Test', function () {
                 })
 
             if (resCreate.status !== 201) {
-                console.error('Failed to create mentor user:', resCreate.body)
+                console.error('Failed to create supervisor user:', resCreate.body)
             }
             expect(resCreate).to.have.status(201)
         })
@@ -148,7 +148,7 @@ describe('Student User Flow Test', function () {
 
             expect(resDelete).to.have.status(204);
 
-            // Check if the related mentor profile is also deleted
+            // Check if the related supervisor profile is also deleted
             const checkProfile = await chai.request(server)
                 .get(`/api/student/${studentId}`)
                 .set('Authorization', `Bearer ${adminToken}`)

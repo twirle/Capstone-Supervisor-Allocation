@@ -32,11 +32,11 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           faculty: editedFaculty,
           course: editedCourse,
           company: editedCompany,
-          // assignedMentor: editedMentor
+          // assignedSupervisor: editedSupervisor
         };
         break;
-      case "mentor":
-        patchUrl = `/api/mentor/${userDetail.user._id}`;
+      case "supervisor":
+        patchUrl = `/api/supervisor/${userDetail.user._id}`;
         requestBody = {
           name: editedName,
           faculty: editedFaculty,
@@ -117,7 +117,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           userDetail.facultyName || "-"
         )}
       </td>
-      {role === "mentor" && (
+      {role === "supervisor" && (
         <td>
           {isEditing ? (
             <input
@@ -130,7 +130,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           )}
         </td>
       )}
-      {role === "mentor" && (
+      {role === "supervisor" && (
         <td>{userDetail.studentNames || "No Students Assigned"}</td>
       )}
 
@@ -161,7 +161,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         </td>
       )}
       {role === "student" && (
-        <td>{userDetail.mentorName || "No Mentor Assigned"}</td>
+        <td>{userDetail.supervisorName || "No Supervisor Assigned"}</td>
       )}
       <td>
         {isEditing ? (

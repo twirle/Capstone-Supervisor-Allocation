@@ -50,8 +50,8 @@ const getAllUsers = async (req, res) => {
 // Additional admin functionalities can be added here
 // const getStudent
 // const createStudent
-// const getMentor
-// const createMentor
+// const getSupervisor
+// const createSupervisor
 // ...
 
 module.exports = { createToken, createUser, updateUserRole, getAllUsers };

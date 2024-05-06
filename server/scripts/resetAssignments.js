@@ -1,7 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Student = require('../models/studentModel')
-const Mentor = require('../models/mentorModel')
+const Supervisor = require('../models/supervisorModel')
 
 async function resetAssignments() {
     try {
@@ -10,12 +10,12 @@ async function resetAssignments() {
             useUnifiedTopology: true,
         });
 
-        // Reset assignedMentor for all students
-        await Student.updateMany({}, { $set: { assignedMentor: null } });
+        // Reset assignedSupervisor for all students
+        await Student.updateMany({}, { $set: { assignedSupervisor: null } });
 
-        // Reset assignedStudents for all mentors
-        // If your mentor model doesn't directly link to students, adjust this part
-        await Mentor.updateMany({}, { $set: { assignedStudents: [] } });
+        // Reset assignedStudents for all supervisors
+        // If your supervisor model doesn't directly link to students, adjust this part
+        await Supervisor.updateMany({}, { $set: { assignedStudents: [] } });
 
         console.log('Reset completed successfully.');
     } catch (error) {

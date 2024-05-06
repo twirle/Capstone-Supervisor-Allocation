@@ -8,11 +8,11 @@ const validateUserFields = (email, password) => {
 
 const validateUserInput = (email, password, role, additionalInfo) => {
     validateUserFields(email, password); // Reuse existing validation for email and password.
-    if (!['student', 'mentor', 'facultyMember'].includes(role) && role !== 'admin') {
+    if (!['student', 'supervisor', 'facultyMember'].includes(role) && role !== 'admin') {
         throw new Error('Invalid or missing role.');
     }
     if (role !== 'admin' && !additionalInfo) {
-        throw new Error('Additional info is required for student, mentor, and faculty member roles.');
+        throw new Error('Additional info is required for student, supervisor, and faculty member roles.');
     }
 }
 

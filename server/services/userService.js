@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const StudentService = require('./studentService');
-const MentorService = require('./mentorService');
+const SupervisorService = require('./supervisorService');
 const FacultyService = require('./facultyMemberService');
 const { hashPassword } = require('../utils/securityUtils');
 const { validateUserInput } = require('../utils/validateHelpers');
@@ -25,8 +25,8 @@ async function signupUser(email, password, role, additionalInfo) {
         case 'student':
             await StudentService.createProfile(user._id, additionalInfo);
             break;
-        case 'mentor':
-            await MentorService.createProfile(user._id, additionalInfo);
+        case 'supervisor':
+            await SupervisorService.createProfile(user._id, additionalInfo);
             break;
         case 'facultyMember':
             await FacultyService.createProfile(user._id, additionalInfo);
@@ -47,8 +47,8 @@ async function deleteUserandProfile(userId) {
         }
 
         switch (user.role) {
-            case 'mentor':
-                await MentorService.deleteProfile(userId)
+            case 'supervisor':
+                await SupervisorService.deleteProfile(userId)
                 break
             case 'student':
                 await StudentService.deleteProfile(userId)

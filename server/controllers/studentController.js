@@ -9,7 +9,7 @@ const getStudents = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("user", "email")
       .populate("faculty", "name")
-      .populate("assignedMentor", "name");
+      .populate("assignedSupervisor", "name");
 
     // console.log("Students with populated data:", students);
     res.status(200).json(students);
@@ -33,7 +33,7 @@ const getStudent = async (req, res) => {
       select: "name",
     })
     .populate({
-      path: "assignedMentor",
+      path: "assignedSupervisor",
       select: "name",
     });
   if (!student) {
@@ -71,7 +71,7 @@ const updateStudent = async (req, res) => {
     // console.log(`Updated student: ${student}`);
     res.status(200).json(student);
   } catch (error) {
-    console.error(`Error updating mentor: ${error}`);
+    console.error(`Error updating supervisor: ${error}`);
     res.status(400).json({ error: error.message });
   }
 };

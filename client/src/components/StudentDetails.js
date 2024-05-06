@@ -6,7 +6,7 @@ const StudentDetails = ({ student }) => {
     const { dispatch } = useStudentsContext()
     const { user } = useAuthContext()
     const [isEditing, setIsEditing] = useState(false);
-    const [assignedMentor, setAssignedMentor] = useState(student.assignedMentor || '');
+    const [assignedSupervisor, setAssignedSupervisor] = useState(student.assignedSupervisor || '');
 
 
     const handleClick = async () => {
@@ -30,7 +30,7 @@ const StudentDetails = ({ student }) => {
     const handleEdit = async () => {
         const response = await fetch('/api/students/' + student._id, {
             method: 'PATCH',
-            body: JSON.stringify({ assignedMentor }),
+            body: JSON.stringify({ assignedSupervisor }),
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${user.token}`
@@ -39,7 +39,7 @@ const StudentDetails = ({ student }) => {
         const json = await response.json();
 
         if (response.ok) {
-            setAssignedMentor(json.assignedMentor);
+            setAssignedSupervisor(json.assignedSupervisor);
             setIsEditing(false);
             // Update the student context or state as needed
             dispatch({ type: 'UPDATE_STUDENT', payload: json });
@@ -57,13 +57,13 @@ const StudentDetails = ({ student }) => {
             <p><strong>Assigned to: </strong>{isEditing ? (
                 <input
                     type="text"
-                    value={assignedMentor}
-                    onChange={(e) => setAssignedMentor(e.target.value)}
+                    value={assignedSupervisor}
+                    onChange={(e) => setAssignedSupervisor(e.target.value)}
                 />
             ) : (
-                assignedMentor || 'Not assigned'
+                assignedSupervisor || 'Not assigned'
             )}</p>
-            (user && user.role === 'admin' || user.role === 'mentor' && (
+            (user && user.role === 'admin' || user.role === 'supervisor' && (
             <div>
                 {isEditing ? (
                     <button onClick={handleEdit}>Save</button>

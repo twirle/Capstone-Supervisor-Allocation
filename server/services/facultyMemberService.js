@@ -10,7 +10,7 @@ async function createProfile(userId, additionalInfo) {
         });
         return profile;
     } catch (error) {
-        throw new Error('Error creating mentor profile:', error);
+        throw new Error('Error creating supervisor profile:', error);
     }
 }
 

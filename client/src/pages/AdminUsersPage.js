@@ -104,12 +104,12 @@ const AdminUsersPage = () => {
       email: u.user.email,
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
-      mentorName:
-        activeRole === "student" && u.assignedMentor
-          ? u.assignedMentor.name
+      supervisorName:
+        activeRole === "student" && u.assignedSupervisor
+          ? u.assignedSupervisor.name
           : undefined,
       studentNames:
-        activeRole === "mentor" && u.assignedStudents
+        activeRole === "supervisor" && u.assignedStudents
           ? u.assignedStudents.map((student) => student.name).join(", ")
           : undefined,
     }));
@@ -178,8 +178,8 @@ const AdminUsersPage = () => {
       <h1>{activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Users</h1>
       <div className="role-buttons">
         <div className="role-controls">
-          {/* {["student", "mentor", "facultyMember", "admin"].map((role) => ( */}
-          {["student", "mentor", "facultyMember"].map((role) => (
+          {/* {["student", "supervisor", "facultyMember", "admin"].map((role) => ( */}
+          {["student", "supervisor", "facultyMember"].map((role) => (
             <button
               key={role}
               className={
@@ -231,11 +231,11 @@ const AdminUsersPage = () => {
           <tr>
             <th>Name</th>
             <th>Faculty</th>
-            {activeRole === "mentor" && <th>Research Area</th>}
-            {activeRole === "mentor" && <th>Assigned Students</th>}
+            {activeRole === "supervisor" && <th>Research Area</th>}
+            {activeRole === "supervisor" && <th>Assigned Students</th>}
             {activeRole === "student" && <th>Course</th>}
             {activeRole === "student" && <th>Company</th>}
-            {activeRole === "student" && <th>Mentor</th>}
+            {activeRole === "student" && <th>Supervisor</th>}
             <th>Email</th>
             <th>Actions</th>
           </tr>

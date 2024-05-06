@@ -23,12 +23,12 @@ const studentSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    assignedMentor: {
+    assignedSupervisor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Mentor',
+        ref: 'Supervisor',
         default: null
     },
-    assignedMentorName: {
+    assignedSupervisorName: {
         type: String,
         default: ''
     }

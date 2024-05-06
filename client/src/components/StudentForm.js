@@ -11,7 +11,7 @@ const StudentForm = () => {
     const [course, setCourse] = useState('')
     const [faculty, setFaculty] = useState('')
     const [company, setCompany] = useState('')
-    const [assignedMentor, setAssignedMentor] = useState('');
+    const [assignedSupervisor, setAssignedSupervisor] = useState('');
 
     const [error, setError] = useState('')
     const [emptyFields, setEmptyFields] = useState([])
@@ -25,7 +25,7 @@ const StudentForm = () => {
             return
         }
 
-        const student = { name, course, faculty, company, assignedMentor };
+        const student = { name, course, faculty, company, assignedSupervisor };
 
 
         const response = await fetch('/api/students', {
@@ -48,7 +48,7 @@ const StudentForm = () => {
             setCourse('')
             setFaculty('')
             setCompany('')
-            setAssignedMentor('')
+            setAssignedSupervisor('')
             setError(null)
             setEmptyFields([])
             console.log('New student added', json)
@@ -101,12 +101,12 @@ const StudentForm = () => {
                 className={emptyFields.includes('company') ? 'error' : ''}
             />
 
-            <label>Assigned To (Mentor)</label>
+            <label>Assigned To (Supervisor)</label>
             <input
                 type="text"
-                onChange={(e) => setAssignedMentor(e.target.value)}
-                value={assignedMentor}
-                className={emptyFields.includes('assignedMentor') ? 'error' : ''}
+                onChange={(e) => setAssignedSupervisor(e.target.value)}
+                value={assignedSupervisor}
+                className={emptyFields.includes('assignedSupervisor') ? 'error' : ''}
             />
 
             <button>Add Student</button>

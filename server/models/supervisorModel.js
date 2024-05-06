@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const mentorSchema = new mongoose.Schema({
+const supervisorSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -26,4 +26,4 @@ const mentorSchema = new mongoose.Schema({
     }]
 });
 
-module.exports = mongoose.model('Mentor', mentorSchema)
+module.exports = mongoose.model('Supervisor', supervisorSchema)

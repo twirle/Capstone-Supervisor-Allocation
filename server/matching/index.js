@@ -1,20 +1,20 @@
 const munkres = require('munkres-js')
 
-function calculateCompatibilityScores(mentors, students) {
+function calculateCompatibilityScores(supervisors, students) {
     let scoresMatrix = [];
-    // console.log('Mentor sample:', mentors[0]);
+    // console.log('Supervisor sample:', supervisors[0]);
     // console.log('Student sample:', students[0]);
 
-    for (let i = 0; i < mentors.length; i++) {
-        let mentorScores = [];
+    for (let i = 0; i < supervisors.length; i++) {
+        let supervisorScores = [];
         for (let j = 0; j < students.length; j++) {
             let score = 0;
 
-            // Check if the student's course matches the mentor's research area.
-            if (mentors[i].researchArea === students[j].course) {
+            // Check if the student's course matches the supervisor's research area.
+            if (supervisors[i].researchArea === students[j].course) {
                 // Highest score for a direct match in research area and course.
                 score += 10;
-            } else if (mentors[i].faculty.equals(students[j].faculty)) {
+            } else if (supervisors[i].faculty.equals(students[j].faculty)) {
                 // Moderate score for being in the same faculty but no direct match in research area.
                 score += 5;
             } else {
@@ -22,10 +22,10 @@ function calculateCompatibilityScores(mentors, students) {
                 score += 1;
             }
 
-            console.log(`Calculating score for mentor ${mentors[i].name} and student ${students[j].name}:`, score);
-            mentorScores.push(score);
+            console.log(`Calculating score for supervisor ${supervisors[i].name} and student ${students[j].name}:`, score);
+            supervisorScores.push(score);
         }
-        scoresMatrix.push(mentorScores);
+        scoresMatrix.push(supervisorScores);
     }
 
     return scoresMatrix;
@@ -42,11 +42,11 @@ function findOptimalAssignments(scoresMatrix) {
     // Apply the Hungarian algorithm to find the optimal assignment.
     const assignments = munkres(costMatrix);
 
-    // `assignments` is an array of [mentorIndex, studentIndex] pairs.
+    // `assignments` is an array of [supervisorIndex, studentIndex] pairs.
     return assignments;
 }
 
-async function updateMatches(assignments, mentors, students, scoresMatrix) {
+async function updateMatches(assignments, supervisors, students, scoresMatrix) {
     let updatePromises = []
     let matchDetails = []
 
@@ -57,45 +57,45 @@ async function updateMatches(assignments, mentors, students, scoresMatrix) {
 
     const maxScore = scoresMatrix.flat().reduce((max, score) => Math.max(max, score), 0)
 
-    for (let [mentorIndex, studentIndex] of assignments) {
-        if (mentorIndex >= mentors.length || studentIndex >= students.length) {
-            console.error(`Invalid assignment: mentorIndex=${mentorIndex}, studentIndex=${studentIndex}`);
+    for (let [supervisorIndex, studentIndex] of assignments) {
+        if (supervisorIndex >= supervisors.length || studentIndex >= students.length) {
+            console.error(`Invalid assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`);
             continue; // Skip invalid assignments
         }
 
-        const mentor = mentors[mentorIndex];
+        const supervisor = supervisors[supervisorIndex];
         const student = students[studentIndex];
 
-        let score = scoresMatrix[mentorIndex][studentIndex];
+        let score = scoresMatrix[supervisorIndex][studentIndex];
         let matchCost = maxScore - score; // Convert score back to cost for this pair
         totalCost += matchCost;
 
 
-        if (!mentor || !student) {
-            console.error(`Missing mentor or student for assignment: mentorIndex=${mentorIndex}, studentIndex=${studentIndex}`);
-            continue; // Skip if mentor or student is missing
+        if (!supervisor || !student) {
+            console.error(`Missing supervisor or student for assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`);
+            continue; // Skip if supervisor or student is missing
         }
 
-        // Update the student model with the assigned mentor's ID
-        updatePromises.push(student.updateOne({ assignedMentor: mentor._id }));
+        // Update the student model with the assigned supervisor's ID
+        updatePromises.push(student.updateOne({ assignedSupervisor: supervisor._id }));
 
-        // Update the mentor model by adding the student to the mentor's list of assignedStudents
-        updatePromises.push(mentor.updateOne({ $push: { assignedStudents: student._id } }));
+        // Update the supervisor model by adding the student to the supervisor's list of assignedStudents
+        updatePromises.push(supervisor.updateOne({ $push: { assignedStudents: student._id } }));
 
         // Calculate statistics
-        if (mentor.faculty.equals(student.faculty)) {
+        if (supervisor.faculty.equals(student.faculty)) {
             sameFacultyCount++;
         } else {
             differentFacultyCount++;
         }
-        if (mentor.researchArea === student.course) {
+        if (supervisor.researchArea === student.course) {
             researchAreaMatchCount++;
         }
 
         // Collect match details for logging or response
         matchDetails.push({
-            "Mentor + Student": `${mentor.name} + ${student.name}`,
-            "Details": `Research Area: ${mentor.researchArea}, Course: ${student.course}`,
+            "Supervisor + Student": `${supervisor.name} + ${student.name}`,
+            "Details": `Research Area: ${supervisor.researchArea}, Course: ${student.course}`,
             "Match Cost": matchCost
         });
     }

@@ -9,7 +9,7 @@ import Signup from "./pages/Signup";
 import Student from "./pages/Student";
 import AddStudent from "./pages/AddStudent";
 import AdminUsersPage from "./pages/AdminUsersPage";
-import FacultyInterestPage from "./pages/FacultyInterest";
+import SupervisorInterestPage from "./pages/SupervisorInterestPage";
 
 function App() {
   const { user, loading } = useAuthContext();
@@ -59,12 +59,14 @@ function App() {
               }
             />
             <Route
-              path="/facultyInterest"
+              path="/supervisorInterest"
               element={
                 !loading &&
                 (user &&
-                (user.role === "facultyMember" || user.role === "admin") ? (
-                  <FacultyInterestPage />
+                (user.role === "facultyMember" ||
+                  user.role === "admin" ||
+                  user.role === "supervisor") ? (
+                  <SupervisorInterestPage />
                 ) : (
                   <Navigate to="/" />
                 ))

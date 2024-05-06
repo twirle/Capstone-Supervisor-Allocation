@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-import "../css/facultyInterestPage.css";
+import "../css/supervisorInterestPage.css";
 
-const FacultyInterestPage = () => {
+const SupervisorInterestPage = () => {
   const [data, setData] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -10,7 +10,10 @@ const FacultyInterestPage = () => {
   const [selectedFaculty, setSelectedFaculty] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [interests, setInterests] = useState("");
+  const [interests, setInterests] = useState({});
+  const [reasons, setReasons] = useState({});
+  const [hasChanges, setHasChanges] = useState(false);
+
   const options = [
     "Full acceptance",
     "Agreeable",
@@ -30,7 +33,9 @@ const FacultyInterestPage = () => {
         const result = await response.json();
         if (response.ok) {
           setData(result);
-          const uniqueFaculties = [...new Set(result.map((item) => item.faculty))];
+          const uniqueFaculties = [
+            ...new Set(result.map((item) => item.faculty)),
+          ];
           setFaculties(uniqueFaculties);
           if (uniqueFaculties.length > 0) {
             const initialFaculty = uniqueFaculties[0];
@@ -57,8 +62,12 @@ const FacultyInterestPage = () => {
         .filter((item) => item.faculty === selectedFaculty)
         .map((item) => item.course);
       setCourses([...new Set(facultyCourses)]);
-      const relevantData = data.filter(item => item.faculty === selectedFaculty);
-      const uniqueCompanies = [...new Set(relevantData.map(item => item.company))];
+      const relevantData = data.filter(
+        (item) => item.faculty === selectedFaculty
+      );
+      const uniqueCompanies = [
+        ...new Set(relevantData.map((item) => item.company)),
+      ];
       setCompanies(uniqueCompanies);
       setSelectedCourse(""); // Reset selected course when faculty changes
       setSelectedCompany(""); // Reset company when faculty changes
@@ -73,10 +82,13 @@ const FacultyInterestPage = () => {
   useEffect(() => {
     // Update companies based on selected course
     if (selectedCourse) {
-      const relevantData = data.filter(item => 
-        item.faculty === selectedFaculty && item.course === selectedCourse
+      const relevantData = data.filter(
+        (item) =>
+          item.faculty === selectedFaculty && item.course === selectedCourse
       );
-      const uniqueCompanies = [...new Set(relevantData.map(item => item.company))];
+      const uniqueCompanies = [
+        ...new Set(relevantData.map((item) => item.company)),
+      ];
       setCompanies(uniqueCompanies);
       setSelectedCompany(""); // Reset company when course changes
     }
@@ -92,6 +104,47 @@ const FacultyInterestPage = () => {
 
   const handleInterestChange = (itemKey, value) => {
     setInterests((prev) => ({ ...prev, [itemKey]: value }));
+    setHasChanges(true);
+    if (value === "Agreeable") {
+      setReasons((prev) => {
+        const updated = { ...prev };
+        delete updated[itemKey];
+        return updated;
+      });
+    }
+  };
+
+  const handleReasonChange = (itemKey, reason) => {
+    setReasons((prev) => ({ ...prev, [itemKey]: reason }));
+    setHasChanges(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`${apiUrl}/api/supervisorInterest`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify(
+          Object.entries(interests).map(([key, value]) => ({
+            key,
+            interest: value,
+            reason: reasons[key] || "",
+          }))
+        ),
+      });
+
+      if (response.ok) {
+        console.log("Interest saved successfully!");
+        setHasChanges(false);
+      } else {
+        console.error("Failed to save interest");
+      }
+    } catch (err) {
+      console.error("Error saving interest:", err);
+    }
   };
 
   const filteredData = data.filter(
@@ -103,7 +156,7 @@ const FacultyInterestPage = () => {
 
   return (
     <div className="faculty-interest-container">
-      <h1>Faculty Interest</h1>
+      <h1>Supervisor Interest</h1>
       <div className="faculty-buttons">
         {faculties.map((faculty) => (
           <button
@@ -128,7 +181,10 @@ const FacultyInterestPage = () => {
             </option>
           ))}
         </select>
-        <select value={selectedCompany} onChange={(e) => setSelectedCompany(e.target.value)}>
+        <select
+          value={selectedCompany}
+          onChange={(e) => setSelectedCompany(e.target.value)}
+        >
           <option value="">All Companies</option>
           {companies.map((company, idx) => (
             <option key={idx} value={company}>
@@ -142,28 +198,27 @@ const FacultyInterestPage = () => {
           <tr>
             <th>Course</th>
             <th>Company</th>
-            <th>Job Scope</th>
             <th>Pax</th>
             <th>Interest</th>
+            <th>Reason</th>
           </tr>
         </thead>
         <tbody>
           {filteredData.map((item, index) => {
             const itemKey = `${item.faculty}_${item.course}_${item.company}`;
+            const selectedInterest = interests[itemKey] || "Agreeable";
             return (
               <tr key={index}>
                 <td>{item.course}</td>
                 <td>{item.company}</td>
-                <td>{}</td>
                 <td>{item.count}</td>
                 <td>
                   <select
-                    value={interests[itemKey] || ""}
+                    value={selectedInterest}
                     onChange={(e) =>
                       handleInterestChange(itemKey, e.target.value)
                     }
                   >
-                    <option value="">Select Interest</option>
                     {options.map((option, idx) => (
                       <option key={idx} value={option}>
                         {option}
@@ -171,13 +226,26 @@ const FacultyInterestPage = () => {
                     ))}
                   </select>
                 </td>
+                <td>
+                  {selectedInterest !== "Agreeable" && (
+                    <input
+                      type="text"
+                      placeholder="Reason"
+                      value={reasons[itemKey] || ""}
+                      onChange={(e) =>
+                        handleReasonChange(itemKey, e.target.value)
+                      }
+                    />
+                  )}
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      {hasChanges && <button onClick={handleSave}>Save</button>}
     </div>
   );
 };
 
-export default FacultyInterestPage;
+export default SupervisorInterestPage;

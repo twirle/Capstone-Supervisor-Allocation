@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
+import "../css/userDetails.css"
 
 const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
   const { user } = useAuthContext();
@@ -173,7 +174,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           userDetail.email
         )}
       </td>
-      <td>
+      <td className="action-buttons">
         {isEditing ? (
           <>
             <button onClick={handleSave}>Save</button>

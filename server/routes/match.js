@@ -1,13 +1,16 @@
-const express = require('express');
+import express from "express";
+import {
+  runMatchingProcess,
+  resetMatching,
+} from "../controllers/matchController.js";
+import { requireAuth, checkRole } from "../middleware/requireAuth.js";
+
 const router = express.Router();
-const { runMatchingProcess, resetMatching } = require('../controllers/matchController');
-const { requireAuth, checkRole } = require('../middleware/requireAuth');
 
 // Endpoint to trigger the matching process
-router.post('/match', requireAuth, checkRole(['admin']), runMatchingProcess);
+router.post("/match", requireAuth, checkRole(["admin"]), runMatchingProcess);
 
 // Reset matches
-router.post('/reset', requireAuth, checkRole(['admin']), resetMatching);
+router.post("/reset", requireAuth, checkRole(["admin"]), resetMatching);
 
-
-module.exports = router;
+export default router;

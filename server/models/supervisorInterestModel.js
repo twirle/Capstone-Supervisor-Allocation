@@ -1,13 +1,15 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const supervisorInterestSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+
+const supervisorInterestSchema = new Schema({
   supervisor: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Supervisor",
     required: true,
   },
   student: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Student",
     required: true,
   },
@@ -27,4 +29,4 @@ const supervisorInterestSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("SupervisorInterest", supervisorInterestSchema);
+export default mongoose.model("SupervisorInterest", supervisorInterestSchema);

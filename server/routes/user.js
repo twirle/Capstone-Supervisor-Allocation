@@ -1,42 +1,51 @@
-const express = require('express');
-const router = express.Router();
-const UserService = require('../services/userService'); // Ensure this is correctly imported
+import express from "express";
+import {
+  loginUser,
+  getAllUsers,
+  getUser,
+  changePassword,
+} from "../controllers/userController.js";
+import { requireAuth, checkRole } from "../middleware/requireAuth.js";
+import { signupUser, deleteUserandProfile } from "../services/userService.js";
 
-// Controller functions
-const { loginUser, getAllUsers, getUser, updateUserPassword, changePassword } = require('../controllers/userController');
-const { requireAuth, checkRole } = require('../middleware/requireAuth');
+const router = express.Router();
 
 // Login route
-router.post('/login', loginUser);
+router.post("/login", loginUser);
 
 // Sign up route, accessible only by admins
-router.post('/signup', requireAuth, checkRole(['admin']), async (req, res) => {
-    try {
-        const { email, password, role, additionalInfo } = req.body;
-        const user = await UserService.signupUser(email, password, role, additionalInfo);
-        res.status(201).json({ message: "User created successfully", user });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+router.post("/signup", requireAuth, checkRole(["admin"]), async (req, res) => {
+  try {
+    const { email, password, role, additionalInfo } = req.body;
+    const user = await signupUser(email, password, role, additionalInfo);
+    res.status(201).json({ message: "User created successfully", user });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
-
-// Get all users, accessible only by admins
-router.get('/all', requireAuth, checkRole(['admin']), getAllUsers)
-
-// Get single user, accessible only by admins
-router.get('/:userId', requireAuth, checkRole(['admin']), getUser)
-
-// Change user password, requires authentication
-router.patch('/:userId/changePassword', requireAuth, changePassword);
 
 // Delete a user, accessible only by admins
-router.delete('/:userId', requireAuth, checkRole(['admin']), async (req, res) => {
+router.delete(
+  "/:userId",
+  requireAuth,
+  checkRole(["admin"]),
+  async (req, res) => {
     try {
-        await UserService.deleteUserandProfile(req.params.userId);
-        res.status(204).send(); // No content to send back
+      await deleteUserandProfile(req.params.userId);
+      res.status(204).send(); // No content to send back
     } catch (error) {
-        res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
-});
+  }
+);
 
-module.exports = router;
+// Get all users, accessible only by admins
+router.get("/all", requireAuth, checkRole(["admin"]), getAllUsers);
+
+// Get single user, accessible only by admins
+router.get("/:userId", requireAuth, checkRole(["admin"]), getUser);
+
+// Change user password, requires authentication
+router.patch("/:userId/changePassword", requireAuth, changePassword);
+
+export default router;

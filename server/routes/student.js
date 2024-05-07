@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
 
-const {
+import {
   getStudents,
   getStudent,
   updateStudent,
   aggregateStudents,
-} = require("../controllers/studentController");
-const { requireAuth, checkRole } = require("../middleware/requireAuth");
+} from "../controllers/studentController.js";
+import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -35,4 +35,4 @@ router.patch(
   updateStudent
 );
 
-module.exports = router;
+export default router;

@@ -1,11 +1,11 @@
-const express = require("express")
+import express from 'express';
 
-const {
+import {
   getFacultyMembers,
   getFacultyMember,
   updateFacultyMember
-} = require('../controllers/facultyMemberController');
-const { requireAuth, checkRole } = require('../middleware/requireAuth')
+} from '../controllers/facultyMemberController.js';
+import { requireAuth, checkRole } from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
@@ -27,5 +27,4 @@ router.patch('/:userId', requireAuth, checkRole(['admin']), updateFacultyMember)
 // DELETE a faculty member
 // moved to userService.js to handle creation and deletion
 
-
-module.exports = router;
+export default router;

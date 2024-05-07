@@ -1,29 +1,33 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const supervisorSchema = new mongoose.Schema({
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-        ref: 'User'
+const { Schema } = mongoose;
+
+const supervisorSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  faculty: {
+    type: Schema.Types.ObjectId,
+    ref: "Faculty",
+    required: true,
+  },
+  researchArea: {
+    type: String,
+    default: null,
+  },
+  assignedStudents: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+      default: [],
     },
-    name: {
-        type: String,
-        required: true
-    },
-    faculty: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Faculty',
-        required: true
-    },
-    researchArea: {
-        type: String,
-        default: null
-    },
-    assignedStudents: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student',
-        default: []
-    }]
+  ],
 });
 
-module.exports = mongoose.model('Supervisor', supervisorSchema)
+export default mongoose.model("Supervisor", supervisorSchema);

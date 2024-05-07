@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 
-const {
+import {
   getFaculties,
   getFaculty,
   createFaculty,
   updateFaculty,
   deleteFaculty,
-} = require("../controllers/facultyController");
-const { requireAuth, checkRole } = require("../middleware/requireAuth");
+} from "../controllers/facultyController.js";
+import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -29,4 +29,4 @@ router.patch("/:id", requireAuth, checkRole(["admin"]), updateFaculty);
 // DELETE a faculty
 router.delete("/:id", deleteFaculty);
 
-module.exports = router;
+export default router;

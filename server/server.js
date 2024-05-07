@@ -1,16 +1,18 @@
-require("dotenv").config();
+import { config as dotenvConfig } from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import userRoutes from "./routes/user.js";
+import studentRoutes from "./routes/student.js";
+import supervisorRoutes from "./routes/supervisor.js";
+import facultyMemberRoutes from "./routes/facultyMember.js";
+import facultyRoutes from "./routes/faculty.js";
+import matchRoutes from "./routes/match.js";
+import cors from "cors";
 
-const express = require("express");
-const mongoose = require("mongoose");
-const userRoutes = require("./routes/user");
-const studentRoutes = require("./routes/student");
-const supervisorRoutes = require("./routes/supervisor");
-const facultyMemberRoutes = require("./routes/facultyMember");
-const facultyRoutes = require("./routes/faculty");
-const matchRoutes = require("./routes/match");
+// Load environment variables
+dotenvConfig({ path: new URL(".env", import.meta.url) });
 
 const app = express();
-const cors = require("cors");
 
 const corsOptions = {
   origin: ["http://localhost:3000"], // Change this to match your frontend URL
@@ -19,7 +21,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Parse JSON requests‰
+// Parse JSON requests
 app.use(express.json());
 
 // Logging middleware
@@ -29,7 +31,6 @@ app.use((req, res, next) => {
 });
 
 // Routes
-// app.use('/api/admin', adminRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/supervisor", supervisorRoutes);
@@ -61,4 +62,4 @@ if (process.env.NODE_ENV !== "test") {
     });
 }
 
-module.exports = app;
+export default app;

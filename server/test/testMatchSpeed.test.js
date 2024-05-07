@@ -3,12 +3,12 @@ process.env.PORT = 4001;
 
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import server from "../server.js";
 import { expect, use } from "chai";
 import chaiHttp from "chai-http";
-const chai = use(chaiHttp);
+import server from "../server.js";
 
 dotenv.config();
+const chai = use(chaiHttp);
 
 describe("Matching Test", () => {
   let authToken;
@@ -49,26 +49,33 @@ describe("Matching Test", () => {
   });
 
   // test case run matching
-  describe("Run match", () => {
-    it("should successfully complete the matching process", async () => {
-      console.time("Matching time");
+  describe("Run and Reset Matching", () => {
+    it("should successfully complete and average the matching process", async () => {
+      let totalMatchingTime = 0;
+      const numRuns = 5;
 
-      const resetResponse = await chai
-        .request(server)
-        .post("/api/match/reset")
-        .set("Authorization", `Bearer ${authToken}`);
+      for (let i = 0; i < numRuns; i++) {
+        console.time("Matching time");
 
-      expect(resetResponse).to.have.status(200);
+        const resetResponse = await chai
+          .request(server)
+          .post("/api/match/reset")
+          .set("Authorization", `Bearer ${authToken}`);
+        expect(resetResponse).to.have.status(200);
 
-      const matchResponse = await chai
-        .request(server)
-        .post("/api/match/match")
-        .set("Authorization", `Bearer ${authToken}`);
+        const matchResponse = await chai
+          .request(server)
+          .post("/api/match/match")
+          .set("Authorization", `Bearer ${authToken}`);
+        expect(matchResponse).to.have.status(200);
 
-      expect(matchResponse).to.have.status(200);
-      console.timeEnd("Matching time");
+        const matchingTime = console.timeEnd("Matching time");
+        totalMatchingTime += matchingTime;
+        console.log(`Run ${i + 1} - Matching time: ${matchingTime}ms`);
+      }
 
-      console.log("Compatibility Matrix:", matchResponse.body.scoresMatrix);
+      const averageMatchingTime = totalMatchingTime / numRuns;
+      console.log(`Average Matching Time: ${averageMatchingTime.toFixed(2)}ms`);
     });
   });
 });

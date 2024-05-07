@@ -11,6 +11,10 @@ const AdminUsersPage = () => {
   const [selectedCourse, setSelectedCourse] = useState("All");
   const [activeRole, setActiveRole] = useState("student");
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage, setUsersPerPage] = useState(10);
+
   const { user } = useAuthContext();
   const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -114,17 +118,22 @@ const AdminUsersPage = () => {
           : undefined,
     }));
     setUsers(formattedData);
-    // setCourses([
-    //   "All Courses",
-    //   ...new Set(formattedData.map((u) => u.courseName)),
-    // ]); // Extract unique courses
+    fetchAllCourses();
   };
 
   const filteredUsers = users.filter(
     (u) =>
       (selectedFaculty === "All" || u.facultyName === selectedFaculty) &&
-      (selectedCourse === "All" || u.courseName === selectedCourse)
+      (selectedCourse === "All" || u.courseName === selectedCourse) &&
+      (u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase())))
   );
+
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleUserSave = (updatedUser) => {
     setUsers(
@@ -225,6 +234,13 @@ const AdminUsersPage = () => {
             </option>
           ))}
         </select>
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search users..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
       <table className="table-style">
         <thead>
@@ -241,7 +257,7 @@ const AdminUsersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map((user) => (
+          {currentUsers.map((user) => (
             <UserDetails
               key={user._id}
               userDetail={user}
@@ -252,6 +268,21 @@ const AdminUsersPage = () => {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        {Array.from({
+          length: Math.ceil(filteredUsers.length / usersPerPage),
+        }).map((_, index) => (
+          <button
+            key={index}
+            className={`page-button ${
+              currentPage === index + 1 ? "active" : ""
+            }`}
+            onClick={() => paginate(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,10 +1,11 @@
-const Student = require("../models/studentModel");
-const Supervisor = require("../models/supervisorModel");
-const {
+import Student from "../models/studentModel.js";
+import Supervisor from "../models/supervisorModel.js";
+import {
   calculateCompatibilityScores,
   findOptimalAssignments,
-  updateMatches,
-} = require("../matching");
+  simulateMatches,
+  updateMatchesInDatabase,
+} from "../matching/index.js";
 
 async function fetchStudents() {
   return await Student.find({
@@ -28,13 +29,14 @@ const runMatchingProcess = async (req, res) => {
 
     const scoresMatrix = calculateCompatibilityScores(supervisors, students);
     const assignments = findOptimalAssignments(scoresMatrix);
-
-    const matchDetails = await updateMatches(
+    const matchDetails = simulateMatches(
       assignments,
       supervisors,
       students,
       scoresMatrix
     );
+
+    await updateMatchesInDatabase(assignments, supervisors, students);
 
     res.status(200).json({
       message: "Matching process completed successfully.",
@@ -64,4 +66,4 @@ const resetMatching = async (req, res) => {
   }
 };
 
-module.exports = { runMatchingProcess, resetMatching };
+export { runMatchingProcess, resetMatching };

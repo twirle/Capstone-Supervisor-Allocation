@@ -1,6 +1,6 @@
-const Student = require("../models/studentModel");
-const Faculty = require("../models/facultyModel");
-const mongoose = require("mongoose");
+import Student from "../models/studentModel.js";
+import Faculty from "../models/facultyModel.js";
+import mongoose from "mongoose";
 
 // get all Students
 const getStudents = async (req, res) => {
@@ -123,9 +123,4 @@ const aggregateStudents = async (req, res) => {
   }
 };
 
-module.exports = {
-  getStudents,
-  getStudent,
-  updateStudent,
-  aggregateStudents,
-};
+export { getStudents, getStudent, updateStudent, aggregateStudents };

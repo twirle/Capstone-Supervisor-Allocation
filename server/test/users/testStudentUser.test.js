@@ -104,6 +104,7 @@ describe("Student User Flow Test", function () {
             faculty: facultyId,
             course: course,
             company: "Nestle",
+            jobScope: "Quality Control",
           },
         });
 

@@ -14,6 +14,8 @@ const AdminUsersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage, setUsersPerPage] = useState(10);
+  const [sortColumn, setSortColumn] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
 
   const { user } = useAuthContext();
   const apiUrl = process.env.REACT_APP_API_URL;
@@ -21,7 +23,7 @@ const AdminUsersPage = () => {
   useEffect(() => {
     fetchFaculties(user.token);
     fetchAllCourses();
-  }, [user.token]); // Fetch faculties on component mount
+  }, [user.token]);
 
   useEffect(() => {
     fetchUsers(activeRole, user.token);
@@ -33,7 +35,7 @@ const AdminUsersPage = () => {
     } else {
       fetchAllCourses();
     }
-  }, [selectedFaculty]); //
+  }, [selectedFaculty]);
 
   const changeActiveRole = (newRole) => {
     if (newRole !== activeRole) {
@@ -45,7 +47,7 @@ const AdminUsersPage = () => {
 
   const fetchUsers = async (role) => {
     try {
-      const response = await fetch(`${apiUrl}/api/${activeRole}`, {
+      const response = await fetch(`${apiUrl}/api/${role}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
           "Content-Type": "application/json",
@@ -108,6 +110,8 @@ const AdminUsersPage = () => {
       email: u.user.email,
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
+      company: u.company || "No Company",
+      jobScope: u.jobScope || "No Job Scope",
       supervisorName:
         activeRole === "student" && u.assignedSupervisor
           ? u.assignedSupervisor.name
@@ -121,13 +125,20 @@ const AdminUsersPage = () => {
     fetchAllCourses();
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      (selectedFaculty === "All" || u.facultyName === selectedFaculty) &&
-      (selectedCourse === "All" || u.courseName === selectedCourse) &&
-      (u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase())))
-  );
+  const filteredUsers = users
+    .filter(
+      (u) =>
+        (selectedFaculty === "All" || u.facultyName === selectedFaculty) &&
+        (selectedCourse === "All" || u.courseName === selectedCourse) &&
+        (u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (u.email && u.email.toLowerCase().includes(searchTerm.toLowerCase())))
+    )
+    .sort((a, b) => {
+      let sortOrder = sortDirection === "asc" ? 1 : -1;
+      if (a[sortColumn] < b[sortColumn]) return -sortOrder;
+      if (a[sortColumn] > b[sortColumn]) return sortOrder;
+      return 0;
+    });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -182,12 +193,22 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection((prevDirection) =>
+        prevDirection === "asc" ? "desc" : "asc"
+      );
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
   return (
     <div className="admin-users-page">
       <h1>{activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Users</h1>
       <div className="role-buttons">
         <div className="role-controls">
-          {/* {["student", "supervisor", "facultyMember", "admin"].map((role) => ( */}
           {["student", "supervisor", "facultyMember"].map((role) => (
             <button
               key={role}
@@ -226,7 +247,7 @@ const AdminUsersPage = () => {
           value={selectedCourse}
           onChange={(e) => setSelectedCourse(e.target.value)}
           disabled={selectedFaculty === "All"} // Disable course selection when "All" faculties are selected
-          hidden={activeRole != "student"}
+          hidden={activeRole !== "student"}
         >
           {courses.map((course) => (
             <option key={course} value={course}>
@@ -245,14 +266,25 @@ const AdminUsersPage = () => {
       <table className="table-style">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Faculty</th>
-            {activeRole === "supervisor" && <th>Research Area</th>}
-            {activeRole === "supervisor" && <th>Assigned Students</th>}
-            {activeRole === "student" && <th>Course</th>}
-            {activeRole === "student" && <th>Company</th>}
-            {activeRole === "student" && <th>Supervisor</th>}
-            <th>Email</th>
+            <th onClick={() => handleSort("name")}>Name</th>
+            <th onClick={() => handleSort("facultyName")}>Faculty</th>
+            {activeRole === "supervisor" && (
+              <th onClick={() => handleSort("researchArea")}>Research Area</th>
+            )}
+            {activeRole === "supervisor" && (
+              <th onClick={() => handleSort("studentNames")}>
+                Assigned Students
+              </th>
+            )}
+            {activeRole === "student" && (
+              <>
+                <th onClick={() => handleSort("courseName")}>Course</th>
+                <th onClick={() => handleSort("company")}>Company</th>
+                <th onClick={() => handleSort("jobScope")}>Job Scope</th>
+                <th onClick={() => handleSort("supervisorName")}>Supervisor</th>
+              </>
+            )}
+            <th onClick={() => handleSort("email")}>Email</th>
             <th>Actions</th>
           </tr>
         </thead>

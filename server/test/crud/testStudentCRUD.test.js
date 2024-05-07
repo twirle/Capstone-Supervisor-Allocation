@@ -101,11 +101,12 @@ describe("Student CRUD Flow Test", function () {
             faculty: facultyId,
             course: course,
             company: "Nestle",
+            jobScope: "Quality Control",
           },
         });
 
       if (resCreate.status !== 201) {
-        console.error("Failed to create supervisor user:", resCreate.body);
+        console.error("Failed to create student user:", resCreate.body);
       }
       expect(resCreate).to.have.status(201);
       studentId = resCreate.body.user._id;

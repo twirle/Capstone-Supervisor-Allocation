@@ -25,14 +25,14 @@ const studentSchema = new Schema({
     type: String,
     require: true,
   },
+  jobScope: {
+    type: String,
+    required: true,
+  },
   assignedSupervisor: {
     type: Schema.Types.ObjectId,
     ref: "Supervisor",
     default: null,
-  },
-  assignedSupervisorName: {
-    type: String,
-    default: "",
   },
 });
 

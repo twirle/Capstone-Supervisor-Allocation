@@ -26,6 +26,19 @@ const companies = {
   "Infocomm Technology": ["Google", "Microsoft", "Apple", "Amazon", "Facebook"],
 };
 
+const jobScopes = {
+  "Nestle": ["Food Scientist", "Quality Control", "Research Analyst"],
+  "PepsiCo": ["Food Technician", "Quality Assurance", "Product Development"],
+  "Mondelez": ["Food Engineer", "Quality Specialist", "Innovation Specialist"],
+  "Danone": ["Food Technologist", "Microbiologist", "Production Supervisor"],
+  "General Mills": ["Product Developer", "Food Scientist", "Lab Technician"],
+  "Google": ["Software Engineer", "Data Analyst", "Cloud Engineer"],
+  "Microsoft": ["Developer", "Project Manager", "Business Analyst"],
+  "Apple": ["iOS Developer", "UX Designer", "Hardware Engineer"],
+  "Amazon": ["Software Developer", "Data Engineer", "Product Manager"],
+  "Facebook": ["Data Scientist", "Software Engineer", "Research Scientist"],
+};
+
 const clearExistingStudentsAndUsers = async () => {
   await Student.deleteMany({});
   await User.deleteMany({ role: "student" });
@@ -36,7 +49,7 @@ const fetchFaculties = async () => {
   return await Faculty.find({});
 };
 
-const createStudentUser = async (fullName, facultyId, course, companyName) => {
+const createStudentUser = async (fullName, facultyId, course, companyName, jobScope) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash("defaultPassword", salt);
 
@@ -64,13 +77,14 @@ const createStudentUser = async (fullName, facultyId, course, companyName) => {
     faculty: facultyId,
     course: course,
     company: companyName,
+    jobScope: jobScope,
   });
 };
 
 const seedStudents = async () => {
   await clearExistingStudentsAndUsers();
   const faculties = await fetchFaculties();
-  const totalStudents = 200; // Total number of students you want to create
+  const totalStudents = 200;
   const allCourses = faculties.reduce(
     (acc, faculty) =>
       acc.concat(
@@ -92,6 +106,11 @@ const seedStudents = async () => {
       companies[facultyName][
         Math.floor(Math.random() * companies[facultyName].length)
       ];
+
+    // Select a random job scope for the chosen company
+    const jobScope = jobScopes[companyName][
+      Math.floor(Math.random() * jobScopes[companyName].length)
+    ];
 
     // Generate a unique name
     const firstNames = [
@@ -233,7 +252,7 @@ const seedStudents = async () => {
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const fullName = `${firstName} ${lastName}`;
 
-    await createStudentUser(fullName, faculty, course, companyName);
+    await createStudentUser(fullName, faculty, course, companyName, jobScope);
   }
 
   console.log(`Inserted ${totalStudents} students successfully.`);

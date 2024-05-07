@@ -81,24 +81,21 @@ const aggregateStudents = async (req, res) => {
     const aggregation = await Student.aggregate([
       {
         $lookup: {
-          from: "faculties",
+          from: Faculty.collection.name,
           localField: "faculty",
           foreignField: "_id",
           as: "facultyDetails",
         },
       },
       {
-        $unwind: {
-          path: "$facultyDetails",
-          preserveNullAndEmptyArrays: true, // This will include students without faculty in the result
-        },
+        $unwind: "$facultyDetails",
       },
       {
         $group: {
           _id: {
-            course: "$course",
-            faculty: "$facultyDetails.name", // Use faculty name from the lookup
             company: "$company",
+            jobScope: "$jobScope",
+            faculty: "$facultyDetails.name",
           },
           students: { $push: { _id: "$_id", name: "$name" } },
           count: { $sum: 1 },
@@ -106,10 +103,10 @@ const aggregateStudents = async (req, res) => {
       },
       {
         $project: {
-          _id: 0, // Exclude this field
-          course: "$_id.course",
-          faculty: "$_id.faculty",
+          _id: 0,
           company: "$_id.company",
+          jobScope: "$_id.jobScope",
+          faculty: "$_id.faculty",
           students: 1,
           count: 1,
         },
@@ -122,5 +119,6 @@ const aggregateStudents = async (req, res) => {
     res.status(500).send("Server error during student aggregation");
   }
 };
+
 
 export { getStudents, getStudent, updateStudent, aggregateStudents };

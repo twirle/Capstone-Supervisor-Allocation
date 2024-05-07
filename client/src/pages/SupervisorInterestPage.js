@@ -5,11 +5,11 @@ import "../css/supervisorInterestPage.css";
 const SupervisorInterestPage = () => {
   const [data, setData] = useState([]);
   const [faculties, setFaculties] = useState([]);
-  const [courses, setCourses] = useState([]);
   const [companies, setCompanies] = useState([]);
+  const [jobScopes, setJobScopes] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [selectedJobScope, setSelectedJobScope] = useState("");
   const [interests, setInterests] = useState({});
   const [reasons, setReasons] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
@@ -40,10 +40,16 @@ const SupervisorInterestPage = () => {
           if (uniqueFaculties.length > 0) {
             const initialFaculty = uniqueFaculties[0];
             setSelectedFaculty(initialFaculty);
-            const facultyCourses = result
-              .filter((item) => item.faculty === initialFaculty)
-              .map((item) => item.course);
-            setCourses([...new Set(facultyCourses)]);
+            const relevantData = result.filter(
+              (item) => item.faculty === initialFaculty
+            );
+            const uniqueCompanies = [
+              ...new Set(relevantData.map((item) => item.company)),
+            ];
+            setCompanies(uniqueCompanies);
+            setJobScopes([
+              ...new Set(relevantData.map((item) => item.jobScope)),
+            ]);
           }
         } else {
           throw new Error(result.message || "Error fetching data");
@@ -56,12 +62,8 @@ const SupervisorInterestPage = () => {
   }, [apiUrl, user.token]);
 
   useEffect(() => {
-    // Update courses and companies based on selected faculty
+    // Update companies and job scopes based on selected faculty
     if (selectedFaculty) {
-      const facultyCourses = data
-        .filter((item) => item.faculty === selectedFaculty)
-        .map((item) => item.course);
-      setCourses([...new Set(facultyCourses)]);
       const relevantData = data.filter(
         (item) => item.faculty === selectedFaculty
       );
@@ -69,37 +71,42 @@ const SupervisorInterestPage = () => {
         ...new Set(relevantData.map((item) => item.company)),
       ];
       setCompanies(uniqueCompanies);
-      setSelectedCourse(""); // Reset selected course when faculty changes
-      setSelectedCompany(""); // Reset company when faculty changes
+      setJobScopes([...new Set(relevantData.map((item) => item.jobScope))]);
+      setSelectedCompany("");
+      setSelectedJobScope("");
     } else {
-      setCourses([]);
-      setSelectedCourse("");
       setCompanies([]);
       setSelectedCompany("");
+      setJobScopes([]);
+      setSelectedJobScope("");
     }
   }, [selectedFaculty, data]);
 
   useEffect(() => {
-    // Update companies based on selected course
-    if (selectedCourse) {
+    // Update job scopes based on selected company
+    if (selectedCompany) {
       const relevantData = data.filter(
         (item) =>
-          item.faculty === selectedFaculty && item.course === selectedCourse
+          item.faculty === selectedFaculty && item.company === selectedCompany
       );
-      const uniqueCompanies = [
-        ...new Set(relevantData.map((item) => item.company)),
+      const uniqueJobScopes = [
+        ...new Set(relevantData.map((item) => item.jobScope)),
       ];
-      setCompanies(uniqueCompanies);
-      setSelectedCompany(""); // Reset company when course changes
+      setJobScopes(uniqueJobScopes);
+      setSelectedJobScope(""); // Reset job scope when company changes
     }
-  }, [selectedCourse, data]);
+  }, [selectedCompany, data]);
 
   const handleFacultySelect = (faculty) => {
     setSelectedFaculty(faculty);
   };
 
-  const handleCourseChange = (e) => {
-    setSelectedCourse(e.target.value);
+  const handleCompanyChange = (e) => {
+    setSelectedCompany(e.target.value);
+  };
+
+  const handleJobScopeChange = (e) => {
+    setSelectedJobScope(e.target.value);
   };
 
   const handleInterestChange = (itemKey, value) => {
@@ -147,15 +154,21 @@ const SupervisorInterestPage = () => {
     }
   };
 
-  const filteredData = data.filter(
-    (item) =>
-      (selectedFaculty ? item.faculty === selectedFaculty : true) &&
-      (selectedCourse ? item.course === selectedCourse : true) &&
-      (selectedCompany ? item.company === selectedCompany : true)
-  );
+  const filteredData = data
+    .filter(
+      (item) =>
+        (selectedFaculty ? item.faculty === selectedFaculty : true) &&
+        (selectedCompany ? item.company === selectedCompany : true) &&
+        (selectedJobScope ? item.jobScope === selectedJobScope : true)
+    )
+    .sort(
+      (a, b) =>
+        a.company.localeCompare(b.company) ||
+        a.jobScope.localeCompare(b.jobScope)
+    );
 
   return (
-    <div className="faculty-interest-container">
+    <div className="supervisor-interest-container">
       <h1>Supervisor Interest</h1>
       <div className="faculty-buttons">
         {faculties.map((faculty) => (
@@ -173,18 +186,7 @@ const SupervisorInterestPage = () => {
         ))}
       </div>
       <div className="filters">
-        <select value={selectedCourse} onChange={handleCourseChange}>
-          <option value="">All Courses</option>
-          {courses.map((course) => (
-            <option key={course} value={course}>
-              {course}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selectedCompany}
-          onChange={(e) => setSelectedCompany(e.target.value)}
-        >
+        <select value={selectedCompany} onChange={handleCompanyChange}>
           <option value="">All Companies</option>
           {companies.map((company, idx) => (
             <option key={idx} value={company}>
@@ -192,12 +194,20 @@ const SupervisorInterestPage = () => {
             </option>
           ))}
         </select>
+        <select value={selectedJobScope} onChange={handleJobScopeChange}>
+          <option value="">All Job Scopes</option>
+          {jobScopes.map((jobScope, idx) => (
+            <option key={idx} value={jobScope}>
+              {jobScope}
+            </option>
+          ))}
+        </select>
       </div>
       <table className="table-style">
         <thead>
           <tr>
-            <th>Course</th>
             <th>Company</th>
+            <th>Job Scope</th>
             <th>Pax</th>
             <th>Interest</th>
             <th>Reason</th>
@@ -205,12 +215,12 @@ const SupervisorInterestPage = () => {
         </thead>
         <tbody>
           {filteredData.map((item, index) => {
-            const itemKey = `${item.faculty}_${item.course}_${item.company}`;
+            const itemKey = `${item.faculty}_${item.company}_${item.jobScope}`;
             const selectedInterest = interests[itemKey] || "Agreeable";
             return (
               <tr key={index}>
-                <td>{item.course}</td>
                 <td>{item.company}</td>
+                <td>{item.jobScope}</td>
                 <td>{item.count}</td>
                 <td>
                   <select

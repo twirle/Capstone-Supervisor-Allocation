@@ -1,19 +1,17 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-const { Schema } = mongoose;
-
-const supervisorInterestSchema = new Schema({
+const supervisorInterestSchema = new mongoose.Schema({
   supervisor: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Supervisor",
     required: true,
   },
   student: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
     required: true,
   },
-  interest: {
+  interestLevel: {
     type: String,
     enum: [
       "Full acceptance",
@@ -22,11 +20,28 @@ const supervisorInterestSchema = new Schema({
       "Do not want to supervise",
     ],
     default: "Agreeable",
+    required: true,
   },
   reason: {
     type: String,
-    default: "",
+    default: null,
+    trim: true,
+    validate: {
+      validator: function (value) {
+        // Reason should be provided if interestLevel is not 'Agreeable'
+        if (this.interestLevel !== "Agreeable") {
+          return value && value.trim().length > 0;
+        }
+        return true;
+      },
+      message: 'Reason is required when interest level is not "Agreeable".',
+    },
+  },
+  timestamp: {
+    type: Date,
+    default: Date.now,
+    required: true,
   },
 });
 
-export default mongoose.model("SupervisorInterest", supervisorInterestSchema);
+module.exports = mongoose.model("SupervisorInterest", supervisorInterestSchema);

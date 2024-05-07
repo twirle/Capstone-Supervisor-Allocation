@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
-import "../css/userDetails.css"
+import "../css/userDetails.css";
 
 const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
   const { user } = useAuthContext();
@@ -12,11 +12,25 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
   );
   const [editedCourse, setEditedCourse] = useState(userDetail.course || "");
   const [editedCompany, setEditedCompany] = useState(userDetail.company || "");
+  const [editedJobScope, setEditedJobScope] = useState(
+    userDetail.jobScope || ""
+  );
   const [editedResearchArea, setEditedResearchArea] = useState(
-    userDetail.company || ""
+    userDetail.researchArea || ""
   );
 
   const apiUrl = process.env.REACT_APP_API_URL;
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setEditedName(userDetail.name);
+    setEditedEmail(userDetail.email);
+    setEditedFaculty(userDetail.faculty ? userDetail.faculty._id : "");
+    setEditedCourse(userDetail.course || "");
+    setEditedCompany(userDetail.company || "");
+    setEditedJobScope(userDetail.jobScope || "");
+    setEditedResearchArea(userDetail.researchArea || "");
+  }, [userDetail]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -32,7 +46,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           faculty: editedFaculty,
           course: editedCourse,
           company: editedCompany,
-          // assignedSupervisor: editedSupervisor
+          jobScope: editedJobScope,
         };
         break;
       case "supervisor":
@@ -55,40 +69,57 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         return;
     }
 
-    const response = await fetch(`${apiUrl}${patchUrl}`, {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(requestBody),
-    });
+    try {
+      const response = await fetch(`${apiUrl}${patchUrl}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(requestBody),
+      });
 
-    if (response.ok) {
-      const updatedData = await response.json();
-      onSave(updatedData); // Update the local state to reflect the changes
-      setIsEditing(false);
-    } else {
-      console.error("Failed to save user:", await response.json());
+      if (response.ok) {
+        const updatedData = await response.json();
+        onSave(updatedData); // Update the local state to reflect the changes
+        setIsEditing(false);
+      } else {
+        console.error("Failed to save user:", await response.json());
+      }
+    } catch (err) {
+      console.error("Failed to save user:", err);
     }
   };
 
   const handleDelete = async () => {
-    if (!user) return; // Guard clause to ensure there is a user
-    const response = await fetch(`/api/user/${userDetail.user._id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      onDelete(userDetail.user._id);
-      console.log("User deleted successfully");
-    } else {
-      console.error("Failed to delete user");
+    if (!user || isDeleting) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(
+        `${apiUrl}/api/user/${userDetail.user._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        onDelete(userDetail.user._id);
+        console.log("User deleted successfully");
+      } else {
+        console.error("Failed to delete user:", await response.json());
+      }
+    } catch (err) {
+      console.error("Failed to delete user:", err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -122,7 +153,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           {isEditing ? (
             <input
               type="text"
-              value={userDetail.researchArea}
+              value={editedResearchArea}
               onChange={(e) => setEditedResearchArea(e.target.value)}
             />
           ) : (
@@ -133,35 +164,43 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
       {role === "supervisor" && (
         <td>{userDetail.studentNames || "No Students Assigned"}</td>
       )}
-
       {role === "student" && (
-        <td>
-          {isEditing ? (
-            <input
-              type="text"
-              value={editedCourse}
-              onChange={(e) => setEditedCourse(e.target.value)}
-            />
-          ) : (
-            userDetail.course || "-"
-          )}
-        </td>
-      )}
-      {role === "student" && (
-        <td>
-          {isEditing ? (
-            <input
-              type="text"
-              value={editedCompany}
-              onChange={(e) => setEditedCompany(e.target.value)}
-            />
-          ) : (
-            userDetail.company || "No Company"
-          )}
-        </td>
-      )}
-      {role === "student" && (
-        <td>{userDetail.supervisorName || "No Supervisor Assigned"}</td>
+        <>
+          <td>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editedCourse}
+                onChange={(e) => setEditedCourse(e.target.value)}
+              />
+            ) : (
+              userDetail.course || "-"
+            )}
+          </td>
+          <td>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editedCompany}
+                onChange={(e) => setEditedCompany(e.target.value)}
+              />
+            ) : (
+              userDetail.company || "No Company"
+            )}
+          </td>
+          <td>
+            {isEditing ? (
+              <input
+                type="text"
+                value={editedJobScope}
+                onChange={(e) => setEditedJobScope(e.target.value)}
+              />
+            ) : (
+              userDetail.jobScope || "No Job Scope"
+            )}
+          </td>
+          <td>{userDetail.supervisorName || "No Supervisor Assigned"}</td>
+        </>
       )}
       <td>
         {isEditing ? (
@@ -183,7 +222,9 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         ) : (
           <>
             <button onClick={() => setIsEditing(true)}>Edit</button>
-            <button onClick={handleDelete}>Delete</button>
+            <button onClick={handleDelete} disabled={isDeleting}>
+              Delete
+            </button>
           </>
         )}
       </td>

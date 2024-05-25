@@ -24,6 +24,9 @@ const SupervisorInterestPage = () => {
   const { user } = useAuthContext();
   const apiUrl = process.env.REACT_APP_API_URL;
 
+  // Log the user object to see its structure and content
+  console.log("User object:", user);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -62,7 +65,6 @@ const SupervisorInterestPage = () => {
   }, [apiUrl, user.token]);
 
   useEffect(() => {
-    // Update companies and job scopes based on selected faculty
     if (selectedFaculty) {
       const relevantData = data.filter(
         (item) => item.faculty === selectedFaculty
@@ -83,7 +85,6 @@ const SupervisorInterestPage = () => {
   }, [selectedFaculty, data]);
 
   useEffect(() => {
-    // Update job scopes based on selected company
     if (selectedCompany) {
       const relevantData = data.filter(
         (item) =>
@@ -93,7 +94,7 @@ const SupervisorInterestPage = () => {
         ...new Set(relevantData.map((item) => item.jobScope)),
       ];
       setJobScopes(uniqueJobScopes);
-      setSelectedJobScope(""); // Reset job scope when company changes
+      setSelectedJobScope("");
     }
   }, [selectedCompany, data]);
 
@@ -127,7 +128,17 @@ const SupervisorInterestPage = () => {
   };
 
   const handleSave = async () => {
+    console.log("Save button clicked");
+
     try {
+      const supervisorId = user ? user._id : null;
+      console.log("Supervisor ID:", supervisorId);
+
+      if (!supervisorId) {
+        console.error("No supervisor ID found.");
+        return;
+      }
+
       const response = await fetch(`${apiUrl}/api/supervisorInterest`, {
         method: "POST",
         headers: {
@@ -135,19 +146,27 @@ const SupervisorInterestPage = () => {
           Authorization: `Bearer ${user.token}`,
         },
         body: JSON.stringify(
-          Object.entries(interests).map(([key, value]) => ({
-            key,
-            interest: value,
-            reason: reasons[key] || "",
-          }))
+          Object.entries(interests).map(([key, value]) => {
+            const [company, jobScope] = key.split("_");
+            return {
+              supervisor: supervisorId,
+              company,
+              jobScope,
+              interest: value,
+              reason: reasons[key] || "",
+            };
+          })
         ),
       });
+
+      console.log("Response status:", response.status);
 
       if (response.ok) {
         console.log("Interest saved successfully!");
         setHasChanges(false);
       } else {
-        console.error("Failed to save interest");
+        const errorData = await response.json();
+        console.error("Failed to save interest", errorData);
       }
     } catch (err) {
       console.error("Error saving interest:", err);
@@ -253,7 +272,15 @@ const SupervisorInterestPage = () => {
           })}
         </tbody>
       </table>
-      {hasChanges && <button onClick={handleSave}>Save</button>}
+      <div className="save-button-container">
+        <button
+          className="save-button"
+          onClick={handleSave}
+          disabled={!hasChanges}
+        >
+          Save
+        </button>
+      </div>
     </div>
   );
 };

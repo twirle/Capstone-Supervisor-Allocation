@@ -25,12 +25,21 @@ export const useLogin = () => {
         localStorage.setItem(
           "user",
           JSON.stringify({
+            _id: json._id, // Ensure _id is included here
             email: json.email,
             token: json.token,
             role: json.role,
           })
         );
-        dispatch({ type: "LOGIN", payload: json });
+        dispatch({
+          type: "LOGIN",
+          payload: {
+            _id: json._id,
+            email: json.email,
+            token: json.token,
+            role: json.role,
+          },
+        });
       }
     } catch (err) {
       setError("Failed to login");

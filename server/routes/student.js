@@ -20,7 +20,7 @@ router.get("/", getStudents);
 router.get(
   "/aggregate",
   requireAuth,
-  checkRole(["admin", "facultyMember"]),
+  checkRole(["admin", "supervisor", "facultyMember"]),
   aggregateStudents
 );
 

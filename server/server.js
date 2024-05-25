@@ -7,6 +7,7 @@ import supervisorRoutes from "./routes/supervisor.js";
 import facultyMemberRoutes from "./routes/facultyMember.js";
 import facultyRoutes from "./routes/faculty.js";
 import matchRoutes from "./routes/match.js";
+import supervisorInterestRoutes from "./routes/supervisorInterest.js";
 import cors from "cors";
 
 // Load environment variables
@@ -37,6 +38,7 @@ app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/facultyMember", facultyMemberRoutes);
 app.use("/api/faculty", facultyRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/supervisorInterest", supervisorInterestRoutes);
 
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {

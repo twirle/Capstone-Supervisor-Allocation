@@ -1,6 +1,19 @@
 import SupervisorInterest from "../models/supervisorInterestModel.js";
 
-export const createOrUpdateSupervisorInterest = async (req, res) => {
+const getSupervisorInterests = async (req, res) => {
+  const supervisorId = req.params.supervisorId;
+  try {
+    const interests = await SupervisorInterest.find({
+      supervisor: supervisorId,
+    });
+    res.json(interests);
+  } catch (error) {
+    console.error("Error fetching supervisor interests:", error);
+    res.status(500).json({ error: "Failed to fetch supervisor interests" });
+  }
+};
+
+const createOrUpdateSupervisorInterest = async (req, res) => {
   console.log("Received data:", req.body); // Log the incoming request body
   try {
     const interests = req.body; // Expecting an array of interests
@@ -51,3 +64,5 @@ export const createOrUpdateSupervisorInterest = async (req, res) => {
     res.status(500).json({ error: "Failed to save supervisor interests" });
   }
 };
+
+export { createOrUpdateSupervisorInterest, getSupervisorInterests };

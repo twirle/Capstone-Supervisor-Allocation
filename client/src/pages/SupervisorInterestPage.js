@@ -61,8 +61,38 @@ const SupervisorInterestPage = () => {
         console.error("Failed to fetch data:", err.message);
       }
     };
-    fetchData();
-  }, [apiUrl, user.token]);
+
+    const fetchInterests = async () => {
+      if (!user?._id) return; // Ensure user ID is available
+      try {
+        const response = await fetch(
+          `${apiUrl}/api/supervisorInterest/bySupervisor/${user._id}`,
+          {
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
+        );
+        const interestsData = await response.json();
+        if (response.ok) {
+          const newInterests = {};
+          const newReasons = {};
+          interestsData.forEach((interest) => {
+            const key = `${interest.company}_${interest.jobScope}`;
+            newInterests[key] = interest.interest;
+            newReasons[key] = interest.reason;
+          });
+          setInterests(newInterests);
+          setReasons(newReasons);
+        } else {
+          throw new Error(interestsData.error);
+        }
+      } catch (error) {
+        console.error("Failed to fetch interests:", error.message);
+      }
+    };
+
+    fetchData(); // Fetch other necessary data first
+    fetchInterests(); // Then fetch interests
+  }, [apiUrl, user.token, user._id]); // React to changes in any of these dependencies
 
   useEffect(() => {
     if (selectedFaculty) {
@@ -139,24 +169,26 @@ const SupervisorInterestPage = () => {
         return;
       }
 
+      const payload = Object.entries(interests).map(([key, value]) => {
+        const [company, jobScope] = key.split("_");
+        return {
+          supervisor: supervisorId,
+          company: company,
+          jobScope: jobScope,
+          interest: value,
+          reason: reasons[key] || "",
+        };
+      });
+
+      console.log("Payload to save:", payload);
+
       const response = await fetch(`${apiUrl}/api/supervisorInterest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${user.token}`,
         },
-        body: JSON.stringify(
-          Object.entries(interests).map(([key, value]) => {
-            const [company, jobScope] = key.split("_");
-            return {
-              supervisor: supervisorId,
-              company,
-              jobScope,
-              interest: value,
-              reason: reasons[key] || "",
-            };
-          })
-        ),
+        body: JSON.stringify(payload),
       });
 
       console.log("Response status:", response.status);
@@ -234,8 +266,10 @@ const SupervisorInterestPage = () => {
         </thead>
         <tbody>
           {filteredData.map((item, index) => {
-            const itemKey = `${item.faculty}_${item.company}_${item.jobScope}`;
+            const itemKey = `${item.company}_${item.jobScope}`;
             const selectedInterest = interests[itemKey] || "Agreeable";
+            const reason = reasons[itemKey] || ""; // Default to empty if not set
+
             return (
               <tr key={index}>
                 <td>{item.company}</td>

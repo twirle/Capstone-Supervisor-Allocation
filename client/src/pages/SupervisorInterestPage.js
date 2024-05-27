@@ -15,7 +15,7 @@ const SupervisorInterestPage = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   const options = [
-    "Full acceptance",
+    "Want to supervise",
     "Agreeable",
     "Conflict of interest",
     "Do not want to supervise",

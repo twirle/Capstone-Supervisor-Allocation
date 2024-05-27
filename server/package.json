@@ -13,8 +13,6 @@
     "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
     
-    "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-    
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
     "supervisorUserTest": "mocha test/users/testSupervisorUser.test.js --exit",

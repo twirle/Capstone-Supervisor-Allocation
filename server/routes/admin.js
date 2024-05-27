@@ -1,8 +1,8 @@
 // NOT IN USE
 
-const express = require('express');
-const { requireAuth, checkRole } = require('../middleware/requireAuth');
-const adminController = require('../controllers/adminController');
+import express from 'express';
+import { requireAuth, checkRole } from '../middleware/requireAuth.js';
+import * as adminController from '../controllers/adminController.js';
 
 const router = express.Router();
 
@@ -19,9 +19,6 @@ router.get('/users', adminController.getAllUsers);
 router.patch('/update-user/:id', adminController.updateUserRole);
 
 // DELETE a user
+// Add your DELETE route here if needed
 
-
-// Additional routes...
-
-module.exports = router;
-
+export default router;

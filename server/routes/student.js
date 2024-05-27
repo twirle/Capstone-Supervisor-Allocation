@@ -1,11 +1,12 @@
-const express = require("express")
+import express from "express";
 
-const {
+import {
   getStudents,
   getStudent,
-  updateStudent
-} = require('../controllers/studentController');
-const { requireAuth, checkRole } = require('../middleware/requireAuth')
+  updateStudent,
+  aggregateStudents,
+} from "../controllers/studentController.js";
+import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -13,19 +14,25 @@ const router = express.Router();
 router.use(requireAuth);
 
 // GET all student
-router.get('/', getStudents);
+router.get("/", getStudents);
+
+// aggregate students
+router.get(
+  "/aggregate",
+  requireAuth,
+  checkRole(["admin", "supervisor", "facultyMember"]),
+  aggregateStudents
+);
 
 // GET a single student based on their 'Profile' Id
-router.get('/:userId', getStudent);
-
-// POST a new student
-// moved to userService.js to handle creation and deletion
+router.get("/:userId", getStudent);
 
 // UPDATE a student
-router.patch('/:userId', requireAuth, checkRole(['admin', 'facultyMember']), updateStudent);
+router.patch(
+  "/:userId",
+  requireAuth,
+  checkRole(["admin", "facultyMember"]),
+  updateStudent
+);
 
-// DELETE a student
-// moved to userService.js to handle creation and deletion
-
-
-module.exports = router
+export default router;

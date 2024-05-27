@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const facultyMemberSchema = new Schema({
+const supervisorSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     required: true,
@@ -17,6 +17,17 @@ const facultyMemberSchema = new Schema({
     ref: "Faculty",
     required: true,
   },
+  researchArea: {
+    type: String,
+    default: null,
+  },
+  assignedStudents: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Student",
+      default: [],
+    },
+  ],
 });
 
-export default mongoose.model("FacultyMember", facultyMemberSchema);
+export default mongoose.model("Supervisor", supervisorSchema);

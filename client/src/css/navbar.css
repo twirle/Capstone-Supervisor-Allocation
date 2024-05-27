@@ -1,0 +1,50 @@
+/* Navbar container styling */
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;  /* Adjust padding as necessary */
+  }
+  
+  /* Individual link group styling */
+  .nav-links {
+    display: flex;
+    gap: 20px;  /* Provides consistent spacing between links */
+    margin: 20px;
+  }
+  
+  /* User info styling */
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;  /* Space between email and logout button */
+  }
+  
+  /* Style for the header to make sure it's visually distinct */
+  header {
+    background-color: #f4f4f4;  /* Light grey background, adjust as necessary */
+    padding: 10px 0;  /* Padding around the header content */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
+  }
+  
+  /* Link styling for better visibility */
+  a {
+    color: #0366d6;  /* Bright blue for links, adjust as necessary */
+    text-decoration: none;  /* No underlines on links */
+    font-weight: bold;
+  }
+  
+  /* Button styling for consistency */
+  button {
+    padding: 8px 16px;  /* Adequate padding for clickability */
+    background-color: #077bff;  /* Bootstrap primary blue, adjust as necessary */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;  /* Darker blue on hover for feedback */
+  }
+  

@@ -10,16 +10,15 @@ import { expect, use } from "chai";
 import chaiHttp from "chai-http";
 const chai = use(chaiHttp);
 
+// Load environment variables
 dotenv.config();
 
-describe("Student User Flow Test", function () {
+describe("Supervisor User Flow Test", function () {
   this.timeout(15000);
   let adminToken;
-  let studentId;
+  let supervisorId;
   let facultyId;
-  let facultyIdNew;
-  let course;
-  let courseNew;
+  let researchArea;
 
   before(async () => {
     try {
@@ -62,16 +61,13 @@ describe("Student User Flow Test", function () {
 
       let faculty = facultyResponse.body[0];
       facultyId = faculty._id;
-      facultyIdNew = facultyResponse.body[1]._id;
-
       let courses = faculty.courses;
 
       console.log("facultyID:", facultyId);
       console.log("faculty name:", faculty.name);
       console.log("faculty courses:", courses);
 
-      course = courses[0];
-      courseNew = courses[1];
+      researchArea = courses[0];
     } catch (err) {
       console.error("Failed to fetch faculty", err.message);
       throw err;
@@ -88,23 +84,21 @@ describe("Student User Flow Test", function () {
     }
   });
 
-  // Test case to create student user
-  describe("Create student /user", () => {
-    it("create an student user", async () => {
+  // Test case to create supervisor user
+  describe("Create supervisor /user", () => {
+    it("create an supervisor user", async () => {
       const resCreate = await chai
         .request(server)
         .post("/api/user/signup")
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
-          email: "studenttest@sit.edu.sg",
+          email: "supervisortest@sit.edu.sg",
           password: process.env.TEST_USER_PASSWORD,
-          role: "student",
+          role: "supervisor",
           additionalInfo: {
-            name: "Test Student",
+            name: "Test Supervisor",
             faculty: facultyId,
-            course: course,
-            company: "Nestle",
-            jobScope: "Quality Control",
+            researchArea: researchArea,
           },
         });
 
@@ -115,25 +109,26 @@ describe("Student User Flow Test", function () {
     });
   });
 
-  // Test case to login to the new student user
-  describe("Login student /user", () => {
-    it("login the student user and get a token", async () => {
+  // Test case to login to the new supervisor user
+  describe("Login supervisor /user", () => {
+    it("login the supervisor user and get a token", async () => {
       const resLogin = await chai.request(server).post("/api/user/login").send({
-        email: "studenttest@sit.edu.sg",
+        email: "supervisortest@sit.edu.sg",
         password: "testASD123!@#",
+        role: "supervisor",
       });
 
-      studentId = resLogin.body.id;
+      supervisorId = resLogin.body.id;
       expect(resLogin).to.have.status(200);
     });
   });
 
-  // test case to try get created student's profile
-  describe("Get student /user", () => {
-    it("should get the student profile", async () => {
+  // test case to try get created supervisor's profile
+  describe("Get supervisor /user", () => {
+    it("should get the supervisor profile", async () => {
       const res = await chai
         .request(server)
-        .get(`/api/student/${studentId}`)
+        .get(`/api/supervisor/${supervisorId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res).to.have.status(200);
@@ -142,14 +137,15 @@ describe("Student User Flow Test", function () {
     });
   });
 
-  // Test case to amend student user password
+  // Test case to amend supervisor user password
   // WIP to allow password amendments
 
-  describe("Delete student /user", () => {
-    it("delete the student user", async () => {
+  // Test case to delete supervisor user and also Supervisor
+  describe("Delete supervisor /user", () => {
+    it("delete the supervisor user and ensure profile is also deleted", async () => {
       const resDelete = await chai
         .request(server)
-        .delete(`/api/user/${studentId}`)
+        .delete(`/api/user/${supervisorId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(resDelete).to.have.status(204);
@@ -157,7 +153,7 @@ describe("Student User Flow Test", function () {
       // Check if the related supervisor profile is also deleted
       const checkProfile = await chai
         .request(server)
-        .get(`/api/student/${studentId}`)
+        .get(`/api/supervisor/${supervisorId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(checkProfile.status).to.equal(404);

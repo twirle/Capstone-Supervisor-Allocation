@@ -1,5 +1,6 @@
 {
   "name": "server",
+  "type": "module",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,31 +9,35 @@
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
     
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
-    "mentorCRUDTest": "mocha test/crud/testMentorCRUD.test.js --exit",
+    "supervisorCRUDTest": "mocha test/crud/testSupervisorCRUD.test.js --exit",
     "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
     
+    "tokenTest": "mocha test/testStudentsToken.test.js --exit",
+    
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
-    "mentorUserTest": "mocha test/users/testMentorUser.test.js --exit",
-    "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
+    "supervisorUserTest": "mocha test/users/testSupervisorUser.test.js --exit",
     
+    "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
     "seedStudents": "node ./scripts/seedStudents.js",
-    "seedMentors": "node ./scripts/seedMentors.js",
+    "seedSupervisors": "node ./scripts/seedSupervisors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
     "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
     "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
     "matchTest": "mocha test/testMatch.test.js --exit",
-    "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents seedMentors seedFacultyMembers matchTest"
+    "matchSpeedTest": "mocha test/testMatchSpeed.test.js --exit",
+    "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents seedSupervisors seedFacultyMembers matchTest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "chai": "^4.3.10",
+    "chai": "^5.1.0",
     "chai-http": "^4.4.0",
+    "chalk": "^5.3.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",

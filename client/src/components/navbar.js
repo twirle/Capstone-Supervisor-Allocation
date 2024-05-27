@@ -1,37 +1,44 @@
-import { Link } from "react-router-dom"
-import { useLogout } from "../hooks/useLogout"
-import { useAuthContext } from "../hooks/useAuthContext"
+import { Link } from "react-router-dom";
+import { useLogout } from "../hooks/useLogout";
+import { useAuthContext } from "../hooks/useAuthContext";
+import "../css/navbar.css";
 
 const Navbar = () => {
-  const { logout } = useLogout()
-  const { user } = useAuthContext()
+  const { logout } = useLogout();
+  const { user } = useAuthContext();
   const handleClick = () => {
-    logout()
-  }
+    logout();
+  };
 
   return (
     <header>
-      <div className="container">
+      <div className="container navbar-container">
         <Link to="/">
-          <h1>Capstone Mentor-Student Assignments</h1>
+          <h1>Capstone Supervisor-Student Matching</h1>
         </Link>
         <nav>
-          {user && user.role === 'admin' && (
-            <div>
-              <Link to="/addstudent">Add Students</Link>
-              <Link to="/students">Manage Students</Link>
+          {user && user.role === "admin" && (
+            <div className="nav-links">
               <Link to="/signup">Signup</Link>
               <Link to="/adminUsersPage">Manage Users</Link>
+              <Link to="/supervisorInterest">Supervisor Interest</Link>
             </div>
           )}
-          {user && user.role === 'mentor' && (
-            <div>
-              <Link to="/students">Manage Students</Link>
+
+          {user && user.role === "supervisor" && (
+            <div className="nav-links">
+              <Link to="/supervisorInterest">Supervisor Interest</Link>
+            </div>
+          )}
+
+          {user && user.role === "facultyMember" && (
+            <div className="nav-links">
+              <Link to="/supervisorInterest">Supervisor Interest</Link>
             </div>
           )}
           {user && (
-            <div>
-              <span> {user.email}</span>
+            <div className="user-info">
+              <span>{user.email}</span>
               <button onClick={handleClick}>Log Out</button>
             </div>
           )}
@@ -40,11 +47,10 @@ const Navbar = () => {
               <Link to="/login">Login</Link>
             </div>
           )}
-
         </nav>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

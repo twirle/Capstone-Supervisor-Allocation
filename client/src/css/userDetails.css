@@ -1,0 +1,17 @@
+.action-buttons button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block: 2px;
+
+  border: 1px solid #ccc;
+}
+
+.action-buttons button.active {
+  background-color: #077bff;
+  color: white;
+}
+
+.action-buttons button:hover {
+  background-color: #0056b3;
+}

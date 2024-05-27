@@ -17,7 +17,7 @@ const supervisorInterestSchema = new mongoose.Schema({
   interest: {
     type: String,
     enum: [
-      "Full acceptance",
+      "Want to supervise",
       "Agreeable",
       "Conflict of interest",
       "Do not want to supervise",

@@ -9,7 +9,7 @@ async function createProfile(userId, additionalInfo) {
       faculty: additionalInfo.faculty,
       course: additionalInfo.course,
       company: additionalInfo.company,
-      jobScope: additionalInfo.jobScope
+      job: additionalInfo.job
     });
     return profile;
   } catch (error) {

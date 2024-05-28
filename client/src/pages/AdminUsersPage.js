@@ -110,8 +110,9 @@ const AdminUsersPage = () => {
       email: u.user.email,
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
-      company: u.company || "No Company",
-      jobScope: u.jobScope || "No Job Scope",
+      company: u.company ? u.company.name : "No Company",
+      jobTitle: u.job ? u.job.title : "No Job Title",
+      jobScope: u.job ? u.job.scope : "No Job Scope",
       supervisorName:
         activeRole === "student" && u.assignedSupervisor
           ? u.assignedSupervisor.name
@@ -280,7 +281,7 @@ const AdminUsersPage = () => {
               <>
                 <th onClick={() => handleSort("courseName")}>Course</th>
                 <th onClick={() => handleSort("company")}>Company</th>
-                <th onClick={() => handleSort("jobScope")}>Job Scope</th>
+                <th onClick={() => handleSort("jobTitle")}>Job Title</th>
                 <th onClick={() => handleSort("supervisorName")}>Supervisor</th>
               </>
             )}

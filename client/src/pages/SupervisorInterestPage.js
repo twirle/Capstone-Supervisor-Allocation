@@ -6,13 +6,14 @@ const SupervisorInterestPage = () => {
   const [data, setData] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [companies, setCompanies] = useState([]);
-  const [jobScopes, setJobScopes] = useState([]);
+  const [jobTitles, setJobTitles] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
-  const [selectedJobScope, setSelectedJobScope] = useState("");
+  const [selectedJobTitle, setSelectedJobTitle] = useState("");
   const [interests, setInterests] = useState({});
   const [reasons, setReasons] = useState({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [expandedRows, setExpandedRows] = useState({});
 
   const options = [
     "Want to supervise",
@@ -24,9 +25,6 @@ const SupervisorInterestPage = () => {
   const { user } = useAuthContext();
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  // Log the user object to see its structure and content
-  console.log("User object:", user);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,6 +33,7 @@ const SupervisorInterestPage = () => {
         });
         const result = await response.json();
         if (response.ok) {
+          console.log("Aggregated Data:", result); // Add console log to see fetched data
           setData(result);
           const uniqueFaculties = [
             ...new Set(result.map((item) => item.faculty)),
@@ -49,10 +48,10 @@ const SupervisorInterestPage = () => {
             const uniqueCompanies = [
               ...new Set(relevantData.map((item) => item.company)),
             ];
-            setCompanies(uniqueCompanies);
-            setJobScopes([
-              ...new Set(relevantData.map((item) => item.jobScope)),
-            ]);
+            setCompanies(uniqueCompanies.sort());
+            setJobTitles([
+              ...new Set(relevantData.flatMap((item) => item.jobTitle)),
+            ].sort());
           }
         } else {
           throw new Error(result.message || "Error fetching data");
@@ -76,7 +75,7 @@ const SupervisorInterestPage = () => {
           const newInterests = {};
           const newReasons = {};
           interestsData.forEach((interest) => {
-            const key = `${interest.company}_${interest.jobScope}`;
+            const key = `${interest.company}_${interest.jobTitle}`;
             newInterests[key] = interest.interest;
             newReasons[key] = interest.reason;
           });
@@ -102,15 +101,17 @@ const SupervisorInterestPage = () => {
       const uniqueCompanies = [
         ...new Set(relevantData.map((item) => item.company)),
       ];
-      setCompanies(uniqueCompanies);
-      setJobScopes([...new Set(relevantData.map((item) => item.jobScope))]);
+      setCompanies(uniqueCompanies.sort());
+      setJobTitles([
+        ...new Set(relevantData.flatMap((item) => item.jobTitle)),
+      ].sort());
       setSelectedCompany("");
-      setSelectedJobScope("");
+      setSelectedJobTitle("");
     } else {
       setCompanies([]);
       setSelectedCompany("");
-      setJobScopes([]);
-      setSelectedJobScope("");
+      setJobTitles([]);
+      setSelectedJobTitle("");
     }
   }, [selectedFaculty, data]);
 
@@ -120,24 +121,34 @@ const SupervisorInterestPage = () => {
         (item) =>
           item.faculty === selectedFaculty && item.company === selectedCompany
       );
-      const uniqueJobScopes = [
-        ...new Set(relevantData.map((item) => item.jobScope)),
+      const uniqueJobTitles = [
+        ...new Set(relevantData.flatMap((item) => item.jobTitle)),
       ];
-      setJobScopes(uniqueJobScopes);
-      setSelectedJobScope("");
+      setJobTitles(uniqueJobTitles.sort());
+      setSelectedJobTitle("");
     }
-  }, [selectedCompany, data]);
+  }, [selectedCompany, selectedFaculty, data]);
 
   const handleFacultySelect = (faculty) => {
     setSelectedFaculty(faculty);
+    const relevantData = data.filter((item) => item.faculty === faculty);
+    const uniqueCompanies = [
+      ...new Set(relevantData.map((item) => item.company)),
+    ];
+    setCompanies(uniqueCompanies.sort());
+    setJobTitles([
+      ...new Set(relevantData.flatMap((item) => item.jobTitle)),
+    ].sort());
+    setSelectedCompany("");
+    setSelectedJobTitle("");
   };
 
   const handleCompanyChange = (e) => {
     setSelectedCompany(e.target.value);
   };
 
-  const handleJobScopeChange = (e) => {
-    setSelectedJobScope(e.target.value);
+  const handleJobTitleChange = (e) => {
+    setSelectedJobTitle(e.target.value);
   };
 
   const handleInterestChange = (itemKey, value) => {
@@ -170,11 +181,11 @@ const SupervisorInterestPage = () => {
       }
 
       const payload = Object.entries(interests).map(([key, value]) => {
-        const [company, jobScope] = key.split("_");
+        const [company, jobTitle] = key.split("_");
         return {
           supervisor: supervisorId,
           company: company,
-          jobScope: jobScope,
+          jobTitle: jobTitle,
           interest: value,
           reason: reasons[key] || "",
         };
@@ -205,18 +216,50 @@ const SupervisorInterestPage = () => {
     }
   };
 
+  // Flatten and group data by company and job title
   const filteredData = data
     .filter(
       (item) =>
-        (selectedFaculty ? item.faculty === selectedFaculty : true) &&
-        (selectedCompany ? item.company === selectedCompany : true) &&
-        (selectedJobScope ? item.jobScope === selectedJobScope : true)
+        (!selectedFaculty || item.faculty === selectedFaculty) &&
+        (!selectedCompany || item.company === selectedCompany) &&
+        (!selectedJobTitle || item.jobTitle.includes(selectedJobTitle))
     )
-    .sort(
-      (a, b) =>
-        a.company.localeCompare(b.company) ||
-        a.jobScope.localeCompare(b.jobScope)
+    .flatMap((item) =>
+      item.jobTitle.map((title, idx) => ({
+        company: item.company,
+        jobTitle: title,
+        jobScope: item.jobScope[idx],
+        count: item.students.length,
+        faculty: item.faculty,
+      }))
     );
+
+  // Sort data by company and job title
+  const sortedData = filteredData.sort((a, b) => {
+    if (a.company < b.company) return -1;
+    if (a.company > b.company) return 1;
+    if (a.jobTitle < b.jobTitle) return -1;
+    if (a.jobTitle > b.jobTitle) return 1;
+    return 0;
+  });
+
+  const groupedData = sortedData.reduce((acc, item) => {
+    if (!acc[item.company]) {
+      acc[item.company] = {};
+    }
+    if (!acc[item.company][item.jobTitle]) {
+      acc[item.company][item.jobTitle] = [];
+    }
+    acc[item.company][item.jobTitle].push(item);
+    return acc;
+  }, {});
+
+  const toggleExpandRow = (itemKey) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [itemKey]: !prev[itemKey],
+    }));
+  };
 
   return (
     <div className="supervisor-interest-container">
@@ -245,11 +288,11 @@ const SupervisorInterestPage = () => {
             </option>
           ))}
         </select>
-        <select value={selectedJobScope} onChange={handleJobScopeChange}>
-          <option value="">All Job Scopes</option>
-          {jobScopes.map((jobScope, idx) => (
-            <option key={idx} value={jobScope}>
-              {jobScope}
+        <select value={selectedJobTitle} onChange={handleJobTitleChange}>
+          <option value="">All Job Titles</option>
+          {jobTitles.map((jobTitle, idx) => (
+            <option key={idx} value={jobTitle}>
+              {jobTitle}
             </option>
           ))}
         </select>
@@ -258,6 +301,7 @@ const SupervisorInterestPage = () => {
         <thead>
           <tr>
             <th>Company</th>
+            <th>Job Title</th>
             <th>Job Scope</th>
             <th>Pax</th>
             <th>Interest</th>
@@ -265,45 +309,73 @@ const SupervisorInterestPage = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((item, index) => {
-            const itemKey = `${item.company}_${item.jobScope}`;
-            const selectedInterest = interests[itemKey] || "Agreeable";
-            const reason = reasons[itemKey] || ""; // Default to empty if not set
+          {Object.keys(groupedData).map((company) => (
+            <React.Fragment key={company}>
+              {Object.keys(groupedData[company]).map((jobTitle, idx) => {
+                const item = groupedData[company][jobTitle][0];
+                const itemKey = `${item.company}_${item.jobTitle}`;
+                const selectedInterest = interests[itemKey] || "Agreeable";
+                const reason = reasons[itemKey] || ""; // Default to empty if not set
+                const isExpanded = expandedRows[itemKey];
 
-            return (
-              <tr key={index}>
-                <td>{item.company}</td>
-                <td>{item.jobScope}</td>
-                <td>{item.count}</td>
-                <td>
-                  <select
-                    value={selectedInterest}
-                    onChange={(e) =>
-                      handleInterestChange(itemKey, e.target.value)
-                    }
-                  >
-                    {options.map((option, idx) => (
-                      <option key={idx} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  {selectedInterest !== "Agreeable" && (
-                    <input
-                      type="text"
-                      placeholder="Reason"
-                      value={reasons[itemKey] || ""}
-                      onChange={(e) =>
-                        handleReasonChange(itemKey, e.target.value)
-                      }
-                    />
-                  )}
-                </td>
-              </tr>
-            );
-          })}
+                return (
+                  <React.Fragment key={idx}>
+                    <tr>
+                      {idx === 0 && (
+                        <td rowSpan={Object.keys(groupedData[company]).length}>
+                          {item.company}
+                        </td>
+                      )}
+                      <td>{item.jobTitle}</td>
+                      <td>
+                        <button onClick={() => toggleExpandRow(itemKey)}>
+                          {isExpanded ? "Hide" : "Show"}
+                        </button>
+                      </td>
+                      <td>{item.count}</td>
+                      <td>
+                        <select
+                          value={selectedInterest}
+                          onChange={(e) =>
+                            handleInterestChange(itemKey, e.target.value)
+                          }
+                        >
+                          {options.map((option, idx) => (
+                            <option key={idx} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        {selectedInterest !== "Agreeable" && (
+                          <input
+                            type="text"
+                            placeholder="Reason"
+                            value={reasons[itemKey] || ""}
+                            onChange={(e) =>
+                              handleReasonChange(itemKey, e.target.value)
+                            }
+                          />
+                        )}
+                      </td>
+                    </tr>
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan="6">
+                          {groupedData[company][jobTitle].map((subItem) => (
+                            <div key={subItem.jobScope}>
+                              <strong>Job Scope:</strong> {subItem.jobScope}
+                            </div>
+                          ))}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </React.Fragment>
+          ))}
         </tbody>
       </table>
       <div className="save-button-container">

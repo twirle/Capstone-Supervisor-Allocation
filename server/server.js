@@ -6,6 +6,7 @@ import studentRoutes from "./routes/student.js";
 import supervisorRoutes from "./routes/supervisor.js";
 import facultyMemberRoutes from "./routes/facultyMember.js";
 import facultyRoutes from "./routes/faculty.js";
+import companyRoutes from "./routes/company.js";
 import matchRoutes from "./routes/match.js";
 import supervisorInterestRoutes from "./routes/supervisorInterest.js";
 import cors from "cors";
@@ -37,6 +38,7 @@ app.use("/api/student", studentRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/facultyMember", facultyMemberRoutes);
 app.use("/api/faculty", facultyRoutes);
+app.use("/api/company", companyRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/supervisorInterest", supervisorInterestRoutes);
 

@@ -10,7 +10,7 @@ const supervisorInterestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  jobScope: {
+  jobTitle: {
     type: String,
     required: true,
   },

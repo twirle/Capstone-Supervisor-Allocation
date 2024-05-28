@@ -1,5 +1,6 @@
 import Student from "../models/studentModel.js";
 import Faculty from "../models/facultyModel.js";
+import Company from "../models/companyModel.js";
 import mongoose from "mongoose";
 
 // get all Students
@@ -9,7 +10,9 @@ const getStudents = async (req, res) => {
       .sort({ createdAt: -1 })
       .populate("user", "email")
       .populate("faculty", "name")
-      .populate("assignedSupervisor", "name");
+      .populate("assignedSupervisor", "name")
+      .populate("company", "name jobs.title jobs.scope") // Populate jobs
+      .populate("job", "title scope"); // Ensure job is populated correctly
 
     // console.log("Students with populated data:", students);
     res.status(200).json(students);
@@ -28,14 +31,11 @@ const getStudent = async (req, res) => {
 
   const student = await Student.findOne({ user: userId })
     .populate("user", "email")
-    .populate({
-      path: "faculty",
-      select: "name",
-    })
-    .populate({
-      path: "assignedSupervisor",
-      select: "name",
-    });
+    .populate("faculty", "name")
+    .populate("assignedSupervisor", "name")
+    .populate("company", "name jobs.title jobs.scope") // Populate jobs
+    .populate("job", "title scope"); // Ensure job is populated correctly
+
   if (!student) {
     return res
       .status(404)
@@ -63,7 +63,7 @@ const updateStudent = async (req, res) => {
       { user: userId },
       updateData,
       { new: true }
-    ).populate("user faculty");
+    ).populate("user faculty company job assignedSupervisor");
     if (!student) {
       console.error(`No student found with ID: ${userId}`);
       return res.status(404).json({ error: "No such student" });
@@ -81,7 +81,7 @@ const aggregateStudents = async (req, res) => {
     const aggregation = await Student.aggregate([
       {
         $lookup: {
-          from: Faculty.collection.name,
+          from: "faculties",
           localField: "faculty",
           foreignField: "_id",
           as: "facultyDetails",
@@ -91,20 +91,68 @@ const aggregateStudents = async (req, res) => {
         $unwind: "$facultyDetails",
       },
       {
+        $lookup: {
+          from: "companies",
+          localField: "company",
+          foreignField: "_id",
+          as: "companyDetails",
+        },
+      },
+      {
+        $unwind: "$companyDetails",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+      {
+        $lookup: {
+          from: "companies",
+          localField: "job",
+          foreignField: "jobs._id",
+          as: "jobDetails",
+        },
+      },
+      {
+        $unwind: "$jobDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          company: "$companyDetails.name",
+          jobTitle: "$jobDetails.jobs.title",
+          jobScope: "$jobDetails.jobs.scope",
+          faculty: "$facultyDetails.name",
+          student: {
+            name: "$name",
+            email: "$userDetails.email",
+            jobTitle: "$jobDetails.jobs.title",
+          },
+        },
+      },
+      {
         $group: {
           _id: {
             company: "$company",
+            jobTitle: "$jobTitle",
             jobScope: "$jobScope",
-            faculty: "$facultyDetails.name",
+            faculty: "$faculty",
           },
-          students: { $push: { _id: "$_id", name: "$name" } },
+          students: { $push: "$student" },
           count: { $sum: 1 },
         },
       },
       {
         $project: {
-          _id: 0,
           company: "$_id.company",
+          jobTitle: "$_id.jobTitle",
           jobScope: "$_id.jobScope",
           faculty: "$_id.faculty",
           students: 1,
@@ -113,6 +161,7 @@ const aggregateStudents = async (req, res) => {
       },
     ]);
 
+    // console.log("Aggregated Data:", aggregation); // Add console log to see aggregated data
     res.json(aggregation);
   } catch (err) {
     console.error(err);

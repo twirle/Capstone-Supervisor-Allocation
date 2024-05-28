@@ -22,11 +22,12 @@ const studentSchema = new Schema({
     required: true,
   },
   company: {
-    type: String,
-    require: true,
+    type: Schema.Types.ObjectId,
+    ref: "Company",
+    required: true,
   },
-  jobScope: {
-    type: String,
+  job: {
+    type: Schema.Types.ObjectId,
     required: true,
   },
   assignedSupervisor: {

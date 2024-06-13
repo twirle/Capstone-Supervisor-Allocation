@@ -56,7 +56,12 @@
 .table-style td {
   border: 1px solid #ccc;
   padding: 8px;
-  text-align: left;
+  text-align: justify;
+  vertical-align: top;
+}
+
+.table-style td .expanded-job-scope {
+  margin-top: 8px;
 }
 
 .table-style th {

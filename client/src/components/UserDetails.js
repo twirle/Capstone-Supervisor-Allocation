@@ -12,6 +12,9 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
   );
   const [editedCourse, setEditedCourse] = useState(userDetail.course || "");
   const [editedCompany, setEditedCompany] = useState(userDetail.company || "");
+  const [editedJobTitle, setEditedJobTitle] = useState(
+    userDetail.jobTitle || ""
+  );
   const [editedJobScope, setEditedJobScope] = useState(
     userDetail.jobScope || ""
   );
@@ -28,6 +31,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
     setEditedFaculty(userDetail.faculty ? userDetail.faculty._id : "");
     setEditedCourse(userDetail.course || "");
     setEditedCompany(userDetail.company || "");
+    setEditedJobTitle(userDetail.jobTitle || "");
     setEditedJobScope(userDetail.jobScope || "");
     setEditedResearchArea(userDetail.researchArea || "");
   }, [userDetail]);
@@ -46,6 +50,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           faculty: editedFaculty,
           course: editedCourse,
           company: editedCompany,
+          jobTitle: editedJobTitle,
           jobScope: editedJobScope,
         };
         break;
@@ -192,11 +197,11 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
             {isEditing ? (
               <input
                 type="text"
-                value={editedJobScope}
-                onChange={(e) => setEditedJobScope(e.target.value)}
+                value={editedJobTitle}
+                onChange={(e) => setEditedJobTitle(e.target.value)}
               />
             ) : (
-              userDetail.jobScope || "No Job Scope"
+              userDetail.jobTitle || "No Job Title"
             )}
           </td>
           <td>{userDetail.supervisorName || "No Supervisor Assigned"}</td>

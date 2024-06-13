@@ -49,9 +49,9 @@ const SupervisorInterestPage = () => {
               ...new Set(relevantData.map((item) => item.company)),
             ];
             setCompanies(uniqueCompanies.sort());
-            setJobTitles([
-              ...new Set(relevantData.flatMap((item) => item.jobTitle)),
-            ].sort());
+            setJobTitles(
+              [...new Set(relevantData.flatMap((item) => item.jobTitle))].sort()
+            );
           }
         } else {
           throw new Error(result.message || "Error fetching data");
@@ -102,9 +102,9 @@ const SupervisorInterestPage = () => {
         ...new Set(relevantData.map((item) => item.company)),
       ];
       setCompanies(uniqueCompanies.sort());
-      setJobTitles([
-        ...new Set(relevantData.flatMap((item) => item.jobTitle)),
-      ].sort());
+      setJobTitles(
+        [...new Set(relevantData.flatMap((item) => item.jobTitle))].sort()
+      );
       setSelectedCompany("");
       setSelectedJobTitle("");
     } else {
@@ -136,9 +136,9 @@ const SupervisorInterestPage = () => {
       ...new Set(relevantData.map((item) => item.company)),
     ];
     setCompanies(uniqueCompanies.sort());
-    setJobTitles([
-      ...new Set(relevantData.flatMap((item) => item.jobTitle)),
-    ].sort());
+    setJobTitles(
+      [...new Set(relevantData.flatMap((item) => item.jobTitle))].sort()
+    );
     setSelectedCompany("");
     setSelectedJobTitle("");
   };
@@ -331,6 +331,15 @@ const SupervisorInterestPage = () => {
                         <button onClick={() => toggleExpandRow(itemKey)}>
                           {isExpanded ? "Hide" : "Show"}
                         </button>
+                        {isExpanded && (
+                          <div className="expanded-job-scope">
+                            {groupedData[company][jobTitle].map((subItem) => (
+                              <div key={subItem.jobScope}>
+                                {subItem.jobScope}
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </td>
                       <td>{item.count}</td>
                       <td>
@@ -352,7 +361,7 @@ const SupervisorInterestPage = () => {
                           <input
                             type="text"
                             placeholder="Reason"
-                            value={reasons[itemKey] || ""}
+                            value={reason}
                             onChange={(e) =>
                               handleReasonChange(itemKey, e.target.value)
                             }
@@ -360,17 +369,6 @@ const SupervisorInterestPage = () => {
                         )}
                       </td>
                     </tr>
-                    {isExpanded && (
-                      <tr>
-                        <td colSpan="6">
-                          {groupedData[company][jobTitle].map((subItem) => (
-                            <div key={subItem.jobScope}>
-                              <strong>Job Scope:</strong> {subItem.jobScope}
-                            </div>
-                          ))}
-                        </td>
-                      </tr>
-                    )}
                   </React.Fragment>
                 );
               })}
@@ -378,6 +376,7 @@ const SupervisorInterestPage = () => {
           ))}
         </tbody>
       </table>
+
       <div className="save-button-container">
         <button
           className="save-button"

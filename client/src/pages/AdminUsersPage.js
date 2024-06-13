@@ -105,14 +105,24 @@ const AdminUsersPage = () => {
   };
 
   const formatUserData = (data) => {
+    console.log("data", data);
     const formattedData = data.map((u) => ({
       ...u,
       email: u.user.email,
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
       company: u.company ? u.company.name : "No Company",
-      jobTitle: u.job ? u.job.title : "No Job Title",
-      jobScope: u.job ? u.job.scope : "No Job Scope",
+      // jobTitle: u.job ? u.job.title : "No Job Title",
+      // jobScope: u.job ? u.job.scope : "No Job Scope",
+      jobTitle:
+        u.company && u.company.jobs
+          ? u.company.jobs.map((job) => job.title).join(", ")
+          : "No Job Title",
+      jobScope:
+        u.company && u.company.jobs
+          ? u.company.jobs.map((job) => job.scope).join(", ")
+          : "No Job Scope",
+
       supervisorName:
         activeRole === "student" && u.assignedSupervisor
           ? u.assignedSupervisor.name

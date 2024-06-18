@@ -3,7 +3,9 @@ import express from "express";
 import {
   getCompanies,
   getCompany,
+  createCompany,
   updateCompany,
+  deleteCompany,
 } from "../controllers/companyController.js";
 import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
@@ -15,10 +17,16 @@ router.use(requireAuth);
 // GET all companies
 router.get("/", getCompanies);
 
-// GET a single company based on 'Id'
-router.get("/:userId", getCompany);
+// GET a single company based on 'companyId'
+router.get("/:companyId", getCompany);
+
+// POST a new company
+router.post("/", requireAuth, checkRole(["admin"]), createCompany);
+
+// DELETE a company
+router.delete("/:companyId", requireAuth, checkRole(["admin"]), deleteCompany);
 
 // UPDATE a company
-router.patch("/:userId", requireAuth, checkRole(["admin"]), updateCompany);
+router.patch("/:companyId", requireAuth, checkRole(["admin"]), updateCompany);
 
 export default router;

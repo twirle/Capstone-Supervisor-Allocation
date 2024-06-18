@@ -7,25 +7,20 @@
   "scripts": {
     "connectionTest": "mocha test/dbConnection.test.js",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-    
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
     "supervisorCRUDTest": "mocha test/crud/testSupervisorCRUD.test.js --exit",
     "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
-    
-    
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
     "supervisorUserTest": "mocha test/users/testSupervisorUser.test.js --exit",
     "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
-    
     "seedStudents": "node ./scripts/seedStudents.js",
     "seedCompanies": "node ./scripts/seedCompanies.js",
     "seedSupervisors": "node ./scripts/seedSupervisors.js",
     "newseedSupervisors": "node ./scripts/newSeedSupervisors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
     "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
-    
     "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
     "matchTest": "mocha test/testMatch.test.js --exit",
@@ -47,6 +42,7 @@
     "mongodb": "^6.2.0",
     "mongoose": "^7.6.3",
     "munkres-js": "^1.2.2",
+    "natural": "^7.0.6",
     "validator": "^13.11.0"
   }
 }

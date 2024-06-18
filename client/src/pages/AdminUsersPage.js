@@ -55,13 +55,67 @@ const AdminUsersPage = () => {
         credentials: "include",
       });
       const data = await response.json();
-      if (response.ok) {
-        formatUserData(data);
-      } else {
-        console.error("Failed to fetch data:", data.error);
+      if (!response.ok) {
+        throw new Error("Failed to fetch users: " + data.error);
       }
+
+      // Extract job IDs and remove duplicates
+      const jobIds = [
+        ...new Set(data.filter((user) => user.job).map((user) => user.job)),
+      ];
+
+      // Fetch job details and map them by ID for quick lookup
+      const jobDetails = await fetchJobDetails(jobIds);
+
+      // Combine user data with job details and format faculty, course, and other attributes
+      const usersWithDetails = data.map((user) => ({
+        ...user,
+        email: user.user.email,
+        facultyName: user.faculty ? user.faculty.name : "No Faculty",
+        courseName: user.course || "No Course",
+        company: user.company ? user.company.name : "No Company",
+        jobTitle: jobDetails[user.job]
+          ? jobDetails[user.job].title
+          : "No Job Job Defined",
+        jobScope: jobDetails[user.job]
+          ? jobDetails[user.job].scope
+          : "No Job Scope Defined",
+        supervisorName: user.assignedSupervisor
+          ? user.assignedSupervisor.name
+          : "No Supervisor Assigned",
+        studentNames: user.assignedStudents
+          ? user.assignedStudents.map((stu) => stu.name).join(", ")
+          : "No Students Assigned",
+      }));
+
+      setUsers(usersWithDetails);
     } catch (err) {
       console.error("Error fetching data:", err);
+    }
+  };
+
+  const fetchJobDetails = async (jobIds) => {
+    try {
+      const jobs = await Promise.all(
+        jobIds.map((id) =>
+          fetch(`${apiUrl}/api/job/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          })
+            .then((res) => res.json())
+            .catch((err) => {
+              console.error("Failed to fetch job:", id, err);
+              return { title: "No Job Title", scope: "No Job Scope" }; // Provide default values on failure
+            })
+        )
+      );
+
+      return jobs.reduce((acc, job) => {
+        acc[job._id] = job;
+        return acc;
+      }, {});
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+      return {};
     }
   };
 
@@ -112,12 +166,12 @@ const AdminUsersPage = () => {
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
       company: u.company ? u.company.name : "No Company",
-      // jobTitle: u.job ? u.job.title : "No Job Title",
+      jobTitle: u.job ? u.job.title : "No Job Title",
       // jobScope: u.job ? u.job.scope : "No Job Scope",
-      jobTitle:
-        u.company && u.company.jobs
-          ? u.company.jobs.map((job) => job.title).join(", ")
-          : "No Job Title",
+      // jobTitle:
+      //   u.company && u.company.jobs
+      //     ? u.company.jobs.map((job) => job.title).join(", ")
+      //     : "No Job Title",
       jobScope:
         u.company && u.company.jobs
           ? u.company.jobs.map((job) => job.scope).join(", ")
@@ -132,6 +186,7 @@ const AdminUsersPage = () => {
           ? u.assignedStudents.map((student) => student.name).join(", ")
           : undefined,
     }));
+    console.log("formatteddata :", formattedData);
     setUsers(formattedData);
     fetchAllCourses();
   };

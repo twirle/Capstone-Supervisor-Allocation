@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Company from "../models/companyModel.js";
+import Job from "../models/jobModel.js";
 import companies from "./text/companies.js";
 
 dotenv.config();
@@ -13,26 +14,39 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-const clearExistingCompanies = async () => {
+const clearExistingData = async () => {
+  await Job.deleteMany({});
   await Company.deleteMany({});
-  console.log("Cleared existing companies.");
+  console.log("Cleared existing companies and jobs.");
 };
 
-const seedCompanies = async () => {
-  await clearExistingCompanies();
+const seedData = async () => {
+  await clearExistingData();
 
   for (const faculty in companies) {
-    for (const company of companies[faculty]) {
-      await Company.create(company);
+    for (const companyData of companies[faculty]) {
+      const { name, jobs } = companyData;
+
+      // Ensure that we are passing an object with the key 'name'
+      const newCompany = await Company.create({ name });
+      console.log(`Created company: ${newCompany.name}`);
+
+      for (const job of jobs) {
+        await Job.create({
+          companyId: newCompany._id,
+          title: job.title,
+          scope: job.scope,
+        });
+      }
     }
   }
 
-  console.log("Inserted companies successfully.");
+  console.log("Inserted companies and jobs successfully.");
 };
 
-seedCompanies()
+seedData()
   .then(() => mongoose.disconnect())
   .catch((err) => {
-    console.error("Error during company seeding:", err);
+    console.error("Error during seeding:", err);
     mongoose.disconnect();
   });

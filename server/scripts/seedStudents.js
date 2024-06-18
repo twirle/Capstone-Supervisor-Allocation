@@ -4,6 +4,7 @@ import Student from "../models/studentModel.js";
 import User from "../models/userModel.js";
 import Faculty from "../models/facultyModel.js";
 import Company from "../models/companyModel.js";
+import Job from "../models/jobModel.js";
 import bcrypt from "bcrypt";
 import { firstNames, lastNames } from "./text/names.js";
 
@@ -29,6 +30,10 @@ const fetchFaculties = async () => {
 
 const fetchCompanies = async () => {
   return await Company.find({});
+};
+
+const fetchJobsForCompany = async (companyId) => {
+  return await Job.find({ companyId: companyId });
 };
 
 const createStudentUser = async (
@@ -104,7 +109,10 @@ const seedStudents = async () => {
       relevantCompanies[Math.floor(Math.random() * relevantCompanies.length)];
 
     // Select a random job from the chosen company
-    const job = company.jobs[Math.floor(Math.random() * company.jobs.length)];
+    const jobs = await fetchJobsForCompany(company._id);
+
+    // Select a random job from the jobs related to the chosen company
+    const job = jobs[Math.floor(Math.random() * jobs.length)];
 
     // Generate a unique name
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];

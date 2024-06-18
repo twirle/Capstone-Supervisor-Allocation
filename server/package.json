@@ -22,6 +22,7 @@
     "seedStudents": "node ./scripts/seedStudents.js",
     "seedCompanies": "node ./scripts/seedCompanies.js",
     "seedSupervisors": "node ./scripts/seedSupervisors.js",
+    "newseedSupervisors": "node ./scripts/newSeedSupervisors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
     "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
     

@@ -73,7 +73,7 @@ const seedStudents = async () => {
   await clearExistingStudentsAndUsers();
   const faculties = await fetchFaculties();
   const companies = await fetchCompanies();
-  const totalStudents = 200;
+  const totalStudents = 50;
   const allCourses = faculties.reduce(
     (acc, faculty) =>
       acc.concat(

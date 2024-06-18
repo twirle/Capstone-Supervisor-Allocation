@@ -300,11 +300,11 @@ const SupervisorInterestPage = () => {
       <table className="table-style">
         <thead>
           <tr>
-            <th>Company</th>
-            <th>Job Title</th>
+            <th className="company">Company</th>
+            <th className="jobTitle">Job Title</th>
             <th>Job Scope</th>
             <th>Pax</th>
-            <th>Interest</th>
+            <th className="interest">Interest</th>
             <th>Reason</th>
           </tr>
         </thead>

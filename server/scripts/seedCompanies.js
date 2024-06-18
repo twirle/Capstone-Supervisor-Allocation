@@ -1,10 +1,13 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import natural from "natural";
+import stopword from "stopword";
 import Company from "../models/companyModel.js";
 import Job from "../models/jobModel.js";
 import companies from "./text/companies.js";
 
 dotenv.config();
+const tokenizer = new natural.WordTokenizer();
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -32,10 +35,13 @@ const seedData = async () => {
       console.log(`Created company: ${newCompany.name}`);
 
       for (const job of jobs) {
+        const tokens = tokenizer.tokenize(job.scope.toLowerCase());
+        const cleanTokens = stopword.removeStopwords(tokens);
         await Job.create({
           companyId: newCompany._id,
           title: job.title,
           scope: job.scope,
+          tokens: cleanTokens,
         });
       }
     }

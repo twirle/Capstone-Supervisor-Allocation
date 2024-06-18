@@ -1,5 +1,9 @@
 import Job from "../models/jobModel.js";
 import mongoose from "mongoose";
+import natural from "natural";
+import stopword from "stopword";
+
+const tokenizer = new natural.WordTokenizer();
 
 // GET all jobs
 const getJobs = async (req, res) => {
@@ -50,7 +54,12 @@ const createJob = async (req, res) => {
   }
 
   try {
-    const newJob = new Job({ companyId, title, scope });
+    // tokenise job scope
+    const tokens = tokenizer.tokenize(scope.toLowerCase());
+    const cleanTokens = stopword.removeStopwords(tokens);
+
+    // create new job
+    const newJob = new Job({ companyId, title, scope, cleanTokens });
     await newJob.save();
     res.status(201).json(newMap);
   } catch (error) {

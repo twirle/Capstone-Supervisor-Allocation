@@ -11,8 +11,8 @@ const getStudents = async (req, res) => {
       .populate("user", "email")
       .populate("faculty", "name")
       .populate("assignedSupervisor", "name")
-      .populate("company", "name jobs.title jobs.scope") // Populate jobs
-      .populate("job", "title scope"); // Ensure job is populated correctly
+      .populate("company", "name")
+      .populate("job", "title scope");
 
     // console.log("Students with populated data:", students);
     res.status(200).json(students);
@@ -33,8 +33,8 @@ const getStudent = async (req, res) => {
     .populate("user", "email")
     .populate("faculty", "name")
     .populate("assignedSupervisor", "name")
-    .populate("company", "name jobs.title jobs.scope") // Populate jobs
-    .populate("job", "title scope"); // Ensure job is populated correctly
+    .populate("company", "name")
+    .populate("job", "title scope");
 
   if (!student) {
     return res
@@ -114,26 +114,29 @@ const aggregateStudents = async (req, res) => {
       },
       {
         $lookup: {
-          from: "companies",
+          from: "jobs",
           localField: "job",
-          foreignField: "jobs._id",
+          foreignField: "_id",
           as: "jobDetails",
         },
       },
       {
-        $unwind: "$jobDetails",
+        $unwind: {
+          path: "$jobDetails",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $project: {
           _id: 0,
           company: "$companyDetails.name",
-          jobTitle: "$jobDetails.jobs.title",
-          jobScope: "$jobDetails.jobs.scope",
+          jobTitle: "$jobDetails.title",
+          jobScope: "$jobDetails.scope",
           faculty: "$facultyDetails.name",
           student: {
             name: "$name",
             email: "$userDetails.email",
-            jobTitle: "$jobDetails.jobs.title",
+            jobTitle: "$jobDetails.title",
           },
         },
       },
@@ -161,13 +164,12 @@ const aggregateStudents = async (req, res) => {
       },
     ]);
 
-    // console.log("Aggregated Data:", aggregation); // Add console log to see aggregated data
+    console.log("Aggregated Data:", aggregation); // Add console log to see aggregated data
     res.json(aggregation);
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error during student aggregation");
   }
 };
-
 
 export { getStudents, getStudent, updateStudent, aggregateStudents };

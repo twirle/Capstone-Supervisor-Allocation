@@ -224,15 +224,13 @@ const SupervisorInterestPage = () => {
         (!selectedCompany || item.company === selectedCompany) &&
         (!selectedJobTitle || item.jobTitle.includes(selectedJobTitle))
     )
-    .flatMap((item) =>
-      item.jobTitle.map((title, idx) => ({
-        company: item.company,
-        jobTitle: title,
-        jobScope: item.jobScope[idx],
-        count: item.students.length,
-        faculty: item.faculty,
-      }))
-    );
+    .map((item) => ({
+      company: item.company,
+      jobTitle: item.jobTitle,
+      jobScope: item.jobScope,
+      count: item.students.length,
+      faculty: item.faculty,
+    }));
 
   // Sort data by company and job title
   const sortedData = filteredData.sort((a, b) => {

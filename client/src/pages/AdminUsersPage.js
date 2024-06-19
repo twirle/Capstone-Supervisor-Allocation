@@ -242,8 +242,8 @@ const AdminUsersPage = () => {
     }
   };
 
-  const testMatch = async () => {
-    const response = await fetch(`${apiUrl}/api/match/match`, {
+  const hungarianMatch = async () => {
+    const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -253,9 +253,26 @@ const AdminUsersPage = () => {
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Test match executed successfully");
+      console.log("Hungarian match executed successfully");
     } else {
-      console.error("Failed to execute test match");
+      console.error("Failed to execute hungarian match");
+    }
+  };
+
+  const jaccardMatch = async () => {
+    const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (response.ok) {
+      fetchUsers(activeRole); // Refetch users to update UI post-reset
+      console.log("Jaccard match executed successfully");
+    } else {
+      console.error("Failed to execute jaccard match");
     }
   };
 
@@ -290,10 +307,13 @@ const AdminUsersPage = () => {
         <div>
           <div className="match-buttons">
             <button className="match-button" onClick={resetAssignments}>
-              Reset Assignments
+              Reset Match
             </button>
-            <button className="match-button" onClick={testMatch}>
-              Test Match
+            <button className="match-button" onClick={hungarianMatch}>
+              Hungarian Match
+            </button>
+            <button className="match-button" onClick={jaccardMatch}>
+              Jaccard Match
             </button>
           </div>
         </div>

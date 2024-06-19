@@ -164,7 +164,7 @@ const aggregateStudents = async (req, res) => {
       },
     ]);
 
-    console.log("Aggregated Data:", aggregation); // Add console log to see aggregated data
+    // console.log("Aggregated Data:", aggregation); // Add console log to see aggregated data
     res.json(aggregation);
   } catch (err) {
     console.error(err);

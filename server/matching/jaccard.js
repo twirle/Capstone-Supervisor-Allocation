@@ -1,22 +1,46 @@
 function jaccardIndex(setA, setB) {
   const intersection = new Set([...setA].filter((x) => setB.has(x)));
   const union = new Set([...setA, ...setB]);
-  return intersection.size / union.size; // Jaccard Index = |Intersection| / |Union|
+  if (union.size === 0) return 0;
+  const score = intersection.size / union.size;
+  console.log(
+    `Intersection Size: ${intersection.size}, Union Size: ${union.size}, Score: ${score}`
+  );
+  return score;
 }
 
 function calculateJaccardScores(supervisors, students) {
   let scoresMatrix = [];
 
   for (let supervisor of supervisors) {
+    // console.log("Supervisor Research Areas:", supervisor.researchArea);
+    const supervisorSet = new Set(
+      supervisor.researchArea.map((area) => area.replace("#", "").trim())
+    );
+
     let supervisorScores = [];
+    console.log("Supervisor Research Areas:", Array.from(supervisorSet)); // Ensure correct formatting
+
     for (let student of students) {
-      // Convert research areas and job tokens into sets
-      const supervisorSet = new Set(supervisor.researchAreas);
+      // const supervisorSet = new Set(supervisor.researchArea);
+      // console.log("supervisorSet", supervisorSet);
       const studentSet = new Set(student.tokens);
+      console.log(`${student.name} Tokens:`, Array.from(studentSet)); // Ensure tokens are correct
+
       let jaccardScore = jaccardIndex(supervisorSet, studentSet);
-      supervisorScores.push(jaccardScore);
+      console.log(
+        `Jaccard Score for ${supervisor.name} and ${student.name}:`,
+        jaccardScore
+      );
+
+      supervisorScores.push({
+        score: jaccardScore,
+        supervisorIndex: supervisors.indexOf(supervisor),
+        studentIndex: students.indexOf(student),
+      });
     }
     scoresMatrix.push(supervisorScores);
+    // console.log(scoresMatrix);
   }
 
   return scoresMatrix;

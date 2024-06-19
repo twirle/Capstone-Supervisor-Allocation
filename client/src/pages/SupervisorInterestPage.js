@@ -33,7 +33,7 @@ const SupervisorInterestPage = () => {
         });
         const result = await response.json();
         if (response.ok) {
-          console.log("Aggregated Data:", result); // Add console log to see fetched data
+          // console.log("Aggregated Data:", result); // Add console log to see fetched data
           setData(result);
           const uniqueFaculties = [
             ...new Set(result.map((item) => item.faculty)),

@@ -48,7 +48,7 @@ const createSupervisorUser = async (fullName, facultyId, researchHashtags) => {
     user: user._id,
     name: fullName,
     faculty: facultyId,
-    researchArea: researchHashtags.join(", "),
+    researchArea: researchHashtags,
   });
 };
 
@@ -64,7 +64,7 @@ const seedSupervisors = async () => {
     const possibleHashtags = facultyHashtags[faculty.name];
 
     const selectedHashtags = [];
-    while (selectedHashtags.length < 2) {
+    while (selectedHashtags.length < 3) {
       const randomHashtag =
         possibleHashtags[Math.floor(Math.random() * possibleHashtags.length)];
       if (!selectedHashtags.includes(randomHashtag)) {

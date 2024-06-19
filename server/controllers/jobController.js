@@ -2,6 +2,7 @@ import Job from "../models/jobModel.js";
 import mongoose from "mongoose";
 import natural from "natural";
 import stopword from "stopword";
+import lemmatizer from "wink-lemmatizer";
 
 const tokenizer = new natural.WordTokenizer();
 
@@ -57,9 +58,11 @@ const createJob = async (req, res) => {
     // tokenise job scope
     const tokens = tokenizer.tokenize(scope.toLowerCase());
     const cleanTokens = stopword.removeStopwords(tokens);
+    let uniqueTokens = [...new Set(cleanTokens)];
+    let lemmatizedTokens = uniqueTokens.map((token) => lemmatizer.verb(token));
 
     // create new job
-    const newJob = new Job({ companyId, title, scope, cleanTokens });
+    const newJob = new Job({ companyId, title, scope, lemmatizedTokens });
     await newJob.save();
     res.status(201).json(newMap);
   } catch (error) {

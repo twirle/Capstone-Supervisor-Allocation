@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import natural from "natural";
 import stopword from "stopword";
+import lemmatizer from "wink-lemmatizer";
 import Company from "../models/companyModel.js";
 import Job from "../models/jobModel.js";
 import companies from "./text/companies.js";
@@ -37,11 +38,16 @@ const seedData = async () => {
       for (const job of jobs) {
         const tokens = tokenizer.tokenize(job.scope.toLowerCase());
         const cleanTokens = stopword.removeStopwords(tokens);
+        let uniqueTokens = [...new Set(cleanTokens)];
+        let lemmatizedTokens = uniqueTokens.map((token) =>
+          lemmatizer.verb(token)
+        );
+        console.log(lemmatizedTokens);
         await Job.create({
           companyId: newCompany._id,
           title: job.title,
           scope: job.scope,
-          tokens: cleanTokens,
+          tokens: lemmatizedTokens,
         });
       }
     }

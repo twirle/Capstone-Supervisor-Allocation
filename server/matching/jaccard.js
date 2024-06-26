@@ -10,57 +10,46 @@ function jaccardIndex(setA, setB) {
 }
 
 function calculateJaccardScores(supervisors, students) {
-  let scoresMatrix = [];
+  let bestMatches = [];
+  const MATCH_THRESHOLD = 0.01;
 
   for (let supervisor of supervisors) {
-    // console.log("Supervisor Research Areas:", supervisor.researchArea);
     const supervisorSet = new Set(
       supervisor.researchArea.map((area) => area.replace("#", "").trim())
     );
 
-    let supervisorScores = [];
-    console.log("Supervisor Research Areas:", Array.from(supervisorSet)); // Ensure correct formatting
-
     for (let student of students) {
-      // const supervisorSet = new Set(supervisor.researchArea);
-      // console.log("supervisorSet", supervisorSet);
       const studentSet = new Set(student.tokens);
-      console.log(`${student.name} Tokens:`, Array.from(studentSet)); // Ensure tokens are correct
-
       let jaccardScore = jaccardIndex(supervisorSet, studentSet);
-      console.log(
-        `Jaccard Score for ${supervisor.name} and ${student.name}:`,
-        jaccardScore
-      );
 
-      supervisorScores.push({
-        score: jaccardScore,
-        supervisorIndex: supervisors.indexOf(supervisor),
-        studentIndex: students.indexOf(student),
-      });
-    }
-    scoresMatrix.push(supervisorScores);
-    // console.log(scoresMatrix);
-  }
-
-  return scoresMatrix;
-}
-
-function findBestMatches(scoresMatrix, threshold = 0.5) {
-  let matches = [];
-  for (let i = 0; i < scoresMatrix.length; i++) {
-    for (let j = 0; j < scoresMatrix[i].length; j++) {
-      if (scoresMatrix[i][j] >= threshold) {
-        matches.push({
-          supervisorIndex: i,
-          studentIndex: j,
-          score: scoresMatrix[i][j],
+      if (jaccardScore >= MATCH_THRESHOLD) {
+        // Ensure the score is above the threshold
+        bestMatches.push({
+          score: jaccardScore,
+          supervisorName: supervisor.name,
+          studentName: student.name,
+          supervisorIndex: supervisors.indexOf(supervisor),
+          studentIndex: students.indexOf(student),
         });
       }
     }
   }
-  // Sort matches by score descending
-  return matches.sort((a, b) => b.score - a.score);
+
+  // Sort matches by score in descending order
+  bestMatches.sort((a, b) => b.score - a.score);
+
+  // Log the top matches for each supervisor
+  supervisors.forEach((supervisor, index) => {
+    console.log(`Top matches for Supervisor ${supervisor.name}:`);
+    bestMatches
+      .filter((match) => match.supervisorIndex === index)
+      .slice(0, 10) // Adjust number to show top N matches
+      .forEach((match) =>
+        console.log(`   - ${match.studentName}: ${match.score.toFixed(2)}`)
+      );
+  });
+
+  return bestMatches; // Return only the best matches
 }
 
 async function updateMatchesInDatabase(matches, supervisors, students) {
@@ -70,7 +59,7 @@ async function updateMatchesInDatabase(matches, supervisors, students) {
     const supervisor = supervisors[match.supervisorIndex];
     const student = students[match.studentIndex];
 
-    if (!supervisor || !student) {
+    if (!supervisor || !student || !student.updateOne) {
       console.error(
         `Missing supervisor or student for match: supervisorIndex=${match.supervisorIndex}, studentIndex=${match.studentIndex}`
       );
@@ -89,4 +78,4 @@ async function updateMatchesInDatabase(matches, supervisors, students) {
   await Promise.all(updatePromises);
 }
 
-export { calculateJaccardScores, findBestMatches, updateMatchesInDatabase };
+export { calculateJaccardScores, updateMatchesInDatabase };

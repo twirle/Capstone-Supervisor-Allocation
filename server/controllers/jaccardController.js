@@ -7,8 +7,6 @@ import {
   updateMatchesInDatabase,
 } from "../matching/jaccard.js";
 
-const MATCH_THRESHOLD = 0.01;
-
 async function fetchStudents() {
   const students = await Student.find({
     $or: [
@@ -30,7 +28,8 @@ async function enrichStudentsWithJobTokens(students) {
   return Promise.all(
     students.map(async (student) => {
       const tokens = await getJobTokens(student.job);
-      return { ...student.toObject(), tokens }; // Converting mongoose document to object and adding tokens
+      student.tokens = tokens;
+      return student;
     })
   );
 }
@@ -45,17 +44,15 @@ const runJaccardMatching = async (req, res) => {
     let students = await fetchStudents();
     students = await enrichStudentsWithJobTokens(students);
 
-    students.forEach((student) => {
-      console.log(student.name);
-      console.log(student.tokens);
-    });
+    // students.forEach((student) => {
+    //   console.log(student.name);
+    //   console.log(student.tokens);
+    // });
 
-    const scoresMatrix = calculateJaccardScores(supervisors, students);
-    const bestMatches = scoresMatrix.filter(
-      (match) => match.score >= MATCH_THRESHOLD
-    );
-
-    // console.log(scoresMatrix);
+    const bestMatches = calculateJaccardScores(supervisors, students);
+    // const bestMatches = scoresMatrix.filter(
+    //   (match) => match.score >= MATCH_THRESHOLD
+    // );
 
     await updateMatchesInDatabase(bestMatches, supervisors, students);
 

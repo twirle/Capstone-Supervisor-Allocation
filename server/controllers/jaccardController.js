@@ -4,6 +4,10 @@ import Job from "../models/jobModel.js";
 
 import {
   calculateJaccardScores,
+  fetchAllSupervisorInterests,
+  calculateCompatibilityScores,
+  simulateMatches,
+  findOptimalAssignments,
   updateMatchesInDatabase,
 } from "../matching/jaccard.js";
 
@@ -43,22 +47,30 @@ const runJaccardMatching = async (req, res) => {
     const supervisors = await fetchSupervisors();
     let students = await fetchStudents();
     students = await enrichStudentsWithJobTokens(students);
+    let supervisorInterestMap = await fetchAllSupervisorInterests();
 
-    // students.forEach((student) => {
-    //   console.log(student.name);
-    //   console.log(student.tokens);
-    // });
+    const jaccardScores = calculateJaccardScores(
+      supervisors,
+      students,
+      supervisorInterestMap
+    );
+    console.log("jaccardScores:", jaccardScores);
+    const assignments = findOptimalAssignments(jaccardScores);
+    console.log("Assignments:", assignments);
+    const matchDetails = simulateMatches(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
+    console.log("matchDetails:", matchDetails);
 
-    const bestMatches = calculateJaccardScores(supervisors, students);
-    // const bestMatches = scoresMatrix.filter(
-    //   (match) => match.score >= MATCH_THRESHOLD
-    // );
-
-    await updateMatchesInDatabase(bestMatches, supervisors, students);
+    await updateMatchesInDatabase(assignments, supervisors, students);
+    console.log("update database");
 
     res.status(200).json({
       message: "Jaccard matching process completed successfully.",
-      matches: bestMatches,
+      matches: matchDetails,
     });
   } catch (error) {
     console.error("Jaccard matching error:", error);

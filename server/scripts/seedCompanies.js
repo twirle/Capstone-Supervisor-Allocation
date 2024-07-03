@@ -24,6 +24,13 @@ const clearExistingData = async () => {
   console.log("Cleared existing companies and jobs.");
 };
 
+function refineTokens(tokens) {
+  let refinedTokens = tokens.filter(
+    (token) => token.length > 1 && isNaN(token)
+  );
+  return stopword.removeStopwords(refinedTokens);
+}
+
 const seedData = async () => {
   await clearExistingData();
 
@@ -37,8 +44,8 @@ const seedData = async () => {
 
       for (const job of jobs) {
         const tokens = tokenizer.tokenize(job.scope.toLowerCase());
-        const cleanTokens = stopword.removeStopwords(tokens);
-        let uniqueTokens = [...new Set(cleanTokens)];
+        const refinedTokens = refineTokens(tokens);
+        let uniqueTokens = [...new Set(refinedTokens)];
         let lemmatizedTokens = uniqueTokens.map((token) =>
           lemmatizer.verb(token)
         );

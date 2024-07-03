@@ -56,7 +56,7 @@ const createSupervisorUser = async (fullName, facultyId, researchHashtags) => {
 const seedSupervisors = async () => {
   await clearExistingSupervisorsAndUsers();
   const faculties = await Faculty.find({});
-  const totalSupervisors = 5;
+  const totalSupervisors = 3;
 
   for (let i = 0; i < totalSupervisors; i++) {
     const facultyIndex = Math.floor(Math.random() * faculties.length);

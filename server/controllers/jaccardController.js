@@ -5,7 +5,6 @@ import Job from "../models/jobModel.js";
 import {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
-  calculateCompatibilityScores,
   simulateMatches,
   findOptimalAssignments,
   updateMatchesInDatabase,
@@ -20,12 +19,8 @@ async function fetchStudents() {
   })
     .select("name job")
     .exec();
-  return students;
-}
 
-async function getJobTokens(jobId) {
-  const job = await Job.findById(jobId).select("tokens").exec();
-  return job ? job.tokens : [];
+  return students;
 }
 
 async function enrichStudentsWithJobTokens(students) {
@@ -36,6 +31,11 @@ async function enrichStudentsWithJobTokens(students) {
       return student;
     })
   );
+}
+
+async function getJobTokens(jobId) {
+  const job = await Job.findById(jobId).select("tokens").exec();
+  return job ? job.tokens : [];
 }
 
 async function fetchSupervisors() {

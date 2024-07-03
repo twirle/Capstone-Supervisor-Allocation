@@ -137,14 +137,6 @@ function convertInterestToScore(interest) {
   }
 }
 
-function calculateCompatibilityScores(scoreMatrix) {
-  // Convert the Jaccard scores to a format suitable for the Hungarian algorithm
-  const maxScore = scoreMatrix
-    .flat()
-    .reduce((max, score) => Math.max(max, score), 0);
-  return scoreMatrix.map((row) => row.map((score) => maxScore - score));
-}
-
 function findOptimalAssignments(scoresMatrix) {
   const maxScore = scoresMatrix
     .flat()
@@ -198,7 +190,6 @@ function simulateMatches(assignments, supervisors, students, jaccardScores) {
 export {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
-  calculateCompatibilityScores,
   simulateMatches,
   findOptimalAssignments,
   updateMatchesInDatabase,

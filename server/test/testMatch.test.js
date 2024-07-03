@@ -62,7 +62,7 @@ describe("Matching Test", () => {
 
       const matchResponse = await chai
         .request(server)
-        .post("/api/match/match")
+        .post("/api/match/hungarianMatch")
         .set("Authorization", `Bearer ${authToken}`);
 
       expect(matchResponse).to.have.status(200);

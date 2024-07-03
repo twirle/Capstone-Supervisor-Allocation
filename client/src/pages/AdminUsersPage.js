@@ -55,13 +55,67 @@ const AdminUsersPage = () => {
         credentials: "include",
       });
       const data = await response.json();
-      if (response.ok) {
-        formatUserData(data);
-      } else {
-        console.error("Failed to fetch data:", data.error);
+      if (!response.ok) {
+        throw new Error("Failed to fetch users: " + data.error);
       }
+
+      // Extract job IDs and remove duplicates
+      const jobIds = [
+        ...new Set(data.filter((user) => user.job).map((user) => user.job)),
+      ];
+
+      // Fetch job details and map them by ID for quick lookup
+      const jobDetails = await fetchJobDetails(jobIds);
+
+      // Combine user data with job details and format faculty, course, and other attributes
+      const usersWithDetails = data.map((user) => ({
+        ...user,
+        email: user.user.email,
+        facultyName: user.faculty ? user.faculty.name : "No Faculty",
+        courseName: user.course || "No Course",
+        company: user.company ? user.company.name : "No Company",
+        jobTitle: jobDetails[user.job]
+          ? jobDetails[user.job].title
+          : "No Job Job Defined",
+        jobScope: jobDetails[user.job]
+          ? jobDetails[user.job].scope
+          : "No Job Scope Defined",
+        supervisorName: user.assignedSupervisor
+          ? user.assignedSupervisor.name
+          : "No Supervisor Assigned",
+        studentNames: user.assignedStudents
+          ? user.assignedStudents.map((stu) => stu.name).join(", ")
+          : "No Students Assigned",
+      }));
+
+      setUsers(usersWithDetails);
     } catch (err) {
       console.error("Error fetching data:", err);
+    }
+  };
+
+  const fetchJobDetails = async (jobIds) => {
+    try {
+      const jobs = await Promise.all(
+        jobIds.map((id) =>
+          fetch(`${apiUrl}/api/job/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          })
+            .then((res) => res.json())
+            .catch((err) => {
+              console.error("Failed to fetch job:", id, err);
+              return { title: "No Job Title", scope: "No Job Scope" }; // Provide default values on failure
+            })
+        )
+      );
+
+      return jobs.reduce((acc, job) => {
+        acc[job._id] = job;
+        return acc;
+      }, {});
+    } catch (error) {
+      console.error("Error fetching job details:", error);
+      return {};
     }
   };
 
@@ -105,13 +159,24 @@ const AdminUsersPage = () => {
   };
 
   const formatUserData = (data) => {
+    console.log("data", data);
     const formattedData = data.map((u) => ({
       ...u,
       email: u.user.email,
       facultyName: u.faculty ? u.faculty.name : "No Faculty",
       courseName: u.course || "No Course",
-      company: u.company || "No Company",
-      jobScope: u.jobScope || "No Job Scope",
+      company: u.company ? u.company.name : "No Company",
+      jobTitle: u.job ? u.job.title : "No Job Title",
+      // jobScope: u.job ? u.job.scope : "No Job Scope",
+      // jobTitle:
+      //   u.company && u.company.jobs
+      //     ? u.company.jobs.map((job) => job.title).join(", ")
+      //     : "No Job Title",
+      jobScope:
+        u.company && u.company.jobs
+          ? u.company.jobs.map((job) => job.scope).join(", ")
+          : "No Job Scope",
+
       supervisorName:
         activeRole === "student" && u.assignedSupervisor
           ? u.assignedSupervisor.name
@@ -121,6 +186,7 @@ const AdminUsersPage = () => {
           ? u.assignedStudents.map((student) => student.name).join(", ")
           : undefined,
     }));
+    console.log("formatteddata :", formattedData);
     setUsers(formattedData);
     fetchAllCourses();
   };
@@ -176,8 +242,8 @@ const AdminUsersPage = () => {
     }
   };
 
-  const testMatch = async () => {
-    const response = await fetch(`${apiUrl}/api/match/match`, {
+  const hungarianMatch = async () => {
+    const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${user.token}`,
@@ -187,9 +253,26 @@ const AdminUsersPage = () => {
     });
     if (response.ok) {
       fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Test match executed successfully");
+      console.log("Hungarian match executed successfully");
     } else {
-      console.error("Failed to execute test match");
+      console.error("Failed to execute hungarian match");
+    }
+  };
+
+  const jaccardMatch = async () => {
+    const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (response.ok) {
+      fetchUsers(activeRole); // Refetch users to update UI post-reset
+      console.log("Jaccard match executed successfully");
+    } else {
+      console.error("Failed to execute jaccard match");
     }
   };
 
@@ -224,10 +307,13 @@ const AdminUsersPage = () => {
         <div>
           <div className="match-buttons">
             <button className="match-button" onClick={resetAssignments}>
-              Reset Assignments
+              Reset Match
             </button>
-            <button className="match-button" onClick={testMatch}>
-              Test Match
+            <button className="match-button" onClick={hungarianMatch}>
+              Hungarian Match
+            </button>
+            <button className="match-button" onClick={jaccardMatch}>
+              Jaccard Match
             </button>
           </div>
         </div>
@@ -280,7 +366,7 @@ const AdminUsersPage = () => {
               <>
                 <th onClick={() => handleSort("courseName")}>Course</th>
                 <th onClick={() => handleSort("company")}>Company</th>
-                <th onClick={() => handleSort("jobScope")}>Job Scope</th>
+                <th onClick={() => handleSort("jobTitle")}>Job Title</th>
                 <th onClick={() => handleSort("supervisorName")}>Supervisor</th>
               </>
             )}

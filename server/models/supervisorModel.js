@@ -18,7 +18,7 @@ const supervisorSchema = new Schema({
     required: true,
   },
   researchArea: {
-    type: String,
+    type: [String],
     default: null,
   },
   assignedStudents: [

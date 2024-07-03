@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 import Student from "../models/studentModel.js";
 import User from "../models/userModel.js";
 import Faculty from "../models/facultyModel.js";
+import Company from "../models/companyModel.js";
+import Job from "../models/jobModel.js";
 import bcrypt from "bcrypt";
+import { firstNames, lastNames } from "./text/names.js";
 
 dotenv.config();
 
@@ -15,30 +18,6 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-const companies = {
-  "Food, Chemical and Biotechnology": [
-    "Nestle",
-    "PepsiCo",
-    "Mondelez",
-    "Danone",
-    "General Mills",
-  ],
-  "Infocomm Technology": ["Google", "Microsoft", "Apple", "Amazon", "Facebook"],
-};
-
-const jobScopes = {
-  "Nestle": ["Food Scientist", "Quality Control", "Research Analyst"],
-  "PepsiCo": ["Food Technician", "Quality Assurance", "Product Development"],
-  "Mondelez": ["Food Engineer", "Quality Specialist", "Innovation Specialist"],
-  "Danone": ["Food Technologist", "Microbiologist", "Production Supervisor"],
-  "General Mills": ["Product Developer", "Food Scientist", "Lab Technician"],
-  "Google": ["Software Engineer", "Data Analyst", "Cloud Engineer"],
-  "Microsoft": ["Developer", "Project Manager", "Business Analyst"],
-  "Apple": ["iOS Developer", "UX Designer", "Hardware Engineer"],
-  "Amazon": ["Software Developer", "Data Engineer", "Product Manager"],
-  "Facebook": ["Data Scientist", "Software Engineer", "Research Scientist"],
-};
-
 const clearExistingStudentsAndUsers = async () => {
   await Student.deleteMany({});
   await User.deleteMany({ role: "student" });
@@ -49,7 +28,21 @@ const fetchFaculties = async () => {
   return await Faculty.find({});
 };
 
-const createStudentUser = async (fullName, facultyId, course, companyName, jobScope) => {
+const fetchCompanies = async () => {
+  return await Company.find({});
+};
+
+const fetchJobsForCompany = async (companyId) => {
+  return await Job.find({ companyId: companyId });
+};
+
+const createStudentUser = async (
+  fullName,
+  facultyId,
+  course,
+  companyId,
+  jobId
+) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash("defaultPassword", salt);
 
@@ -76,15 +69,16 @@ const createStudentUser = async (fullName, facultyId, course, companyName, jobSc
     name: fullName,
     faculty: facultyId,
     course: course,
-    company: companyName,
-    jobScope: jobScope,
+    company: companyId,
+    job: jobId,
   });
 };
 
 const seedStudents = async () => {
   await clearExistingStudentsAndUsers();
   const faculties = await fetchFaculties();
-  const totalStudents = 200;
+  const companies = await fetchCompanies();
+  const totalStudents = 10;
   const allCourses = faculties.reduce(
     (acc, faculty) =>
       acc.concat(
@@ -102,157 +96,30 @@ const seedStudents = async () => {
     const facultyName = faculties.find(
       (fac) => fac._id.toString() === faculty.toString()
     ).name;
-    const companyName =
-      companies[facultyName][
-        Math.floor(Math.random() * companies[facultyName].length)
-      ];
+    const relevantCompanies = companies.filter((company) =>
+      facultyName === "Food, Chemical and Biotechnology"
+        ? ["Nestle", "PepsiCo", "Mondelez", "Danone", "General Mills"].includes(
+            company.name
+          )
+        : ["Google", "Microsoft", "Apple", "Amazon", "Facebook"].includes(
+            company.name
+          )
+    );
+    const company =
+      relevantCompanies[Math.floor(Math.random() * relevantCompanies.length)];
 
-    // Select a random job scope for the chosen company
-    const jobScope = jobScopes[companyName][
-      Math.floor(Math.random() * jobScopes[companyName].length)
-    ];
+    // Select a random job from the chosen company
+    const jobs = await fetchJobsForCompany(company._id);
+
+    // Select a random job from the jobs related to the chosen company
+    const job = jobs[Math.floor(Math.random() * jobs.length)];
 
     // Generate a unique name
-    const firstNames = [
-      "Jason",
-      "Maria",
-      "Kevin",
-      "Sarah",
-      "James",
-      "Emily",
-      "Michael",
-      "Rachel",
-      "David",
-      "Anna",
-      "Ella",
-      "George",
-      "Natalie",
-      "Liam",
-      "Sophia",
-      "John",
-      "Amelia",
-      "Oliver",
-      "Megan",
-      "Noah",
-      "Emma",
-      "Lucas",
-      "Chloe",
-      "Aiden",
-      "Lily",
-      "Gabriel",
-      "Zoe",
-      "Benjamin",
-      "Charlotte",
-      "Ethan",
-      "Ethan",
-      "Olivia",
-      "Daniel",
-      "Harper",
-      "Ava",
-      "William",
-      "Mia",
-      "Alexander",
-      "Sophia",
-      "Evelyn",
-      "Benjamin",
-      "Amelia",
-      "Logan",
-      "Abigail",
-      "Elijah",
-      "Henry",
-      "Grace",
-      "Emily",
-      "Oliver",
-      "Charlotte",
-      "Samuel",
-      "Elizabeth",
-      "Michael",
-      "Penelope",
-      "Jack",
-      "Isabella",
-      "Lucas",
-      "Harper",
-      "Aiden",
-      "Madison",
-    ];
-
-    const lastNames = [
-      "Teo",
-      "Lim",
-      "Tan",
-      "Lee",
-      "Ong",
-      "Ng",
-      "Wong",
-      "Koh",
-      "Goh",
-      "Chen",
-      "Ho",
-      "Low",
-      "Yeo",
-      "Yeoh",
-      "Choo",
-      "Foo",
-      "Cheong",
-      "Soh",
-      "Toh",
-      "Ang",
-      "Kwan",
-      "Lau",
-      "Phua",
-      "Quek",
-      "Sia",
-      "Tay",
-      "Heng",
-      "Loh",
-      "Chia",
-      "Lim",
-      "Tan",
-      "Koh",
-      "Chia",
-      "Lim",
-      "Yap",
-      "Pang",
-      "Ng",
-      "Koh",
-      "Yeo",
-      "Tan",
-      "Ong",
-      "Chong",
-      "Tan",
-      "Tan",
-      "Chan",
-      "Lee",
-      "Lee",
-      "Ho",
-      "Wong",
-      "Lee",
-      "Tan",
-      "Tan",
-      "Wong",
-      "Ng",
-      "Lim",
-      "Lim",
-      "Lee",
-      "Chua",
-      "Tan",
-      "Tan",
-      "Ng",
-      "Yap",
-      "Pang",
-      "Chong",
-      "Chan",
-      "Ho",
-      "Wong",
-      "Lee",
-      "Chua",
-    ];
-
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const fullName = `${firstName} ${lastName}`;
 
-    await createStudentUser(fullName, faculty, course, companyName, jobScope);
+    await createStudentUser(fullName, faculty, course, company._id, job._id);
   }
 
   console.log(`Inserted ${totalStudents} students successfully.`);

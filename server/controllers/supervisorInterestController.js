@@ -22,12 +22,12 @@ const createOrUpdateSupervisorInterest = async (req, res) => {
       const {
         supervisor,
         company,
-        jobScope,
+        jobTitle,
         interest: interestValue,
         reason,
       } = interest;
 
-      if (!supervisor || !company || !jobScope) {
+      if (!supervisor || !company || !jobTitle) {
         return res
           .status(400)
           .json({ error: "Supervisor, company, and job scope are required." });
@@ -36,7 +36,7 @@ const createOrUpdateSupervisorInterest = async (req, res) => {
       let supervisorInterest = await SupervisorInterest.findOne({
         supervisor,
         company,
-        jobScope,
+        jobTitle,
       });
 
       if (supervisorInterest) {
@@ -48,7 +48,7 @@ const createOrUpdateSupervisorInterest = async (req, res) => {
         supervisorInterest = new SupervisorInterest({
           supervisor,
           company,
-          jobScope,
+          jobTitle,
           interest: interestValue,
           reason,
         });

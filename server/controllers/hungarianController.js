@@ -5,7 +5,7 @@ import {
   findOptimalAssignments,
   simulateMatches,
   updateMatchesInDatabase,
-} from "../matching/index.js";
+} from "../matching/hungarian.js";
 
 async function fetchStudents() {
   return await Student.find({
@@ -20,7 +20,7 @@ async function fetchSupervisors() {
   return await Supervisor.find().exec();
 }
 
-const runMatchingProcess = async (req, res) => {
+const runHungarianMatching = async (req, res) => {
   try {
     const supervisors = await fetchSupervisors();
     console.log(`Supervisors: ${supervisors.length}`);
@@ -66,4 +66,4 @@ const resetMatching = async (req, res) => {
   }
 };
 
-export { runMatchingProcess, resetMatching };
+export { runHungarianMatching, resetMatching };

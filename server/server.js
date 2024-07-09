@@ -68,4 +68,8 @@ app.get("/", (req, res) => {
   res.json("Welcome to the API!");
 });
 
+app.all("*", (req, res) => {
+  res.status(404).send("Resource not found");
+});
+
 export default app;

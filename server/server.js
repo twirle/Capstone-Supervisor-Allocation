@@ -50,10 +50,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something went wrong!");
 });
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
-});
-
 // Only connect to DB and listen on port if NOT in test environment
 if (process.env.NODE_ENV !== "test") {
   mongoose
@@ -67,5 +63,13 @@ if (process.env.NODE_ENV !== "test") {
       console.error("Connection error:", error);
     });
 }
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the API!");
+});
+
+app.get("/", (req, res) => {
+  res.json("we did it!");
+});
 
 export default app;

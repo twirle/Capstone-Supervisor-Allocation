@@ -44,6 +44,10 @@ app.use("/api/job", jobRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/supervisorInterest", supervisorInterestRoutes);
 
+app.get("/", (req, res) => {
+  res.json("Welcome to the API!");
+});
+
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -63,13 +67,5 @@ if (process.env.NODE_ENV !== "test") {
       console.error("Connection error:", error);
     });
 }
-
-app.get("/", (req, res) => {
-  res.json("Welcome to the API!");
-});
-
-app.all("*", (req, res) => {
-  res.status(404).send("Resource not found");
-});
 
 export default app;

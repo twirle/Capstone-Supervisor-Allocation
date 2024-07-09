@@ -3,7 +3,7 @@
   "type": "module",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "connectionTest": "mocha test/dbConnection.test.js",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",

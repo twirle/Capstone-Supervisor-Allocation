@@ -19,7 +19,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://server-kohl-eight.vercel.app"], // Change this to match your frontend URL
+    origin: ["http://client-kohl-eight.vercel.app"], // Change this to match your frontend URL
     credentials: true,
   })
 );

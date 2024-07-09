@@ -65,11 +65,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
-});
-
-app.get("/", (req, res) => {
-  res.json("we did it!");
+  res.json("Welcome to the API!");
 });
 
 export default app;

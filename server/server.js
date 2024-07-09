@@ -19,7 +19,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://client-indol-mu.vercel.app/"], // Change this to match your frontend URL
+    origin: ["https://client-indol-mu.vercel.app"], // Change this to match your frontend URL
     credentials: true,
   })
 );

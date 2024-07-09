@@ -17,12 +17,12 @@ dotenvConfig({ path: new URL(".env", import.meta.url) });
 
 const app = express();
 
-const corsOptions = {
-  origin: ["http://localhost:3000"], // Change this to match your frontend URL
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: ["http://server-kohl-eight.vercel.app"], // Change this to match your frontend URL
+    credentials: true,
+  })
+);
 
 // Parse JSON requests
 app.use(express.json());

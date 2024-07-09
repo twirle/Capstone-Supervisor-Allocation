@@ -7,18 +7,10 @@
   "scripts": {
     "connectionTest": "mocha test/dbConnection.test.js",
     "tokenTest": "mocha test/testStudentsToken.test.js --exit",
-<<<<<<< HEAD
-    
-=======
->>>>>>> tokenisation
     "studentCRUDTest": "mocha test/crud/testStudentCRUD.test.js --exit",
     "supervisorCRUDTest": "mocha test/crud/testSupervisorCRUD.test.js --exit",
     "facultyMemberCRUDTest": "mocha test/crud/testFacultyMemberCRUD.test.js --exit",
     "facultyCRUDTest": "mocha test/crud/testFacultyCRUD.test.js --exit",
-<<<<<<< HEAD
-    
-=======
->>>>>>> tokenisation
     "adminUserTest": "mocha test/users/testAdminUser.test.js --exit",
     "studentUserTest": "mocha test/users/testStudentUser.test.js --exit",
     "supervisorUserTest": "mocha test/users/testSupervisorUser.test.js --exit",
@@ -32,7 +24,7 @@
     "clearDatabase": "node ./scripts/clearDatabase.js",
     "resetAssignments": "node ./scripts/resetAssignments.js",
     "matchTest": "mocha test/testMatch.test.js --exit",
-    "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents seedSupervisors seedFacultyMembers matchTest"
+    "setupDatabase": "npm-run-all clearDatabase seedFaculties seedStudents newSeedSupervisors seedFacultyMembers"
   },
   "keywords": [],
   "author": "",

@@ -27,7 +27,7 @@ const getSupervisor = async (req, res) => {
   const supervisor = await Supervisor.findOne({ user: userId })
     .populate("faculty", "name")
     .populate("user", "email")
-    .populate("assignedStudents", "name");
+    .populate("assignedStudents", "name course faculty job company");
   if (!supervisor) {
     return res
       .status(404)

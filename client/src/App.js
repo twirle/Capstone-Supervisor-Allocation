@@ -5,9 +5,8 @@ import { useAuthContext } from "./hooks/useAuthContext";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import Student from "./pages/Student";
-import AddStudent from "./pages/AddStudent";
+import SupervisorInfo from "./pages/SupervisorInfo";
+import StudentInfo from "./pages/StudentInfo";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import SupervisorInterestPage from "./pages/SupervisorInterestPage";
 
@@ -24,28 +23,11 @@ function App() {
               path="/"
               element={!loading && (user ? <Home /> : <Navigate to="/login" />)}
             />
+
             <Route
               path="/login"
               element={!loading && (!user ? <Login /> : <Navigate to="/" />)}
             />
-            <Route
-              path="/signup"
-              element={
-                !loading &&
-                (user && user.role === "admin" ? (
-                  <Signup />
-                ) : (
-                  <Navigate to="/" />
-                ))
-              }
-            />
-            <Route
-              path="/students"
-              element={<Student />}
-              // limit to only faculty leads later
-              // {user && user.role === 'faculty_lead' && <Link to="/students">Students</Link>}
-            />
-            <Route path="/AddStudent" element={<AddStudent />} />
 
             <Route
               path="/adminUsersPage"
@@ -58,6 +40,7 @@ function App() {
                 ))
               }
             />
+
             <Route
               path="/supervisorInterest"
               element={
@@ -67,6 +50,30 @@ function App() {
                   user.role === "admin" ||
                   user.role === "supervisor") ? (
                   <SupervisorInterestPage />
+                ) : (
+                  <Navigate to="/" />
+                ))
+              }
+            />
+
+            <Route
+              path="/supervisorInfo"
+              element={
+                !loading &&
+                (user && user.role === "supervisor" ? (
+                  <SupervisorInfo />
+                ) : (
+                  <Navigate to="/" />
+                ))
+              }
+            />
+
+            <Route
+              path="/studentInfo"
+              element={
+                !loading &&
+                (user && (user.role === "student" || user.role === "admin") ? (
+                  <StudentInfo />
                 ) : (
                   <Navigate to="/" />
                 ))

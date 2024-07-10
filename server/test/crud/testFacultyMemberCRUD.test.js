@@ -3,7 +3,7 @@ process.env.PORT = 4001;
 
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import server from "../../server.js"; // Adjust the path as necessary
+import server from "../../index.js"; // Adjust the path as necessary
 import { expect, use } from "chai";
 import chaiHttp from "chai-http";
 const chai = use(chaiHttp);

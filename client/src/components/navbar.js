@@ -14,12 +14,11 @@ const Navbar = () => {
     <header>
       <div className="container navbar-container">
         <Link to="/">
-          <h1>Capstone Supervisor-Student Matching</h1>
+          <h1>Capstone Connect</h1>
         </Link>
         <nav>
           {user && user.role === "admin" && (
             <div className="nav-links">
-              <Link to="/signup">Signup</Link>
               <Link to="/adminUsersPage">Manage Users</Link>
               <Link to="/supervisorInterest">Supervisor Interest</Link>
             </div>
@@ -28,6 +27,7 @@ const Navbar = () => {
           {user && user.role === "supervisor" && (
             <div className="nav-links">
               <Link to="/supervisorInterest">Supervisor Interest</Link>
+              <Link to="/supervisorInfo">Match Information</Link>
             </div>
           )}
 
@@ -36,6 +36,13 @@ const Navbar = () => {
               <Link to="/supervisorInterest">Supervisor Interest</Link>
             </div>
           )}
+
+          {user && user.role === "student" && (
+            <div className="nav-links">
+              <Link to="/studentInfo">Match Information</Link>
+            </div>
+          )}
+
           {user && (
             <div className="user-info">
               <span>{user.email}</span>

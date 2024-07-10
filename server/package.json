@@ -16,6 +16,7 @@
     "supervisorUserTest": "mocha test/users/testSupervisorUser.test.js --exit",
     "facultyMemberUserTest": "mocha test/users/testFacultyMemberUser.test.js --exit",
     "seedStudents": "node ./scripts/seedStudents.js",
+    "seedTestStudent": "node ./scripts/seedTestStudent.js",
     "seedCompanies": "node ./scripts/seedCompanies.js",
     "seedSupervisors": "node ./scripts/seedSupervisors.js",
     "newseedSupervisors": "node ./scripts/newSeedSupervisors.js",

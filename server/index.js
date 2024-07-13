@@ -19,7 +19,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000"], // Change this to match your frontend URL
+    origin: ["http://localhost:3000"],
+    // origin: ["https://client-indol-mu.vercel.app"],
     credentials: true,
   })
 );

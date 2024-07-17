@@ -1,7 +1,7 @@
 /* General styles for admin-users-page */
 .admin-users-page {
   font-family: "Poppins", sans-serif;
-  /* padding: 20px; */
+  padding: 20px;
   max-width: 1200px;
   margin: auto;
 }

@@ -80,4 +80,19 @@ const runJaccardMatching = async (req, res) => {
   }
 };
 
-export { runJaccardMatching };
+const resetMatching = async (req, res) => {
+  try {
+    // Reset assignedSupervisor for all students
+    await Student.updateMany({}, { $set: { assignedSupervisor: null } });
+
+    // Reset assignedStudents for all supervisors
+    await Supervisor.updateMany({}, { $set: { assignedStudents: [] } });
+
+    res.status(200).json({ message: "All assignments have been reset." });
+  } catch (error) {
+    console.error("Resetting error:", error);
+    res.status(500).json({ error: "Failed to reset assignments." });
+  }
+};
+
+export { runJaccardMatching, resetMatching };

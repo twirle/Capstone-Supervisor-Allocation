@@ -304,7 +304,7 @@ const AdminUsersPage = () => {
         <div>
           <div className="match-buttons">
             <button className="match-button" onClick={resetAssignments}>
-              Reset Match
+              Reset Matches
             </button>
             <button className="match-button" onClick={hungarianMatch}>
               Hungarian Match

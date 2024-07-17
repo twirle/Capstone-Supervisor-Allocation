@@ -1,9 +1,9 @@
 import express from "express";
+import { runHungarianMatching } from "../controllers/hungarianController.js";
 import {
-  runHungarianMatching,
+  runJaccardMatching,
   resetMatching,
-} from "../controllers/hungarianController.js";
-import { runJaccardMatching } from "../controllers/jaccardController.js";
+} from "../controllers/jaccardController.js";
 import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
 const router = express.Router();

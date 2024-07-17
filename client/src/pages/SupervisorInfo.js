@@ -13,6 +13,7 @@ function SupervisorInfo({ userId }) {
   useEffect(() => {
     if (user.role !== "supervisor") {
       setError("User is not a supervisor");
+      return;
     }
 
     setLoading(true);

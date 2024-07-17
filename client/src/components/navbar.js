@@ -21,6 +21,7 @@ const Navbar = () => {
             <div className="nav-links">
               <Link to="/adminUsersPage">Manage Users</Link>
               <Link to="/supervisorInterest">Supervisor Interest</Link>
+              <Link to="/matchManage">Match Management</Link>
             </div>
           )}
 

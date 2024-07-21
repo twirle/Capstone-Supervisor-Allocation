@@ -227,48 +227,48 @@ const AdminUsersPage = () => {
     }
   };
 
-  // Now defunct
-  const hungarianMatch = async () => {
-    const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Hungarian match executed successfully");
-    } else {
-      console.error("Failed to execute hungarian match");
-    }
-  };
+  // // Now defunct matches | shifted to match management
+  // const hungarianMatch = async () => {
+  //   const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
+  //     method: "POST",
+  //     headers: {
+  //       Authorization: `Bearer ${user.token}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //     credentials: "include",
+  //   });
+  //   if (response.ok) {
+  //     fetchUsers(activeRole); // Refetch users to update UI post-reset
+  //     console.log("Hungarian match executed successfully");
+  //   } else {
+  //     console.error("Failed to execute hungarian match");
+  //   }
+  // };
 
-  const jaccardMatch = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (response.ok) {
-        fetchUsers(activeRole); // Refetch users to update UI post-reset
-        console.log("Jaccard match executed successfully");
-      } else {
-        console.error("Failed to execute jaccard match");
-      }
-    } catch (error) {
-      console.log("Error in matching");
-      setError("Error in matching");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const jaccardMatch = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${user.token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //     });
+  //     if (response.ok) {
+  //       fetchUsers(activeRole); // Refetch users to update UI post-reset
+  //       console.log("Jaccard match executed successfully");
+  //     } else {
+  //       console.error("Failed to execute jaccard match");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error in matching");
+  //     setError("Error in matching");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -301,7 +301,7 @@ const AdminUsersPage = () => {
             </button>
           ))}
         </div>
-        <div>
+        {/* <div>
           <div className="match-buttons">
             <button className="match-button" onClick={resetAssignments}>
               Reset Matches
@@ -313,7 +313,7 @@ const AdminUsersPage = () => {
               Jaccard Match
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="filters">
         <select

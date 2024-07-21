@@ -65,7 +65,12 @@ const runJaccardMatching = async (req, res) => {
     );
     console.log("matchDetails:", matchDetails);
 
-    await updateMatchesInDatabase(assignments, supervisors, students);
+    await updateMatchesInDatabase(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
     console.log("update database");
 
     res.status(200).json({

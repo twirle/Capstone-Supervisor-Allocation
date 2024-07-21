@@ -1,7 +1,6 @@
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export const jaccardMatch = async (userToken, setLoading, setError) => {
-  setLoading(true);
+export const jaccardMatch = async (userToken) => {
   try {
     const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
       method: "POST",
@@ -11,22 +10,18 @@ export const jaccardMatch = async (userToken, setLoading, setError) => {
       },
       credentials: "include",
     });
-    if (response.ok) {
-      console.log("Jaccard match executed successfully");
-    } else {
-      console.error("Failed to execute jaccard match");
+    if (!response.ok) {
+      throw new Error("Failed to execute Jaccard match");
     }
+    console.log("Jaccard match executed successfully");
+    return await response.json(); // Assuming the server might send back some data
   } catch (error) {
-    console.log("Error in matching");
-    setError("Error in matching");
-  } finally {
-    setLoading(false);
+    console.error("Error executing matches", error.message);
+    throw error;
   }
 };
 
-export const resetAssignments = async (userToken, setLoading, setError) => {
-  // Call endpoint to reset assignments
-  setLoading(true);
+export const resetAssignments = async (userToken) => {
   try {
     const response = await fetch(`${apiUrl}/api/match/reset`, {
       method: "POST",
@@ -36,15 +31,13 @@ export const resetAssignments = async (userToken, setLoading, setError) => {
       },
       credentials: "include",
     });
-    if (response.ok) {
-      console.log("Assignments reset successfully");
-    } else {
-      console.error("Failed to reset assignments");
+    if (!response.ok) {
+      throw new Error("Failed to reset assignments");
     }
-  } catch (err) {
-    console.log("Error resetting assignments");
-    setError("Error resetting assignments");
-  } finally {
-    setLoading(false);
+    console.log("Assignments reset successfully");
+    return await response.json();
+  } catch (error) {
+    console.error("Error executing matches", error.message);
+    throw error;
   }
 };

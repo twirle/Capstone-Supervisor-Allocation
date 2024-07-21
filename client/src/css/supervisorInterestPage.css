@@ -1,7 +1,7 @@
 /* supervisorInterestPage.css */
 .supervisor-interest-container {
   font-family: "Poppins", sans-serif;
-  padding: 20px;
+  /* padding: 20px; */
   max-width: 1200px;
   margin: auto;
 }
@@ -67,6 +67,36 @@
 
 .table-style th {
   background-color: #f4f4f4;
+}
+
+.table-style th:nth-child(1),
+.table-style td:nth-child(1) {
+  width: 10%;
+}
+
+.table-style th:nth-child(2),
+.table-style td:nth-child(2) {
+  width: 11%;
+}
+
+.table-style th:nth-child(3),
+.table-style td:nth-child(3) {
+  width: 35%;
+}
+
+.table-style th:nth-child(4),
+.table-style td:nth-child(4) {
+  width: 5%;
+}
+
+.table-style th:nth-child(5),
+.table-style td:nth-child(5) {
+  width: 14%;
+}
+
+.table-style th:nth-child(6),
+.table-style td:nth-child(6) {
+  width: 25%;
 }
 
 .save-button {

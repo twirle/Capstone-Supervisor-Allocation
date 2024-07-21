@@ -9,6 +9,7 @@ import {
   findOptimalAssignments,
   updateMatchesInDatabase,
 } from "../matching/jaccard.js";
+import matchResult from "../models/matchResultModel.js";
 
 async function fetchStudents() {
   const students = await Student.find({
@@ -42,21 +43,26 @@ async function fetchSupervisors() {
   return await Supervisor.find().exec();
 }
 
-const runJaccardMatching = async (req, res) => {
-  try {
-    const supervisors = await fetchSupervisors();
-    let students = await fetchStudents();
-    students = await enrichStudentsWithJobTokens(students);
-    let supervisorInterestMap = await fetchAllSupervisorInterests();
+async function prepareMatchingData() {
+  const supervisors = await fetchSupervisors();
+  let students = await fetchStudents();
+  students = await enrichStudentsWithJobTokens(students);
+  let supervisorInterestMap = await fetchAllSupervisorInterests();
+  return { supervisors, students, supervisorInterestMap };
+}
 
+const runHungarianMatching = async (req, res) => {
+  try {
+    const { supervisors, students, supervisorInterestMap } =
+      await prepareMatchingData();
     const jaccardScores = calculateJaccardScores(
       supervisors,
       students,
       supervisorInterestMap
     );
-    console.log("jaccardScores:", jaccardScores);
+    // console.log("jaccardScores:", jaccardScores);
     const assignments = findOptimalAssignments(jaccardScores);
-    console.log("Assignments:", assignments);
+    // console.log("Assignments:", assignments);
     const matchDetails = simulateMatches(
       assignments,
       supervisors,
@@ -85,6 +91,15 @@ const runJaccardMatching = async (req, res) => {
   }
 };
 
+const runGreedyMatching = async (req, res) => {
+  try {
+    const { supervisors, students, supervisorInterestMap } =
+      await prepareMatchingData();
+  } catch (error) {
+    40;
+  }
+};
+
 const resetMatching = async (req, res) => {
   try {
     // Reset assignedSupervisor for all students
@@ -92,6 +107,7 @@ const resetMatching = async (req, res) => {
 
     // Reset assignedStudents for all supervisors
     await Supervisor.updateMany({}, { $set: { assignedStudents: [] } });
+    await matchResult.deleteMany({});
 
     res.status(200).json({ message: "All assignments have been reset." });
   } catch (error) {
@@ -100,4 +116,4 @@ const resetMatching = async (req, res) => {
   }
 };
 
-export { runJaccardMatching, resetMatching };
+export { runHungarianMatching, runGreedyMatching, resetMatching };

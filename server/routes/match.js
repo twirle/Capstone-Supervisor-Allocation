@@ -1,9 +1,9 @@
 import express from "express";
-import { runHungarianMatching } from "../controllers/hungarianController.js";
 import {
-  runJaccardMatching,
+  runHungarianMatching,
+  runGreedyMatching,
   resetMatching,
-} from "../controllers/jaccardController.js";
+} from "../controllers/matchController.js";
 import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 
 const router = express.Router();
@@ -16,12 +16,12 @@ router.post(
   runHungarianMatching
 );
 
-// Endpoint to trigger the jaccard matching process
+// Endpoint to trigger the greedy matching process
 router.post(
-  "/jaccardMatch",
+  "/GreedyMatch",
   requireAuth,
   checkRole(["admin"]),
-  runJaccardMatching
+  runGreedyMatching
 );
 
 // Reset matches

@@ -1,8 +1,8 @@
 const apiUrl = process.env.REACT_APP_API_URL;
 
-export const jaccardMatch = async (userToken) => {
+export const hungarianMatch = async (userToken) => {
   try {
-    const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
+    const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${userToken}`,
@@ -11,9 +11,9 @@ export const jaccardMatch = async (userToken) => {
       credentials: "include",
     });
     if (!response.ok) {
-      throw new Error("Failed to execute Jaccard match");
+      throw new Error("Failed to execute Hungarian match");
     }
-    console.log("Jaccard match executed successfully");
+    console.log("Hungarian match executed successfully");
     return await response.json(); // Assuming the server might send back some data
   } catch (error) {
     console.error("Error executing matches", error.message);

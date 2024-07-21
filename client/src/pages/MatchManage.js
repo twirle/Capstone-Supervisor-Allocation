@@ -3,7 +3,7 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import MatchTable from "../components/matchTable";
 import { fetchMatches } from "../services/matchResultService";
 import "../css/matchManage.css";
-import { jaccardMatch, resetAssignments } from "../services/matchingService";
+import { hungarianMatch, resetAssignments } from "../services/matchingService";
 
 function MatchManage({ userId }) {
   const [loading, setLoading] = useState(false);
@@ -53,10 +53,10 @@ function MatchManage({ userId }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleJaccardMatch = async () => {
+  const handleHungarianMatch = async () => {
     try {
       setLoading(true);
-      await jaccardMatch(user.token);
+      await hungarianMatch(user.token);
       await loadMatches();
     } catch (error) {
       setError("Failed to execute match", error.message);
@@ -96,7 +96,7 @@ function MatchManage({ userId }) {
           <button
             className="match-button"
             disabled={loading}
-            onClick={handleJaccardMatch}
+            onClick={handleHungarianMatch}
           >
             Jaccard Match
           </button>

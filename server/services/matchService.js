@@ -7,10 +7,10 @@ import {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
   simulateMatches,
-  findHungarianAssignments,
   updateMatchesInDatabase,
 } from "../matching/jaccard.js";
 
+import { findHungarianAssignments } from "../matching/hungarian.js";
 import { findGreedyAssignments } from "../matching/greedy.js";
 import { findGaleShapleyAssignments } from "../matching/galeShapley.js";
 

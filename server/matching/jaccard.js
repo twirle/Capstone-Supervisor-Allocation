@@ -149,22 +149,22 @@ function convertInterestToScore(interest) {
   }
 }
 
-function findHungarianAssignments(jaccardScores) {
-  const maxScore = jaccardScores
-    .flat()
-    .reduce((max, score) => Math.max(max, score), 0);
+// function findHungarianAssignments(jaccardScores) {
+//   const maxScore = jaccardScores
+//     .flat()
+//     .reduce((max, score) => Math.max(max, score), 0);
 
-  console.log("maxScore:", maxScore);
-  
-  const costMatrix = jaccardScores.map((row) =>
-    row.map((score) => maxScore - score)
-  );
+//   console.log("maxScore:", maxScore);
 
-  console.log("findoptimalcostmatrix:", costMatrix);
-  const assignments = munkres(costMatrix);
+//   const costMatrix = jaccardScores.map((row) =>
+//     row.map((score) => maxScore - score)
+//   );
 
-  return assignments;
-}
+//   console.log("findoptimalcostmatrix:", costMatrix);
+//   const assignments = munkres(costMatrix);
+
+//   return assignments;
+// }
 
 function simulateMatches(assignments, supervisors, students, jaccardScores) {
   let matchDetails = [];
@@ -205,6 +205,6 @@ export {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
   simulateMatches,
-  findHungarianAssignments,
+  // findHungarianAssignments,
   updateMatchesInDatabase,
 };

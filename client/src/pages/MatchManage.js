@@ -42,11 +42,13 @@ function MatchManage({ userId }) {
     }
   };
 
-  const filteredMatches = matches.filter(
-    (matches) =>
-      matches.supervisor.name.toLowerCase().includes(filter.toLowerCase()) ||
-      matches.student.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const filteredMatches = matches
+    .filter(
+      (match) =>
+        match.supervisor.name.toLowerCase().includes(filter.toLowerCase()) ||
+        match.student.name.toLowerCase().includes(filter.toLowerCase())
+    )
+    .sort((a, b) => b.score - a.score);
 
   // Pagination
   const indexOfLastMatch = currentPage * matchesPerPage;
@@ -127,7 +129,7 @@ function MatchManage({ userId }) {
             disabled={loading}
             onClick={handleHungarianMatch}
           >
-            Jaccard Match
+            Hungarian Match
           </button>
           <button
             className="match-button"

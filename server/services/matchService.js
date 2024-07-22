@@ -12,6 +12,7 @@ import {
 } from "../matching/jaccard.js";
 
 import { findGreedyAssignments } from "../matching/greedy.js";
+import { findGaleShapleyAssignments } from "../matching/galeShapley.js";
 
 async function fetchStudents() {
   const students = await Student.find({
@@ -75,6 +76,7 @@ export {
   calculateJaccardScores,
   findHungarianAssignments,
   findGreedyAssignments,
+  findGaleShapleyAssignments,
   simulateMatches,
   updateMatchesInDatabase,
 };

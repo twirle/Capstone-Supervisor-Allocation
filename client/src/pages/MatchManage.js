@@ -6,6 +6,7 @@ import "../css/matchManage.css";
 import {
   greedyMatch,
   hungarianMatch,
+  galeShapleyMatch,
   resetAssignments,
 } from "../services/matchingService";
 
@@ -81,6 +82,18 @@ function MatchManage({ userId }) {
     }
   };
 
+  const handleGaleShapleyMatch = async () => {
+    try {
+      setLoading(true);
+      await galeShapleyMatch(user.token);
+      await loadMatches();
+    } catch (error) {
+      setError("Failed to execute match", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReset = async () => {
     try {
       setLoading(true);
@@ -122,6 +135,13 @@ function MatchManage({ userId }) {
             onClick={handleGreedyMatch}
           >
             Greedy Match
+          </button>
+          <button
+            className="match-button"
+            disabled={loading}
+            onClick={handleGaleShapleyMatch}
+          >
+            Gale-Shapley Match
           </button>
           <button
             className="match-button"

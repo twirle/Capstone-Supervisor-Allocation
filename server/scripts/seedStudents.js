@@ -5,6 +5,7 @@ import User from "../models/userModel.js";
 import Faculty from "../models/facultyModel.js";
 import Company from "../models/companyModel.js";
 import Job from "../models/jobModel.js";
+import matchResult from "../models/matchResultModel.js";
 import bcrypt from "bcrypt";
 import { firstNames, lastNames } from "./text/names.js";
 
@@ -21,6 +22,7 @@ mongoose
 const clearExistingStudentsAndUsers = async () => {
   await Student.deleteMany({});
   await User.deleteMany({ role: "student" });
+  await matchResult.deleteMany({});
   console.log("Cleared existing students and student users.");
 };
 
@@ -78,7 +80,7 @@ const seedStudents = async () => {
   await clearExistingStudentsAndUsers();
   const faculties = await fetchFaculties();
   const companies = await fetchCompanies();
-  const totalStudents = 10;
+  const totalStudents = 30;
   const allCourses = faculties.reduce(
     (acc, faculty) =>
       acc.concat(
@@ -121,7 +123,6 @@ const seedStudents = async () => {
 
     await createStudentUser(fullName, faculty, course, company._id, job._id);
   }
-
   console.log(`Inserted ${totalStudents} students successfully.`);
 };
 

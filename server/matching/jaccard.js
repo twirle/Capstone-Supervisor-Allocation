@@ -153,7 +153,9 @@ function findHungarianAssignments(jaccardScores) {
   const maxScore = jaccardScores
     .flat()
     .reduce((max, score) => Math.max(max, score), 0);
+
   console.log("maxScore:", maxScore);
+  
   const costMatrix = jaccardScores.map((row) =>
     row.map((score) => maxScore - score)
   );

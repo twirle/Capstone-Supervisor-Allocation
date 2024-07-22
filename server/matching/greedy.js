@@ -1,4 +1,4 @@
-const findGreedyAssignments = (jaccardScores) => {
+function findGreedyAssignments(jaccardScores) {
   const assignments = [];
   const supervisorCap = 10;
   const numSupervisors = jaccardScores.length;
@@ -42,6 +42,6 @@ const findGreedyAssignments = (jaccardScores) => {
   console.log("total rounds:", rounds);
 
   return assignments;
-};
+}
 
 export { findGreedyAssignments };

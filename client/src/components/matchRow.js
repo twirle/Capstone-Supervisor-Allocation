@@ -5,14 +5,17 @@ function MatchRow({ match }) {
   const [expanded, setExpanded] = useState(false);
   const toggleExpand = () => setExpanded(!expanded);
 
+  const supervisor = match.supervisor;
+  const student = match.student;
+
   return (
     <tr onClick={toggleExpand} style={{ cursor: "pointer" }}>
       <td>
-        {match.supervisor.name}
+        {supervisor.name}
         {expanded && (
           <div className="detail-section">
             <p className="detail-item">
-              <strong>Faculty:</strong> {match.supervisor.faculty.name}
+              <strong>Faculty:</strong> {supervisor.faculty.name}
             </p>
             <p className="detail-item">
               <strong>Research Areas:</strong>{" "}
@@ -22,22 +25,28 @@ function MatchRow({ match }) {
         )}
       </td>
       <td>
-        {match.student.name}
-        {expanded && (
-          <div className="detail-section">
-            <p className="detail-item">
-              <strong>Faculty:</strong> {match.student.faculty.name}
-            </p>
-            <p className="detail-item">
-              <strong>Course:</strong> {match.student.course}
-            </p>
-            <p className="detail-item">
-              <strong>Company:</strong> {match.student.company.name}
-            </p>
-            <p className="detail-item">
-              <strong>Job Title:</strong> {match.student.job.title}
-            </p>
-          </div>
+        {student ? (
+          <>
+            {student.name}
+            {expanded && (
+              <div className="detail-section">
+                <p className="detail-item">
+                  <strong>Faculty:</strong> {student.faculty.name}
+                </p>
+                <p className="detail-item">
+                  <strong>Course:</strong> {student.course}
+                </p>
+                <p className="detail-item">
+                  <strong>Company:</strong> {student.company.name || "N/A"}
+                </p>
+                <p className="detail-item">
+                  <strong>Job Title:</strong> {student.job.title || "N/A"}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          "No student assigned"
         )}
       </td>
       <td>{match.score.toFixed(3)}</td>

@@ -149,12 +149,12 @@ function convertInterestToScore(interest) {
   }
 }
 
-function findOptimalAssignments(scoresMatrix) {
-  const maxScore = scoresMatrix
+function findHungarianAssignments(jaccardScores) {
+  const maxScore = jaccardScores
     .flat()
     .reduce((max, score) => Math.max(max, score), 0);
   console.log("maxScore:", maxScore);
-  const costMatrix = scoresMatrix.map((row) =>
+  const costMatrix = jaccardScores.map((row) =>
     row.map((score) => maxScore - score)
   );
 
@@ -203,6 +203,6 @@ export {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
   simulateMatches,
-  findOptimalAssignments,
+  findHungarianAssignments,
   updateMatchesInDatabase,
 };

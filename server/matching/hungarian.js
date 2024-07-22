@@ -1,3 +1,4 @@
+// OLD PAGE: NOT IN USE, THE HUNGARIAN PARTS BEING USED ARE IN jaccard.js
 import munkres from "munkres-js";
 
 function calculateCompatibilityScores(supervisors, students) {
@@ -134,9 +135,8 @@ async function updateMatchesInDatabase(assignments, supervisors, students) {
   await Promise.all(updatePromises);
 }
 
-export {
-  calculateCompatibilityScores,
-  findOptimalAssignments,
-  simulateMatches,
-  updateMatchesInDatabase,
-};
+export // calculateCompatibilityScores,
+// findOptimalAssignments,
+// simulateMatches,
+// updateMatchesInDatabase,
+ {};

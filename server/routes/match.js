@@ -18,7 +18,7 @@ router.post(
 
 // Endpoint to trigger the greedy matching process
 router.post(
-  "/GreedyMatch",
+  "/greedyMatch",
   requireAuth,
   checkRole(["admin"]),
   runGreedyMatching

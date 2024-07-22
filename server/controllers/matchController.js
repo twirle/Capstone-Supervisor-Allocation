@@ -1,55 +1,12 @@
-import Student from "../models/studentModel.js";
-import Supervisor from "../models/supervisorModel.js";
-import Job from "../models/jobModel.js";
-
 import {
+  prepareMatchingData,
+  resetMatching,
   calculateJaccardScores,
-  fetchAllSupervisorInterests,
+  findHungarianAssignments,
+  findGreedyAssignments,
   simulateMatches,
-  findOptimalAssignments,
   updateMatchesInDatabase,
-} from "../matching/jaccard.js";
-import matchResult from "../models/matchResultModel.js";
-
-async function fetchStudents() {
-  const students = await Student.find({
-    $or: [
-      { assignedSupervisor: { $exists: false } },
-      { assignedSupervisor: null },
-    ],
-  })
-    .select("name job")
-    .exec();
-
-  return students;
-}
-
-async function enrichStudentsWithJobTokens(students) {
-  return Promise.all(
-    students.map(async (student) => {
-      const tokens = await getJobTokens(student.job);
-      student.tokens = tokens;
-      return student;
-    })
-  );
-}
-
-async function getJobTokens(jobId) {
-  const job = await Job.findById(jobId).select("tokens").exec();
-  return job ? job.tokens : [];
-}
-
-async function fetchSupervisors() {
-  return await Supervisor.find().exec();
-}
-
-async function prepareMatchingData() {
-  const supervisors = await fetchSupervisors();
-  let students = await fetchStudents();
-  students = await enrichStudentsWithJobTokens(students);
-  let supervisorInterestMap = await fetchAllSupervisorInterests();
-  return { supervisors, students, supervisorInterestMap };
-}
+} from "../services/matchService.js";
 
 const runHungarianMatching = async (req, res) => {
   try {
@@ -60,9 +17,9 @@ const runHungarianMatching = async (req, res) => {
       students,
       supervisorInterestMap
     );
-    // console.log("jaccardScores:", jaccardScores);
-    const assignments = findOptimalAssignments(jaccardScores);
-    // console.log("Assignments:", assignments);
+    console.log("jaccardScores:", jaccardScores);
+    const assignments = findHungarianAssignments(jaccardScores);
+    console.log("Assignments:", assignments);
     const matchDetails = simulateMatches(
       assignments,
       supervisors,
@@ -77,7 +34,6 @@ const runHungarianMatching = async (req, res) => {
       students,
       jaccardScores
     );
-    console.log("update database");
 
     res.status(200).json({
       message: "Jaccard matching process completed successfully.",
@@ -95,24 +51,38 @@ const runGreedyMatching = async (req, res) => {
   try {
     const { supervisors, students, supervisorInterestMap } =
       await prepareMatchingData();
+    const jaccardScores = calculateJaccardScores(
+      supervisors,
+      students,
+      supervisorInterestMap
+    );
+    console.log("jaccardScores:", jaccardScores);
+    const assignments = findGreedyAssignments(jaccardScores);
+    console.log("greedy assignments", assignments);
+    const matchDetails = simulateMatches(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
+    console.log("matchDetails:", matchDetails);
+
+    await updateMatchesInDatabase(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
+
+    res.status(200).json({
+      message: "Greedy matching process completed successfully.",
+      matches: matchDetails,
+    });
   } catch (error) {
-    40;
-  }
-};
-
-const resetMatching = async (req, res) => {
-  try {
-    // Reset assignedSupervisor for all students
-    await Student.updateMany({}, { $set: { assignedSupervisor: null } });
-
-    // Reset assignedStudents for all supervisors
-    await Supervisor.updateMany({}, { $set: { assignedStudents: [] } });
-    await matchResult.deleteMany({});
-
-    res.status(200).json({ message: "All assignments have been reset." });
-  } catch (error) {
-    console.error("Resetting error:", error);
-    res.status(500).json({ error: "Failed to reset assignments." });
+    console.error("Greedy matching error:".error);
+    res.status(500).json({
+      error: "An error occurred during the Greedy matching process.",
+    });
   }
 };
 

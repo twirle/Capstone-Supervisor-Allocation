@@ -3,7 +3,11 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import MatchTable from "../components/matchTable";
 import { fetchMatches } from "../services/matchResultService";
 import "../css/matchManage.css";
-import { hungarianMatch, resetAssignments } from "../services/matchingService";
+import {
+  greedyMatch,
+  hungarianMatch,
+  resetAssignments,
+} from "../services/matchingService";
 
 function MatchManage({ userId }) {
   const [loading, setLoading] = useState(false);
@@ -65,6 +69,18 @@ function MatchManage({ userId }) {
     }
   };
 
+  const handleGreedyMatch = async () => {
+    try {
+      setLoading(true);
+      await greedyMatch(user.token);
+      await loadMatches();
+    } catch (error) {
+      setError("Failed to execute match", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReset = async () => {
     try {
       setLoading(true);
@@ -103,7 +119,7 @@ function MatchManage({ userId }) {
           <button
             className="match-button"
             disabled={loading}
-            onClick={""}
+            onClick={handleGreedyMatch}
           >
             Greedy Match
           </button>

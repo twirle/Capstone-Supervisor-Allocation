@@ -29,7 +29,7 @@ const getSupervisor = async (req, res) => {
     .populate("user", "email")
     .populate({
       path: "assignedStudents",
-      select: "name course faculty job company",
+      select: "name course faculty job company user",
       populate: [
         {
           path: "faculty",
@@ -45,6 +45,11 @@ const getSupervisor = async (req, res) => {
           path: "job",
           model: "Job",
           select: "title",
+        },
+        {
+          path: "user",
+          model: "User",
+          select: "email",
         },
       ],
     });

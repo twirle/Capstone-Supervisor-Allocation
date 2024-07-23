@@ -1,5 +1,5 @@
 /* supervisorInfo.css */
-.supervisor-info-container {
+.student-info-container {
   font-family: "Poppins", sans-serif;
   padding: 20px;
   max-width: 1200px;
@@ -22,6 +22,21 @@
 
 .table-style th {
   background-color: #f4f4f4;
+}
+
+.student-info-container .table-style th:nth-child(1),
+.student-info-container.table-style td:nth-child(1) {
+  width: 15%;
+}
+
+.student-info-container .table-style th:nth-child(2),
+.student-info-container .table-style td:nth-child(2) {
+  width: 15%;
+}
+
+.student-info-container .table-style th:nth-child(3),
+.student-info-container .table-style td:nth-child(3) {
+  width: 35%;
 }
 
 .save-button {

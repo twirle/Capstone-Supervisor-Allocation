@@ -6,14 +6,14 @@
   margin: auto;
 }
 
-.match-manage-container .top-controls {
+.top-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.match-manage-container .searchBar input {
+.searchBar input {
   /* flex: 3; */
   padding: 8px;
   margin-block: 8px;
@@ -22,7 +22,7 @@
   border: 1px solid #ccc;
 }
 
-.match-manage-container .match-buttons {
+.match-buttons {
   /* flex: 1; */
   display: flex;
   gap: 10px; /* Adds space between buttons */

@@ -81,9 +81,6 @@ const AdminUsersPage = () => {
         facultyName: user.faculty ? user.faculty.name : "No Faculty",
         courseName: user.course || "No Course",
         company: user.company ? user.company.name : "No Company",
-        // jobTitle: jobDetails[user.job]
-        //   ? jobDetails[user.job].title
-        //   : "No Job Defined",
         jobTitle: user.job ? user.job.title : "No Job Defined",
         jobScope: user.job ? user.job.scope : "No Job Scope Defined",
         supervisorName: user.assignedSupervisor
@@ -158,6 +155,11 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
+
   const filteredUsers = users
     .filter(
       (u) =>
@@ -173,11 +175,33 @@ const AdminUsersPage = () => {
       return 0;
     });
 
+  // Pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    } else if (currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [filteredUsers.length, currentPage, usersPerPage]);
+
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages > 0 ? totalPages : 1); // Ensure the page is at least 1
+    }
+  }, [filteredUsers.length, currentPage, usersPerPage]);
+
+  const paginate = (pageNumber) => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const handleUserSave = (updatedUser) => {
     try {
@@ -200,75 +224,6 @@ const AdminUsersPage = () => {
       setError("Error deleting user");
     }
   };
-
-  const resetAssignments = async () => {
-    // Call endpoint to reset assignments
-    setLoading(true);
-    try {
-      const response = await fetch(`${apiUrl}/api/match/reset`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
-      if (response.ok) {
-        fetchUsers(activeRole); // Refetch users to update UI post-reset
-        console.log("Assignments reset successfully");
-      } else {
-        console.error("Failed to reset assignments");
-      }
-    } catch (err) {
-      console.log("Error resetting assignments");
-      setError("Error resetting assignments");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // // Now defunct matches | shifted to match management
-  // const hungarianMatch = async () => {
-  //   const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
-  //     method: "POST",
-  //     headers: {
-  //       Authorization: `Bearer ${user.token}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //     credentials: "include",
-  //   });
-  //   if (response.ok) {
-  //     fetchUsers(activeRole); // Refetch users to update UI post-reset
-  //     console.log("Hungarian match executed successfully");
-  //   } else {
-  //     console.error("Failed to execute hungarian match");
-  //   }
-  // };
-
-  // const jaccardMatch = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${user.token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //       credentials: "include",
-  //     });
-  //     if (response.ok) {
-  //       fetchUsers(activeRole); // Refetch users to update UI post-reset
-  //       console.log("Jaccard match executed successfully");
-  //     } else {
-  //       console.error("Failed to execute jaccard match");
-  //     }
-  //   } catch (error) {
-  //     console.log("Error in matching");
-  //     setError("Error in matching");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -301,19 +256,6 @@ const AdminUsersPage = () => {
             </button>
           ))}
         </div>
-        {/* <div>
-          <div className="match-buttons">
-            <button className="match-button" onClick={resetAssignments}>
-              Reset Matches
-            </button>
-            <button className="match-button" onClick={hungarianMatch}>
-              Hungarian Match
-            </button>
-            <button className="match-button" onClick={jaccardMatch}>
-              Jaccard Match
-            </button>
-          </div>
-        </div> */}
       </div>
       <div className="filters">
         <select
@@ -343,7 +285,8 @@ const AdminUsersPage = () => {
           className="search-input"
           placeholder="Search users..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          // onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearch}
         />
       </div>
       <table className="table-style">
@@ -384,19 +327,23 @@ const AdminUsersPage = () => {
         </tbody>
       </table>
       <div className="pagination">
-        {Array.from({
-          length: Math.ceil(filteredUsers.length / usersPerPage),
-        }).map((_, index) => (
-          <button
-            key={index}
-            className={`page-button ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
-            onClick={() => paginate(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
+        {Array.from(
+          {
+            length: Math.ceil(filteredUsers.length / usersPerPage),
+          },
+          // }).map((_, index) => (
+          (_, index) => (
+            <button
+              key={index}
+              className={`page-button ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          )
+        )}
       </div>
     </div>
   );

@@ -30,6 +30,10 @@ function MatchManage({ userId }) {
     loadMatches();
   }, [user.token]);
 
+  useEffect(() => {
+    setCurrentPage(1); // Reset to the first page when filter changes
+  }, [filter]);
+
   const loadMatches = async () => {
     try {
       setLoading(true);

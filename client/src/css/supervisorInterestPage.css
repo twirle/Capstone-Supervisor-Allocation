@@ -4,111 +4,111 @@
   /* padding: 20px; */
   max-width: 1200px;
   margin: auto;
-}
 
-.faculty-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-block: 16px;
-}
+  .faculty-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-block: 16px;
+  }
 
-.faculty-button {
-  background-color: #f8f9fa;
-  color: #333;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s;
-}
+  .faculty-button {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+  }
 
-.faculty-button.active {
-  background-color: #077bff;
-  color: white;
-}
+  .faculty-button.active {
+    background-color: #077bff;
+    color: white;
+  }
 
-.faculty-button:hover {
-  background-color: #e2e6ea;
-}
+  .faculty-button:hover {
+    background-color: #e2e6ea;
+  }
 
-.filters {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.filters select {
-  padding: 8px 16px;
-  margin-right: 20px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
+  .filters {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .filters select {
+    padding: 8px 16px;
+    margin-right: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
 
-.table-style {
-  width: 100%;
-  table-layout: auto;
-  border-collapse: collapse;
-  margin-block: 16px;
-}
+  .table-style {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    margin-block: 16px;
+  }
 
-.table-style th,
-.table-style td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  /* text-align: justify; */
-  vertical-align: top;
-}
+  .table-style th,
+  .table-style td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    /* text-align: justify; */
+    vertical-align: top;
+  }
 
-.table-style td .expanded-job-scope {
-  margin-top: 8px;
-}
+  .table-style td .expanded-job-scope {
+    margin-top: 8px;
+  }
 
-.table-style th {
-  background-color: #f4f4f4;
-}
+  .table-style th {
+    background-color: #f4f4f4;
+  }
 
-.table-style th:nth-child(1),
-.table-style td:nth-child(1) {
-  width: 10%;
-}
+  .table-style th:nth-child(1),
+  .table-style td:nth-child(1) {
+    width: 10%;
+  }
 
-.table-style th:nth-child(2),
-.table-style td:nth-child(2) {
-  width: 11%;
-}
+  .table-style th:nth-child(2),
+  .table-style td:nth-child(2) {
+    width: 11%;
+  }
 
-.table-style th:nth-child(3),
-.table-style td:nth-child(3) {
-  width: 35%;
-}
+  .table-style th:nth-child(3),
+  .table-style td:nth-child(3) {
+    width: 35%;
+  }
 
-.table-style th:nth-child(4),
-.table-style td:nth-child(4) {
-  width: 5%;
-}
+  .table-style th:nth-child(4),
+  .table-style td:nth-child(4) {
+    width: 5%;
+  }
 
-.table-style th:nth-child(5),
-.table-style td:nth-child(5) {
-  width: 14%;
-}
+  .table-style th:nth-child(5),
+  .table-style td:nth-child(5) {
+    width: 14%;
+  }
 
-.table-style th:nth-child(6),
-.table-style td:nth-child(6) {
-  width: 25%;
-}
+  .table-style th:nth-child(6),
+  .table-style td:nth-child(6) {
+    width: 25%;
+  }
 
-.save-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
+  .save-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
 
-.save-button:hover {
-  background-color: #0056b3;
+  .save-button:hover {
+    background-color: #0056b3;
+  }
 }

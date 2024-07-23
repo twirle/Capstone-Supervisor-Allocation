@@ -40,6 +40,7 @@ function SupervisorInfo({ userId }) {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Faculty</th>
             <th>Course</th>
             <th>Job Title</th>
@@ -50,6 +51,7 @@ function SupervisorInfo({ userId }) {
           {supervisor.assignedStudents.map((student) => (
             <tr key={student._id}>
               <td>{student.name}</td>
+              <td>{student.user.email}</td>
               <td>{student.faculty.name}</td>
               <td>{student.course}</td>
               <td>{student.job.title}</td>

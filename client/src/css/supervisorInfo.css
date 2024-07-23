@@ -24,6 +24,21 @@
   background-color: #f4f4f4;
 }
 
+.supervisor-info-container .table-style th:nth-child(1),
+.supervisor-info-container.table-style td:nth-child(1) {
+  width: 15%;
+}
+
+.supervisor-info-container .table-style th:nth-child(2),
+.supervisor-info-container .table-style td:nth-child(2) {
+  width: 15%;
+}
+
+.supervisor-info-container .table-style th:nth-child(3),
+.supervisor-info-container .table-style td:nth-child(3) {
+  width: 35%;
+}
+
 .save-button {
   background-color: #007bff;
   color: white;

@@ -8,6 +8,7 @@ import {
   hungarianMatch,
   galeShapleyMatch,
   resetAssignments,
+  kMeansMatch,
 } from "../services/matchingService";
 
 function MatchManage({ userId }) {
@@ -96,6 +97,18 @@ function MatchManage({ userId }) {
     }
   };
 
+  const handleKMeansMatch = async () => {
+    try {
+      setLoading(true);
+      await kMeansMatch(user.token);
+      await loadMatches();
+    } catch (error) {
+      setError("Failed to execute match", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReset = async () => {
     try {
       setLoading(true);
@@ -144,6 +157,13 @@ function MatchManage({ userId }) {
             onClick={handleGaleShapleyMatch}
           >
             Gale-Shapley Match
+          </button>
+          <button
+            className="match-button"
+            disabled={loading}
+            onClick={handleKMeansMatch}
+          >
+            k-Means Match
           </button>
           <button
             className="match-button"

@@ -10,10 +10,6 @@ import {
   updateMatchesInDatabase,
 } from "../matching/jaccard.js";
 
-import { findHungarianAssignments } from "../matching/hungarian.js";
-import { findGreedyAssignments } from "../matching/greedy.js";
-import { findGaleShapleyAssignments } from "../matching/galeShapley.js";
-
 async function fetchStudents() {
   const students = await Student.find({
     $or: [
@@ -74,9 +70,6 @@ export {
   prepareMatchingData,
   resetMatching,
   calculateJaccardScores,
-  findHungarianAssignments,
-  findGreedyAssignments,
-  findGaleShapleyAssignments,
   simulateMatches,
   updateMatchesInDatabase,
 };

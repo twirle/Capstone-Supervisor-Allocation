@@ -2,12 +2,14 @@ import {
   prepareMatchingData,
   resetMatching,
   calculateJaccardScores,
-  findHungarianAssignments,
-  findGreedyAssignments,
-  findGaleShapleyAssignments,
   simulateMatches,
   updateMatchesInDatabase,
 } from "../services/matchService.js";
+
+import { findHungarianAssignments } from "../matching/hungarian.js";
+import { findGreedyAssignments } from "../matching/greedy.js";
+import { findGaleShapleyAssignments } from "../matching/galeShapley.js";
+import { findKMeansAssignments } from "../matching/k-means.js";
 
 const runHungarianMatching = async (req, res) => {
   try {
@@ -114,13 +116,54 @@ const runGaleShapleyMatch = async (req, res) => {
     );
 
     res.status(200).json({
-      message: "Greedy matching process completed successfully.",
+      message: "Gale-Shalpey  matching process completed successfully.",
       matches: matchDetails,
     });
   } catch (error) {
-    console.error("Greedy matching error:".error);
+    console.error("Gale-Shalpey matching error:".error);
     res.status(500).json({
-      error: "An error occurred during the Greedy matching process.",
+      error: "An error occurred during the Gale-Shalpey matching process.",
+    });
+  }
+};
+
+const runKMeansMatch = async (req, res) => {
+  try {
+    const { supervisors, students, supervisorInterestMap } =
+      await prepareMatchingData();
+    const jaccardScores = calculateJaccardScores(
+      supervisors,
+      students,
+      supervisorInterestMap
+    );
+    // const numClusters = Math.min(supervisors.length, students.length);
+    const numClusters = 2;
+    const assignments = findKMeansAssignments(jaccardScores, numClusters);
+    console.log("kMeans assignments", assignments);
+    const matchDetails = simulateMatches(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
+    console.log("matchDetails:", matchDetails);
+
+    await updateMatchesInDatabase(
+      assignments,
+      supervisors,
+      students,
+      jaccardScores
+    );
+
+    res.status(200).json({
+      message: "kMeans Gale-Shalpey matching process completed successfully.",
+      matches: matchDetails,
+    });
+  } catch (error) {
+    console.error("kMeans Gale-Shalpey matching error:".error);
+    res.status(500).json({
+      error:
+        "An error occurred during the kMeans Gale-Shalpey matching process.",
     });
   }
 };
@@ -129,5 +172,6 @@ export {
   runHungarianMatching,
   runGreedyMatching,
   runGaleShapleyMatch,
+  runKMeansMatch,
   resetMatching,
 };

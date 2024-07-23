@@ -34,7 +34,7 @@ function createPreferenceLists(jaccardScores) {
 function findGaleShapleyAssignments(jaccardScores) {
   const { studentPreferences, supervisorPreferences } =
     createPreferenceLists(jaccardScores);
-  console.log(studentPreferences, supervisorPreferences);
+//   console.log(studentPreferences, supervisorPreferences);
 
   const supervisorCapacities = new Array(supervisorPreferences.length).fill(10);
   const numStudents = studentPreferences.length;

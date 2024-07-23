@@ -3,6 +3,7 @@ import {
   runHungarianMatching,
   runGreedyMatching,
   runGaleShapleyMatch,
+  runKMeansMatch,
   resetMatching,
 } from "../controllers/matchController.js";
 import { requireAuth, checkRole } from "../middleware/requireAuth.js";
@@ -25,13 +26,16 @@ router.post(
   runGreedyMatching
 );
 
-// Endpoint to trigger the greedy matching process
+// Endpoint to trigger the galeShapleyMatch matching process
 router.post(
   "/galeShapleyMatch",
   requireAuth,
   checkRole(["admin"]),
   runGaleShapleyMatch
 );
+
+// Endpoint to trigger the galeShapleyMatch matching process
+router.post("/kMeansMatch", requireAuth, checkRole(["admin"]), runKMeansMatch);
 
 // Reset matches
 router.post("/reset", requireAuth, checkRole(["admin"]), resetMatching);

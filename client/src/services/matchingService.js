@@ -63,6 +63,27 @@ export const galeShapleyMatch = async (userToken) => {
   }
 };
 
+export const kMeansMatch = async (userToken) => {
+  try {
+    const response = await fetch(`${apiUrl}/api/match/kMeansMatch`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("Failed to execute k-Means match");
+    }
+    console.log("k-Means match executed successfully");
+    return await response.json();
+  } catch (error) {
+    console.error("Error executing matches", error.message);
+    throw error;
+  }
+};
+
 export const resetAssignments = async (userToken) => {
   try {
     const response = await fetch(`${apiUrl}/api/match/reset`, {

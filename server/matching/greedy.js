@@ -32,7 +32,7 @@ function findGreedyAssignments(jaccardScores) {
       supervisorStudentCount[supervisor]++;
       assignedStudents.add(student);
     }
-    console.log("assignedStudents:", assignedStudents);
+    // console.log("assignedStudents:", assignedStudents);
 
     // break if all students are already assigned
     if (assignedStudents.size === numStudents) {

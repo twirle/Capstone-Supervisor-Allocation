@@ -38,17 +38,20 @@ function StudentInfo({ userId }) {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Email</th>
             <th>Faculty</th>
             <th>Research Area</th>
           </tr>
         </thead>
         <tbody>
-          {/* {student.assignedSupervisor.map((supervisor) => (
-            <tr key={supervisor._id}>
-              <td>{supervisor.name}</td>
-              <td>{supervisor.researchArea}</td>
+          {student.assignedSupervisor && (
+            <tr key={student.assignedSupervisor._id}>
+              <td>{student.assignedSupervisor.name}</td>
+              <td>{student.assignedSupervisor.user.email}</td>
+              <td>{student.assignedSupervisor.faculty.name}</td>
+              <td>{student.assignedSupervisor.researchArea.join(", ")}</td>
             </tr>
-          ))} */}
+          )}
         </tbody>
       </table>
     </div>

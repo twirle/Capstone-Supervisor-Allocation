@@ -30,9 +30,24 @@ const getStudent = async (req, res) => {
   const student = await Student.findOne({ user: userId })
     .populate("user", "email")
     .populate("faculty", "name")
-    .populate("assignedSupervisor", "name")
     .populate("company", "name")
-    .populate("job", "title scope");
+    .populate("job", "title scope")
+    .populate({
+      path: "assignedSupervisor",
+      select: "name faculty researchArea user",
+      populate: [
+        {
+          path: "faculty",
+          model: "Faculty",
+          select: "name",
+        },
+        {
+          path: "user",
+          model: "User",
+          select: "email",
+        },
+      ],
+    });
 
   if (!student) {
     return res
@@ -41,7 +56,10 @@ const getStudent = async (req, res) => {
   }
 
   // Check if the requesting user is the student themselves or an admin
-  if (student._id.toString() !== req.user.id && req.user.role !== "admin") {
+  if (
+    student.user._id.toString() !== req.user.id &&
+    req.user.role !== "admin"
+  ) {
     return res
       .status(403)
       .json({ error: "Not authorized to access this student" });

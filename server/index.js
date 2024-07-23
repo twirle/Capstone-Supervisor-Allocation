@@ -21,7 +21,8 @@ const app = express();
 app.use(
   cors({
     // origin: ["http://localhost:3000"],
-    origin: ["https://client-indol-mu.vercel.app"],
+    // origin: ["https://client-indol-mu.vercel.app"],
+    origin: [process.env.CLIENT_URL],
     credentials: true,
   })
 );

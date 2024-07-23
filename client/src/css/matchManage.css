@@ -1,0 +1,136 @@
+/* matchManage.css */
+.match-manage-container {
+  font-family: "Poppins", sans-serif;
+  /* padding: 10px; */
+  max-width: 1200px;
+  margin: auto;
+}
+
+.match-manage-container .top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.match-manage-container .searchBar input {
+  /* flex: 3; */
+  padding: 8px;
+  margin-block: 8px;
+  width: 150%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.match-manage-container .match-buttons {
+  /* flex: 1; */
+  display: flex;
+  gap: 10px; /* Adds space between buttons */
+}
+
+.table-style {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+  margin-block: 16px;
+}
+
+.table-style tr,
+.table-style th {
+  border: 1px solid #ccc;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.table-style th {
+  background-color: #f4f4f4;
+}
+.table-style thead th:nth-child(1),
+.table-style thead td:nth-child(1) {
+  width: 45%;
+}
+
+.table-style thead th:nth-child(2),
+.table-style thead td:nth-child(2) {
+  width: 45%;
+}
+
+.table-style th:nth-child(3),
+.table-style td:nth-child(3) {
+  width: 10%;
+}
+
+.match-manage-container button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.match-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.match-button.active {
+  background-color: #077bff;
+  color: white;
+}
+
+.match-button {
+  background-color: #077bff;
+  color: white;
+}
+
+.match-button:hover {
+  background-color: #0056b3;
+}
+
+/* Styles for the details section when a row is expanded */
+.detail-section {
+  padding: 10px;
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  margin-top: 5px;
+  border-radius: 4px;
+}
+
+.detail-heading {
+  font-weight: bold;
+  margin-top: 0;
+}
+
+.detail-item {
+  margin-bottom: 5px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-button {
+  padding: 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  outline: none;
+  font-size: 16px;
+  margin: 0 5px;
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.page-button.active {
+  background-color: #077bff;
+  color: white;
+}
+
+.page-button:hover {
+  background-color: #0056b3;
+}

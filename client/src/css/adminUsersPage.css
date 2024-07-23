@@ -1,7 +1,7 @@
 /* General styles for admin-users-page */
 .admin-users-page {
   font-family: "Poppins", sans-serif;
-  /* padding: 20px; */
+  /* padding: 10px; */
   max-width: 1200px;
   margin: auto;
 }
@@ -11,7 +11,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .role-controls {
@@ -106,7 +106,7 @@
 .search-input {
   padding: 8px;
   margin-block: 8px;
-  width: 200px;
+  width: 25%;
   border-radius: 5px;
   border: 1px solid #ccc;
 }

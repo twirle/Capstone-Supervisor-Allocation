@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
 import SupervisorInfo from "./pages/SupervisorInfo";
 import StudentInfo from "./pages/StudentInfo";
+import MatchManage from "./pages/MatchManage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import SupervisorInterestPage from "./pages/SupervisorInterestPage";
 
@@ -74,6 +75,18 @@ function App() {
                 !loading &&
                 (user && (user.role === "student" || user.role === "admin") ? (
                   <StudentInfo />
+                ) : (
+                  <Navigate to="/" />
+                ))
+              }
+            />
+
+            <Route
+              path="/matchManage"
+              element={
+                !loading &&
+                (user && user.role === "admin" ? (
+                  <MatchManage />
                 ) : (
                   <Navigate to="/" />
                 ))

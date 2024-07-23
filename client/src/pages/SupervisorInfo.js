@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { fetchSupervisorDetails } from "../services/supervisorService";
-import { fetchJobDetails } from "../services/jobService";
 import "../css/supervisorInfo.css";
 
 function SupervisorInfo({ userId }) {
@@ -12,24 +11,26 @@ function SupervisorInfo({ userId }) {
   const { user } = useAuthContext();
 
   useEffect(() => {
+    if (user.role !== "supervisor") {
+      setError("User is not a supervisor");
+      return;
+    }
+
     setLoading(true);
     fetchSupervisorDetails(user)
       .then((data) => {
         console.log("Fetched supervisor data:", data);
         setSupervisor(data);
-        setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to load supervisor details", error);
         setError("Failed to fetch data");
-        setLoading(false);
-      });
-    setLoading(false);
+      })
+      .finally(() => setLoading(false));
   }, [userId]);
 
   if (loading) return <p>Loading..</p>;
   if (error) return <p>{error}..</p>;
-  if (user.role !== "supervisor") return <p> User is not a supervisor</p>;
   if (!supervisor) return <p>Supervisor information is not available</p>;
 
   return (
@@ -49,10 +50,10 @@ function SupervisorInfo({ userId }) {
           {supervisor.assignedStudents.map((student) => (
             <tr key={student._id}>
               <td>{student.name}</td>
+              <td>{student.faculty.name}</td>
               <td>{student.course}</td>
-              <td>{student.faculty}</td>
-              <td>{student.job}</td>
-              <td>{student.company}</td>
+              <td>{student.job.title}</td>
+              <td>{student.company.name}</td>
             </tr>
           ))}
         </tbody>

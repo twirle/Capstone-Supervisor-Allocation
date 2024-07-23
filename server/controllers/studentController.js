@@ -1,6 +1,4 @@
 import Student from "../models/studentModel.js";
-import Faculty from "../models/facultyModel.js";
-import Company from "../models/companyModel.js";
 import mongoose from "mongoose";
 
 // get all Students

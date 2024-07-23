@@ -1,7 +1,8 @@
 import munkres from "munkres-js";
 import SupervisorInterest from "../models/supervisorInterestModel.js";
-// calculate jaccard similarity score and prepare for hungarian algorithm
+import matchResult from "../models/matchResultModel.js";
 
+// calculate jaccard similarity score and prepare for hungarian algorithm
 function jaccardIndex(setA, setB) {
   const intersection = new Set([...setA].filter((x) => setB.has(x)));
   const union = new Set([...setA, ...setB]);
@@ -69,13 +70,19 @@ function calculateJaccardScores(supervisors, students, supervisorInterestMap) {
   return scoresMatrix; // Optionally return the raw scores matrix
 }
 
-async function updateMatchesInDatabase(assignments, supervisors, students) {
+async function updateMatchesInDatabase(
+  assignments,
+  supervisors,
+  students,
+  scores
+) {
   let updatePromises = [];
 
   for (let assignment of assignments) {
     const [supervisorIndex, studentIndex] = assignment; // Correct destructuring
     const supervisor = supervisors[supervisorIndex];
     const student = students[studentIndex];
+    const score = scores[supervisorIndex][studentIndex];
 
     if (!supervisor || !student) {
       console.error(
@@ -86,7 +93,12 @@ async function updateMatchesInDatabase(assignments, supervisors, students) {
 
     updatePromises.push(
       student.updateOne({ assignedSupervisor: supervisor._id }),
-      supervisor.updateOne({ $push: { assignedStudents: student._id } })
+      supervisor.updateOne({ $push: { assignedStudents: student._id } }),
+      new matchResult({
+        supervisor: supervisor._id,
+        student: student._id,
+        score,
+      }).save()
     );
   }
 
@@ -137,20 +149,22 @@ function convertInterestToScore(interest) {
   }
 }
 
-function findOptimalAssignments(scoresMatrix) {
-  const maxScore = scoresMatrix
-    .flat()
-    .reduce((max, score) => Math.max(max, score), 0);
-  console.log("maxScore:", maxScore);
-  const costMatrix = scoresMatrix.map((row) =>
-    row.map((score) => maxScore - score)
-  );
+// function findHungarianAssignments(jaccardScores) {
+//   const maxScore = jaccardScores
+//     .flat()
+//     .reduce((max, score) => Math.max(max, score), 0);
 
-  console.log("findoptimalcostmatrix:", costMatrix);
-  const assignments = munkres(costMatrix);
+//   console.log("maxScore:", maxScore);
 
-  return assignments;
-}
+//   const costMatrix = jaccardScores.map((row) =>
+//     row.map((score) => maxScore - score)
+//   );
+
+//   console.log("findoptimalcostmatrix:", costMatrix);
+//   const assignments = munkres(costMatrix);
+
+//   return assignments;
+// }
 
 function simulateMatches(assignments, supervisors, students, jaccardScores) {
   let matchDetails = [];
@@ -191,6 +205,6 @@ export {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
   simulateMatches,
-  findOptimalAssignments,
+  // findHungarianAssignments,
   updateMatchesInDatabase,
 };

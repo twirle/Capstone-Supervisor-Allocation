@@ -9,6 +9,7 @@ import facultyRoutes from "./routes/faculty.js";
 import companyRoutes from "./routes/company.js";
 import jobRoutes from "./routes/job.js";
 import matchRoutes from "./routes/match.js";
+import matchResultRoutes from "./routes/matchResult.js";
 import supervisorInterestRoutes from "./routes/supervisorInterest.js";
 import cors from "cors";
 
@@ -43,6 +44,7 @@ app.use("/api/faculty", facultyRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/job", jobRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/matchResult", matchResultRoutes);
 app.use("/api/supervisorInterest", supervisorInterestRoutes);
 
 app.get("/", (req, res) => {

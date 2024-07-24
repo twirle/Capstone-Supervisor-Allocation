@@ -67,8 +67,9 @@
 }
 
 /* Styles for table layout */
-.table-style {
+.admin-users-page .table-style {
   width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
 }
 

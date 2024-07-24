@@ -67,8 +67,10 @@
 }
 
 /* Styles for table layout */
-.table-style {
+.admin-users-page .table-style {
   width: 100%;
+  table-layout: fixed;
+  text-wrap: wrap;
   border-collapse: collapse;
 }
 
@@ -83,11 +85,44 @@
   background-color: #f4f4f4;
 }
 
-.admin-users-page th,
-.admin-users-page td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
+.admin-users-page .table-style th:nth-child(1),
+.admin-users-page .table-style td:nth-child(1) {
+  width: 7%;
+}
+
+.admin-users-page .table-style th:nth-child(2),
+.admin-users-page .table-style td:nth-child(2) {
+  width: 7%;
+}
+
+.admin-users-page .table-style th:nth-child(3),
+.admin-users-page .table-style td:nth-child(3) {
+  width: 10%;
+}
+
+.admin-users-page .table-style th:nth-child(4),
+.admin-users-page .table-style td:nth-child(4) {
+  width: 14%;
+}
+
+.admin-users-page .table-style th:nth-child(5),
+.admin-users-page .table-style td:nth-child(5) {
+  width: 10%;
+}
+
+.admin-users-page .table-style th:nth-child(6),
+.admin-users-page .table-style td:nth-child(6) {
+  width: 7%;
+}
+
+.admin-users-page .table-style th:nth-child(7),
+.admin-users-page .table-style td:nth-child(7) {
+  width: 15%;
+}
+
+.admin-users-page .table-style th:nth-child(8),
+.admin-users-page .table-style td:nth-child(8) {
+  width: 6%;
 }
 
 /* Styles for filters */

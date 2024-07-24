@@ -161,8 +161,19 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
               value={editedResearchArea}
               onChange={(e) => setEditedResearchArea(e.target.value)}
             />
+          ) : Array.isArray(userDetail.researchArea) &&
+            userDetail.researchArea.length > 0 ? (
+            userDetail.researchArea
+              .map((item) =>
+                item
+                  .split("#")
+                  .filter(Boolean)
+                  .map((tag) => `#${tag}`)
+                  .join(", ")
+              )
+              .join(", ")
           ) : (
-            userDetail.researchArea || "-"
+            "-"
           )}
         </td>
       )}

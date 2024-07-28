@@ -22,6 +22,7 @@ function calculateJaccardScores(supervisors, students, supervisorInterestMap) {
     const supervisorSet = new Set(
       supervisor.researchArea.flatMap((area) => splitHashtags(area))
     );
+    console.log("supervisorSet", supervisorSet);
     let supervisorScores = [];
     let supervisorDetails = {
       supervisorName: supervisor.name,

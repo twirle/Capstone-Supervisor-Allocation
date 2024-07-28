@@ -155,6 +155,35 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/api/import-users", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          console.log("File uploaded successfully");
+          // Handle successful upload (e.g., show a success message)
+        } else {
+          console.error("Failed to upload file:", await response.json());
+          // Handle failed upload (e.g., show an error message)
+        }
+      } catch (err) {
+        console.error("Failed to upload file:", err);
+        // Handle error (e.g., show an error message)
+      }
+    }
+  };
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1); // Reset to first page on search
@@ -257,6 +286,7 @@ const AdminUsersPage = () => {
           ))}
         </div>
       </div>
+
       <div className="filters">
         <select
           value={selectedFaculty}
@@ -288,6 +318,23 @@ const AdminUsersPage = () => {
           // onChange={(e) => setSearchTerm(e.target.value)}
           onChange={handleSearch}
         />
+        <div className="import-buttons">
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            accept=".csv"
+            onChange={handleImport}
+          />
+          <button
+            className="import-button"
+            disabled={loading}
+            onClick={() => document.getElementById("fileInput").click()}
+            // onClick={handleImport}
+          >
+            Import CSV
+          </button>
+        </div>
       </div>
       <table className="table-style">
         <thead>

@@ -56,10 +56,16 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         break;
       case "supervisor":
         patchUrl = `/api/supervisor/${userDetail.user._id}`;
+        const researchAreaArray =
+          typeof editedResearchArea === "string"
+            ? editedResearchArea
+                .split(",")
+                .map((tag) => `#${tag.trim().replace(/^#/, "")}`)
+            : editedResearchArea;
         requestBody = {
           name: editedName,
           faculty: editedFaculty,
-          researchArea: editedResearchArea, // Assuming you manage researchArea state
+          researchArea: researchAreaArray,
         };
         break;
       case "facultyMember":
@@ -130,6 +136,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
 
   return (
     <tr>
+      {/* Name */}
       <td>
         {isEditing ? (
           <input
@@ -141,18 +148,21 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           userDetail.name
         )}
       </td>
-      <td>
+
+      {/* Faculty Name */}
+      <td>{userDetail.facultyName || "-"}</td>
+      {/* <td>
         {isEditing ? (
           <select
             value={editedFaculty}
             onChange={(e) => setEditedFaculty(e.target.value)}
-          >
-            {/* Add options for faculties here */}
-          </select>
+          ></select>
         ) : (
           userDetail.facultyName || "-"
         )}
-      </td>
+      </td> */}
+
+      {/* Research Area */}
       {role === "supervisor" && (
         <td>
           {isEditing ? (
@@ -164,25 +174,23 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
           ) : Array.isArray(userDetail.researchArea) &&
             userDetail.researchArea.length > 0 ? (
             userDetail.researchArea
-              .map((item) =>
-                item
-                  .split("#")
-                  .filter(Boolean)
-                  .map((tag) => `#${tag}`)
-                  .join(", ")
-              )
+              .map((tag) => (tag.startsWith("#") ? tag : `#${tag}`))
               .join(", ")
           ) : (
             "-"
           )}
         </td>
       )}
+      {/* Assigned Students */}
       {role === "supervisor" && (
         <td>{userDetail.studentNames || "No Students Assigned"}</td>
       )}
+
       {role === "student" && (
         <>
-          <td>
+          {/* Student Company */}
+          <td>{userDetail.course || "-"}</td>
+          {/* <td>
             {isEditing ? (
               <input
                 type="text"
@@ -192,8 +200,12 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
             ) : (
               userDetail.course || "-"
             )}
-          </td>
-          <td>
+          </td> */}
+
+          {/* Student Company & Job Title */}
+          <td>{userDetail.company || "-"}</td>
+          <td>{userDetail.jobTitle || "-"}</td>
+          {/* <td>
             {isEditing ? (
               <input
                 type="text"
@@ -214,11 +226,12 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
             ) : (
               userDetail.jobTitle || "No Job Title"
             )}
-          </td>
+          </td> */}
           <td>{userDetail.supervisorName || "No Supervisor Assigned"}</td>
         </>
       )}
-      <td>
+      <td>{userDetail.email || "No Email Assigned"}</td>
+      {/* <td>
         {isEditing ? (
           <input
             type="email"
@@ -228,7 +241,7 @@ const UserDetails = ({ userDetail, onDelete, role, onSave }) => {
         ) : (
           userDetail.email
         )}
-      </td>
+      </td> */}
       <td className="action-buttons">
         {isEditing ? (
           <>

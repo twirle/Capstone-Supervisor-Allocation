@@ -19,7 +19,6 @@
     "seedTestStudent": "node ./scripts/seedTestStudent.js",
     "seedCompanies": "node ./scripts/seedCompanies.js",
     "seedSupervisors": "node ./scripts/seedSupervisors.js",
-    "newseedSupervisors": "node ./scripts/newSeedSupervisors.js",
     "seedFaculties": "node ./scripts/seedFaculties.js",
     "seedFacultyMembers": "node ./scripts/seedFacultyMembers.js",
     "clearDatabase": "node ./scripts/clearDatabase.js",

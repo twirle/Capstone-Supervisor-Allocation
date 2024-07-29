@@ -1,6 +1,7 @@
-import munkres from "munkres-js";
 import SupervisorInterest from "../models/supervisorInterestModel.js";
 import matchResult from "../models/matchResultModel.js";
+import Company from "../models/companyModel.js";
+import Job from "../models/jobModel.js";
 
 // calculate jaccard similarity score and prepare for hungarian algorithm
 function jaccardIndex(setA, setB) {
@@ -8,9 +9,9 @@ function jaccardIndex(setA, setB) {
   const union = new Set([...setA, ...setB]);
   if (union.size === 0) return 0;
   const score = intersection.size / union.size;
-  console.log(
-    `Intersection Size: ${intersection.size}, Union Size: ${union.size}, Score: ${score}`
-  );
+  // console.log(
+  //   `Intersection Size: ${intersection.size}, Union Size: ${union.size}, Score: ${score}`
+  // );
   return score;
 }
 
@@ -23,6 +24,9 @@ function calculateJaccardScores(supervisors, students, supervisorInterestMap) {
       supervisor.researchArea.flatMap((area) => splitHashtags(area))
     );
     console.log("supervisorSet", supervisorSet);
+
+    const supervisorId = supervisor.user.toString();
+    console.log("Supervisor user in loop:", supervisorId);
     let supervisorScores = [];
     let supervisorDetails = {
       supervisorName: supervisor.name,
@@ -34,9 +38,19 @@ function calculateJaccardScores(supervisors, students, supervisorInterestMap) {
       let jaccardScore = jaccardIndex(supervisorSet, studentSet);
       console.log("jaccardScore:", jaccardScore);
 
+      // Ensure student.company and student.job are IDs
+      if (!student.company || !student.job) {
+        console.error(`Missing company or job for student: ${student.name}`);
+        continue; // Skip this student if data is incomplete
+      }
+
       // Construct a unique key to fetch interest score
-      const interestKey = `${supervisor._id}_${student.company}_${student.jobTitle}`;
+      const interestKey = `${supervisorId}_${student.company}_${student.job}`;
+      console.log('Constructed interestKey:', interestKey);
+
       const interest = supervisorInterestMap.get(interestKey) || "Agreeable"; // Default to 'Agreeable' if not found
+      console.log('Retrieved interest:', interest);
+
       const interestScore = convertInterestToScore(interest);
       console.log("interestScore:", interestScore);
 
@@ -53,19 +67,12 @@ function calculateJaccardScores(supervisors, students, supervisorInterestMap) {
 
     scoresMatrix.push(supervisorScores);
     detailedResults.push(supervisorDetails); // Collect detailed results
-    console.log("scoresMatrix:", scoresMatrix);
   }
 
   // Log detailed results
   detailedResults.forEach((supervisorResult) => {
-    console.log(
-      `Top matches for Supervisor ${supervisorResult.supervisorName}:`
-    );
     supervisorResult.matches
-      .sort((a, b) => b.score - a.score) // Sort matches by score in descending order
-      .forEach((match) =>
-        console.log(`   - ${match.studentName}: ${match.score}`)
-      );
+      .sort((a, b) => b.score - a.score); // Sort matches by score in descending order
   });
 
   return scoresMatrix; // Optionally return the raw scores matrix
@@ -115,24 +122,61 @@ function splitHashtags(tag) {
     .split(" ");
 }
 
+// async function fetchAllSupervisorInterests() {
+//   const interests = await SupervisorInterest.find({});
+//   console.log("interests", interests);
+//   const supervisorInterestMap = new Map();
+
+//   interests.forEach((interest) => {
+//     // Construct a unique key using both the company name and job title
+//     const key = `${interest.supervisor}_${interest.company._id}_${interest.job._id}`;
+//     console.log("key", key);
+
+//     let supervisorMap =
+//       supervisorInterestMap.get(interest.supervisor) || new Map();
+//     supervisorMap.set(key, interest.interest);
+
+//     // Update the map with the newly added key-value pair
+//     supervisorInterestMap.set(interest.supervisor, supervisorMap);
+//   });
+
+//   console.log("Supervisor Interest Map:", supervisorInterestMap);
+//   return supervisorInterestMap;
+// }
+
 async function fetchAllSupervisorInterests() {
-  const interests = await SupervisorInterest.find({});
-  const supervisorInterestMap = new Map();
+  try {
+    const interests = await SupervisorInterest.find({});
 
-  interests.forEach((interest) => {
-    // Construct a unique key using both the company name and job title
-    const key = `${interest.supervisor}_${interest.company}_${interest.jobTitle}`;
+    // Fetch all companies and jobs to create a map of names to IDs
+    const companies = await Company.find({}).select('_id name').exec();
+    const jobs = await Job.find({}).select('_id title').exec();
 
-    let supervisorMap =
-      supervisorInterestMap.get(interest.supervisor) || new Map();
-    supervisorMap.set(key, interest.interest);
+    const companyMap = new Map();
+    const jobMap = new Map();
 
-    // Update the map with the newly added key-value pair
-    supervisorInterestMap.set(interest.supervisor, supervisorMap);
-  });
+    companies.forEach(company => {
+      companyMap.set(company.name, company._id.toString());
+    });
 
-  console.log("Supervisor Interest Map:", supervisorInterestMap);
-  return supervisorInterestMap;
+    jobs.forEach(job => {
+      jobMap.set(job.title, job._id.toString());
+    });
+
+    // Map interests with resolved company and job IDs
+    const supervisorInterestMap = new Map();
+    interests.forEach(interest => {
+      const key = `${interest.supervisor.toString()}_${companyMap.get(interest.company)}_${jobMap.get(interest.jobTitle)}`;
+      console.log("Key being added to map:", key);
+      supervisorInterestMap.set(key, interest.interest);
+    });
+
+    console.log("Supervisor Interest Map:", supervisorInterestMap);
+    return supervisorInterestMap;
+  } catch (error) {
+    console.error('Error fetching supervisor interests:', error);
+    return new Map();
+  }
 }
 
 function convertInterestToScore(interest) {
@@ -149,23 +193,6 @@ function convertInterestToScore(interest) {
       return 1.0; // Default case if interest level is unknown
   }
 }
-
-// function findHungarianAssignments(jaccardScores) {
-//   const maxScore = jaccardScores
-//     .flat()
-//     .reduce((max, score) => Math.max(max, score), 0);
-
-//   console.log("maxScore:", maxScore);
-
-//   const costMatrix = jaccardScores.map((row) =>
-//     row.map((score) => maxScore - score)
-//   );
-
-//   console.log("findoptimalcostmatrix:", costMatrix);
-//   const assignments = munkres(costMatrix);
-
-//   return assignments;
-// }
 
 function simulateMatches(assignments, supervisors, students, jaccardScores) {
   let matchDetails = [];
@@ -206,6 +233,5 @@ export {
   calculateJaccardScores,
   fetchAllSupervisorInterests,
   simulateMatches,
-  // findHungarianAssignments,
   updateMatchesInDatabase,
 };

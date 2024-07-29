@@ -74,4 +74,22 @@ async function deleteUserandProfile(userId) {
   }
 }
 
-export { signupUser, deleteUserandProfile };
+async function buildSignupUsers(usersData) {
+  const createdUsers = [];
+  for (const userData of usersData) {
+    try {
+      const user = await signupUser(
+        userData.email,
+        userData.password,
+        userData.role,
+        userdata.additionalInfo
+      );
+      createdUsers.push(user);
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
+  }
+  return createdUsers;
+}
+
+export { signupUser, deleteUserandProfile, buildSignupUsers };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
+import ImportService from "../services/importService";
 import { useAuthContext } from "../hooks/useAuthContext";
 import "../css/adminUsersPage.css";
 
@@ -158,28 +159,28 @@ const AdminUsersPage = () => {
   const handleImport = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
+      const fileName = file.name.toLowerCase();
+      let role;
+
+      if (fileName.includes("students_data.csv")) {
+        role = "student";
+      } else if (fileName.includes("supervisors_data.csv")) {
+        role = "supervisor";
+      } else {
+        console.error(
+          'Invalid file name. Please use "students_data.csv" or "supervisors_data.csv".'
+        );
+        return;
+      }
 
       try {
-        const response = await fetch("/api/import-users", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: formData,
-        });
-
-        if (response.ok) {
-          console.log("File uploaded successfully");
-          // Handle successful upload (e.g., show a success message)
-        } else {
-          console.error("Failed to upload file:", await response.json());
-          // Handle failed upload (e.g., show an error message)
-        }
+        setLoading(true);
+        await ImportService.uploadFile(file, user.token, role);
+        console.log("File uploaded successfully");
       } catch (err) {
         console.error("Failed to upload file:", err);
-        // Handle error (e.g., show an error message)
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -321,16 +322,15 @@ const AdminUsersPage = () => {
         <div className="import-buttons">
           <input
             type="file"
+            accept=".csv"
             id="fileInput"
             style={{ display: "none" }}
-            accept=".csv"
             onChange={handleImport}
           />
           <button
             className="import-button"
             disabled={loading}
             onClick={() => document.getElementById("fileInput").click()}
-            // onClick={handleImport}
           >
             Import CSV
           </button>

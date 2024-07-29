@@ -14,13 +14,16 @@ function MatchRow({ match }) {
         {supervisor.name}
         {expanded && (
           <div className="detail-section">
-            <p className="detail-item">
-              <strong>Faculty:</strong> {supervisor.faculty.name}
-            </p>
-            <p className="detail-item">
+            <div className="detail-item">
+              <strong>Faculty:</strong>{" "}
+              <span className="detail-value">{supervisor.faculty.name}</span>
+            </div>
+            <div className="detail-item">
               <strong>Research Areas:</strong>{" "}
-              {match.supervisor.researchArea.join(", ")}
-            </p>
+              <span className="detail-value">
+                {match.supervisor.researchArea.join(", ")}
+              </span>
+            </div>
           </div>
         )}
       </td>
@@ -30,18 +33,42 @@ function MatchRow({ match }) {
             {student.name}
             {expanded && (
               <div className="detail-section">
-                <p className="detail-item">
-                  <strong>Faculty:</strong> {student.faculty.name}
-                </p>
-                <p className="detail-item">
-                  <strong>Course:</strong> {student.course}
-                </p>
-                <p className="detail-item">
-                  <strong>Company:</strong> {student.company.name || "N/A"}
-                </p>
-                <p className="detail-item">
-                  <strong>Job Title:</strong> {student.job.title || "N/A"}
-                </p>
+                <div className="detail-item">
+                  <strong>Faculty:</strong>{" "}
+                  <span className="detail-value">{student.faculty.name}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>Course:</strong>{" "}
+                  <span className="detail-value">{student.course}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>Company:</strong>{" "}
+                  <span className="detail-value">
+                    {student.company.name || "N/A"}
+                  </span>
+                </div>
+                <div className="detail-item">
+                  <strong>Job Title:</strong>{" "}
+                  <span className="detail-value">
+                    {student.job.title || "N/A"}
+                  </span>
+                </div>
+                <div className="detail-item">
+                  <strong>Tokens:</strong>{" "}
+                  {student.job.tokens.length > 0 ? (
+                    <div
+                      style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}
+                    >
+                      {student.job.tokens.map((token, index) => (
+                        <span key={index} className="token-item">
+                          {token}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    "N/A"
+                  )}
+                </div>
               </div>
             )}
           </>

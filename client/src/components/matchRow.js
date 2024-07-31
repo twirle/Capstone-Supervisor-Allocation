@@ -76,7 +76,7 @@ function MatchRow({ match }) {
           "No student assigned"
         )}
       </td>
-      <td>{match.score.toFixed(3)}</td>
+      <td>{match.score.toFixed(4)}</td>
       {/* <td>{expanded ? "Hide Details" : "Show Details"}</td> */}
     </tr>
   );

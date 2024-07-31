@@ -31,11 +31,16 @@
 
 .student-info-container .table-style th:nth-child(2),
 .student-info-container .table-style td:nth-child(2) {
-  width: 15%;
+  width: 20%;
 }
 
 .student-info-container .table-style th:nth-child(3),
 .student-info-container .table-style td:nth-child(3) {
+  width: 30%;
+}
+
+.student-info-container .table-style th:nth-child(4),
+.student-info-container .table-style td:nth-child(4) {
   width: 35%;
 }
 

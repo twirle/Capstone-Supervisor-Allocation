@@ -31,7 +31,7 @@ const getMatchResults = async (req, res) => {
           {
             path: "job",
             model: "Job",
-            select: "title",
+            select: "title tokens" ,
           },
         ],
       });

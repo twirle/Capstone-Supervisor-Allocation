@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
+import ImportService from "../services/importService";
 import { useAuthContext } from "../hooks/useAuthContext";
 import "../css/adminUsersPage.css";
 
@@ -155,6 +156,35 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileName = file.name.toLowerCase();
+      let role;
+
+      if (fileName.includes("students_data.csv")) {
+        role = "student";
+      } else if (fileName.includes("supervisors_data.csv")) {
+        role = "supervisor";
+      } else {
+        console.error(
+          'Invalid file name. Please use "students_data.csv" or "supervisors_data.csv".'
+        );
+        return;
+      }
+
+      try {
+        setLoading(true);
+        await ImportService.uploadFile(file, user.token, role);
+        console.log("File uploaded successfully");
+      } catch (err) {
+        console.error("Failed to upload file:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1); // Reset to first page on search
@@ -257,6 +287,7 @@ const AdminUsersPage = () => {
           ))}
         </div>
       </div>
+
       <div className="filters">
         <select
           value={selectedFaculty}
@@ -288,6 +319,22 @@ const AdminUsersPage = () => {
           // onChange={(e) => setSearchTerm(e.target.value)}
           onChange={handleSearch}
         />
+        <div className="import-buttons">
+          <input
+            type="file"
+            accept=".csv"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleImport}
+          />
+          <button
+            className="import-button"
+            disabled={loading}
+            onClick={() => document.getElementById("fileInput").click()}
+          >
+            Import CSV
+          </button>
+        </div>
       </div>
       <table className="table-style">
         <thead>

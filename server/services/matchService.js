@@ -16,9 +16,7 @@ async function fetchStudents() {
       { assignedSupervisor: { $exists: false } },
       { assignedSupervisor: null },
     ],
-  })
-    .select("name job")
-    .exec();
+  });
 
   return students;
 }

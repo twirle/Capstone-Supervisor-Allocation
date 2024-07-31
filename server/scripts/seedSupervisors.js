@@ -3,7 +3,10 @@ import mongoose from "mongoose";
 import Supervisor from "../models/supervisorModel.js";
 import User from "../models/userModel.js";
 import Faculty from "../models/facultyModel.js";
+import matchResult from "../models/matchResultModel.js";
 import bcrypt from "bcrypt";
+import { firstNames, lastNames } from "./text/names.js";
+import { facultyHashtags } from "./text/hashtags.js";
 
 dotenv.config();
 
@@ -18,11 +21,12 @@ mongoose
 const clearExistingSupervisorsAndUsers = async () => {
   await Supervisor.deleteMany({});
   await User.deleteMany({ role: "supervisor" });
+  await matchResult.deleteMany({});
   console.log("Cleared existing supervisors and supervisor users.");
 };
 
 // Function to create a single supervisor user
-const createSupervisorUser = async (fullName, facultyId, researchArea) => {
+const createSupervisorUser = async (fullName, facultyId, researchHashtags) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash("defaultPassword", salt);
   let userEmail = `${fullName.replace(/\s+/g, "").toLowerCase()}@sit.edu.sg`;
@@ -46,7 +50,7 @@ const createSupervisorUser = async (fullName, facultyId, researchArea) => {
     user: user._id,
     name: fullName,
     faculty: facultyId,
-    researchArea: researchArea,
+    researchArea: researchHashtags,
   });
 };
 
@@ -54,139 +58,52 @@ const createSupervisorUser = async (fullName, facultyId, researchArea) => {
 const seedSupervisors = async () => {
   await clearExistingSupervisorsAndUsers();
   const faculties = await Faculty.find({});
-  const totalSupervisors = 50; // Total number of supervisors you want to create
-  const allResearchAreas = faculties.reduce(
-    (acc, faculty) =>
-      acc.concat(
-        faculty.courses.map((researchArea) => ({
-          faculty: faculty._id,
-          researchArea,
-        }))
-      ),
-    []
-  );
+  const totalSupervisors = 3;
 
   for (let i = 0; i < totalSupervisors; i++) {
-    // Select a random research area from all research areas
-    const randomIndex = Math.floor(Math.random() * allResearchAreas.length);
-    const { faculty, researchArea } = allResearchAreas[randomIndex];
+    const facultyIndex = Math.floor(Math.random() * faculties.length);
+    const faculty = faculties[facultyIndex];
+    const possibleHashtags = facultyHashtags[faculty.name];
 
-    // Generate a unique name
-    // Generate a unique name for supervisors
-    const firstNames = [
-      "Morgan",
-      "Taylor",
-      "Jordan",
-      "Casey",
-      "Cameron",
-      "Avery",
-      "Riley",
-      "Alexis",
-      "Peyton",
-      "Quinn",
-      "Jordan",
-      "Harper",
-      "Reese",
-      "Sawyer",
-      "Rowan",
-      "Dakota",
-      "Emerson",
-      "Finley",
-      "Emery",
-      "Aubrey",
-      "Charlie",
-      "Skyler",
-      "Hayden",
-      "Jaden",
-      "Kendall",
-      "Parker",
-      "Tatum",
-      "Armani",
-      "Blair",
-      "Dallas",
-      "Frankie",
-      "Elliot",
-      "Phoenix",
-      "River",
-      "Sage",
-      "Shiloh",
-      "Spencer",
-      "Terry",
-      "Jamie",
-      "Leslie",
-      "Micah",
-      "Morgan",
-      "Drew",
-      "Brett",
-      "Carter",
-      "Devin",
-      "Jessie",
-      "Reagan",
-      "Robin",
-      "Stevie",
-    ];
+    const selectedHashtags = [];
+    while (selectedHashtags.length < 3) {
+      const randomHashtag =
+        possibleHashtags[Math.floor(Math.random() * possibleHashtags.length)];
+      if (!selectedHashtags.includes(randomHashtag)) {
+        selectedHashtags.push(randomHashtag);
+      }
+    }
 
-    const lastNames = [
-      "Murphy",
-      "Kelly",
-      "Ryan",
-      "Reed",
-      "Parker",
-      "Campbell",
-      "Owen",
-      "Brooks",
-      "Kennedy",
-      "Ellis",
-      "Bailey",
-      "Collins",
-      "Frost",
-      "Hudson",
-      "Hunter",
-      "Jensen",
-      "Lane",
-      "Logan",
-      "Mckenzie",
-      "Morgan",
-      "Murphy",
-      "Perry",
-      "Porter",
-      "Ray",
-      "Reese",
-      "Reid",
-      "Riley",
-      "Ross",
-      "Russell",
-      "Sanders",
-      "Scott",
-      "Shaw",
-      "Shelby",
-      "Sheridan",
-      "Simmons",
-      "Sloan",
-      "Spencer",
-      "Tate",
-      "Terry",
-      "Todd",
-      "Tyler",
-      "Valentine",
-      "Wallace",
-      "Watts",
-      "Webb",
-      "Wells",
-      "West",
-      "Wilder",
-      "Wiley",
-      "Winters",
-    ];
+    const fullName = `${
+      firstNames[Math.floor(Math.random() * firstNames.length)]
+    } ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
 
-    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    const fullName = `${firstName} ${lastName}`;
-
-    await createSupervisorUser(fullName, faculty, researchArea);
+    await createSupervisorUser(fullName, faculty._id, selectedHashtags);
   }
 
-  console.log(`Inserted ${totalSupervisors} supervisors successfully.`);
+  // Add the additional test supervisor
+  const testFacultyIndex = Math.floor(Math.random() * faculties.length);
+  const testFaculty = faculties[testFacultyIndex];
+  const testPossibleHashtags = facultyHashtags[testFaculty.name];
+  const testSelectedHashtags = [];
+
+  while (testSelectedHashtags.length < 3) {
+    const randomHashtag =
+      testPossibleHashtags[
+        Math.floor(Math.random() * testPossibleHashtags.length)
+      ];
+    if (!testSelectedHashtags.includes(randomHashtag)) {
+      testSelectedHashtags.push(randomHashtag);
+    }
+  }
+
+  await createSupervisorUser(
+    "Supervisor Test",
+    testFaculty._id,
+    testSelectedHashtags
+  );
+
+  console.log(`Inserted ${totalSupervisors + 1} supervisors successfully.`);
 };
 
 seedSupervisors()

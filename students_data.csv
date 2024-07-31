@@ -1,26 +1,101 @@
 name,faculty,course,company,job
-Emily Murphy,"Food, Chemical and Biotechnology",,PepsiCo,Product Development
-Spencer Ong,"Food, Chemical and Biotechnology",,PepsiCo,Intern Quality Assurance
-Noah Heng,"Food, Chemical and Biotechnology",,Nestle,Food Scientist
-Reese Reese,Infocomm Technology,,Microsoft,Business Analyst
-Hayden Sanders,"Food, Chemical and Biotechnology",,PepsiCo,Product Development
-Charlotte Lane,"Food, Chemical and Biotechnology",,PepsiCo,Product Development
-Leslie Heng,Infocomm Technology,,Google,Software Engineer
-Jack Wiley,Infocomm Technology,,Google,Data Analyst
-Jamie Phua,Infocomm Technology,,Google,Software Engineer
-Jason Quek,"Food, Chemical and Biotechnology",,Nestle,Research Analyst
-Elijah Porter,"Food, Chemical and Biotechnology",,Nestle,Intern Quality Control
-Oliver Webb,"Food, Chemical and Biotechnology",,Nestle,Intern Quality Control
-Skyler Choo,Infocomm Technology,,Microsoft,Project Manager
-Terry Frost,Infocomm Technology,,Microsoft,Business Analyst
-Kendall Chong,Infocomm Technology,,Microsoft,Business Analyst
-Mia Sia,"Food, Chemical and Biotechnology",,PepsiCo,Food Technician
-Lucas Chen,"Food, Chemical and Biotechnology",,PepsiCo,Intern Quality Assurance
-Quinn Chan,"Food, Chemical and Biotechnology",,Nestle,Intern Quality Control
-David Wallace,Infocomm Technology,,Microsoft,Business Analyst
-Lily Parker,"Food, Chemical and Biotechnology",,Nestle,Research Analyst
-Robin Simmons,"Food, Chemical and Biotechnology",,Nestle,Research Analyst
-Riley Ong,"Food, Chemical and Biotechnology",,Nestle,Research Analyst
-Zoe Winters,"Food, Chemical and Biotechnology",,PepsiCo,Food Technician
-Oliver Cheong,"Food, Chemical and Biotechnology",,Nestle,Research Analyst
-Mia Bailey,"Food, Chemical and Biotechnology",,PepsiCo,Food Technician
+Michael Tay,Information Technology,Applied Artificial Intelligence,Microsoft,Developer
+Robin Phua,Information Technology,Computer Science in Interactive Media and Game Development,Google,Cloud Engineer
+Sage Lane,Information Technology,Computer Science in Real-Time Interactive Simulation,Google,Data Analyst
+Aiden Lee,Information Technology,Applied Computing (Fintech),Apple,UX Designer
+Maria Frost,Information Technology,Computer Engineering,Apple,Hardware Engineer
+Charlotte Valentine,Information Technology,Computer Engineering,Microsoft,Project Manager
+Jordan Terry,Information Technology,Information and Communications Technology (Information Security),Google,Data Analyst
+Quinn Kwan,Information Technology,Information and Communications Technology (Information Security),Facebook,Research Scientist
+Madison Tyler,Information Technology,Applied Computing (Fintech),Facebook,Research Scientist
+Frankie Murphy,Information Technology,Information Communications Technology (Software Engineering),Apple,iOS Developer
+Samuel Ong,Information Technology,Computer Engineering,Google,Cloud Engineer
+Dallas Ray,Information Technology,Computer Science in Interactive Media and Game Development,Microsoft,Business Analyst
+Aubrey Lau,Information Technology,Computer Science in Interactive Media and Game Development,Apple,iOS Developer
+Stevie Lim,Information Technology,Computing Science,Facebook,Data Scientist
+Logan Ang,Information Technology,Computer Engineering,Google,Cloud Engineer
+Sawyer Chan,Information Technology,Computer Science in Interactive Media and Game Development,Apple,iOS Developer
+Sophia Russell,Information Technology,Computer Engineering,Amazon,Data Engineer
+Michael Wiley,Information Technology,Applied Computing (Fintech),Microsoft,Business Analyst
+Hayden Sloan,Information Technology,Computer Engineering,Google,Data Analyst
+Olivia Winters,Information Technology,Digital Art and Animation,Amazon,Data Engineer
+Kendall Loh,Information Technology,Information and Communications Technology (Information Security),Apple,iOS Developer
+Jordan West,Information Technology,Computer Science in Interactive Media and Game Development,Facebook,Software Engineer
+Brett Chong,Information Technology,Computer Science in Real-Time Interactive Simulation,Amazon,Data Engineer
+Brett Choo,Information Technology,Computing Science,Facebook,Data Scientist
+Sarah Sanders,Information Technology,Computer Science in Interactive Media and Game Development,Apple,Hardware Engineer
+Stevie Yeo,Information Technology,Computing Science,Amazon,Software Developer
+Tatum Pang,Information Technology,Information and Communications Technology (Information Security),Amazon,Software Developer
+James Todd,Information Technology,Applied Artificial Intelligence,Google,Data Analyst
+Maria Scott,Information Technology,Computer Science in Real-Time Interactive Simulation,Apple,Hardware Engineer
+Benjamin Valentine,Information Technology,Computing Science,Google,Cloud Engineer
+James Reese,Information Technology,Computer Engineering,Facebook,Research Scientist
+Grace Hudson,Information Technology,Applied Computing (Fintech),Microsoft,Business Analyst
+Charlotte Scott,Information Technology,Computer Engineering,Facebook,Software Engineer
+Megan Wilder,Information Technology,Applied Artificial Intelligence,Amazon,Product Manager
+Sage Logan,Information Technology,Computer Science in Real-Time Interactive Simulation,Apple,UX Designer
+Leslie Ross,Information Technology,Information Communications Technology (Software Engineering),Apple,Hardware Engineer
+Rachel Reed,Information Technology,Computer Science in Interactive Media and Game Development,Microsoft,Business Analyst
+Brett Frost,Information Technology,Digital Art and Animation,Amazon,Data Engineer
+Emery Spencer,Information Technology,Computer Science in Interactive Media and Game Development,Apple,UX Designer
+Brett Hudson,Information Technology,Computer Science in Interactive Media and Game Development,Amazon,Product Manager
+Zoe Heng,Information Technology,Computer Engineering,Google,Software Engineer
+Grace Ho,Information Technology,Information Communications Technology (Software Engineering),Facebook,Software Engineer
+Zoe Tate,Information Technology,Computer Engineering,Apple,Hardware Engineer
+Spencer Cheong,Information Technology,Computer Engineering,Google,Cloud Engineer
+Devin Jensen,Information Technology,Applied Artificial Intelligence,Facebook,Data Scientist
+Evelyn Phua,Information Technology,Computer Science in Interactive Media and Game Development,Apple,Hardware Engineer
+Benjamin Wells,Information Technology,Computer Engineering,Google,Data Analyst
+Michael Owen,Information Technology,Information Communications Technology (Software Engineering),Microsoft,Business Analyst
+Charlotte Scott,Information Technology,Computing Science,Google,Data Analyst
+Liam Ryan,Information Technology,Computing Science,Facebook,Research Scientist
+Liam Reid,Information Technology,Computer Science in Real-Time Interactive Simulation,Facebook,Software Engineer
+Emerson Campbell,Information Technology,Applied Computing (Fintech),Facebook,Software Engineer
+Kevin Watts,Information Technology,Computer Engineering,Google,Data Analyst
+Chloe Hunter,Information Technology,Digital Art and Animation,Facebook,Data Scientist
+Abigail McKenzie,Information Technology,Computer Science in Interactive Media and Game Development,Amazon,Data Engineer
+Leslie Sanders,Information Technology,Computing Science,Apple,iOS Developer
+Jack Owen,Information Technology,Applied Computing (Fintech),Microsoft,Developer
+Sawyer Ryan,Information Technology,Computer Science in Interactive Media and Game Development,Microsoft,Developer
+Leslie Valentine,Information Technology,Applied Artificial Intelligence,Amazon,Data Engineer
+Lucas Goh,Information Technology,Computer Science in Interactive Media and Game Development,Microsoft,Developer
+George Ng,Information Technology,Digital Art and Animation,Microsoft,Project Manager
+Emily Pang,Information Technology,Computer Science in Interactive Media and Game Development,Facebook,Data Scientist
+Benjamin Tay,Information Technology,Digital Art and Animation,Facebook,Data Scientist
+River Porter,Information Technology,Computer Science in Interactive Media and Game Development,Facebook,Software Engineer
+Isabella Ong,Information Technology,Information and Communications Technology (Information Security),Amazon,Software Developer
+Rowan Reese,Information Technology,Information Communications Technology (Software Engineering),Facebook,Software Engineer
+Avery McKenzie,Information Technology,Computer Science in Real-Time Interactive Simulation,Google,Cloud Engineer
+Ava Watts,Information Technology,Computer Science in Real-Time Interactive Simulation,Google,Data Analyst
+Gabriel Soh,Information Technology,Computer Science in Interactive Media and Game Development,Google,Software Engineer
+Anna Porter,Information Technology,Computing Science,Facebook,Software Engineer
+Ella Owen,"Food, Chemical and Biotechnology",Chemical Engineering,Danone,Food Technologist
+Parker Tan,"Food, Chemical and Biotechnology",Food Technology,PepsiCo,Intern Quality Assurance
+Casey Tate,"Food, Chemical and Biotechnology",Chemical Engineering,Danone,Production Supervisor
+Logan Chan,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,PepsiCo,Intern Quality Assurance
+Henry Hunter,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Mondelez,Innovation Specialist
+Blair Lee,"Food, Chemical and Biotechnology",Food Technology,PepsiCo,Product Development
+William Sanders,"Food, Chemical and Biotechnology",Food Technology,Mondelez,Food Engineer
+George Ross,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Mondelez,Intern Quality Specialist
+Sage Ong,"Food, Chemical and Biotechnology",Food Technology,Nestle,Food Scientist
+Madison Ross,"Food, Chemical and Biotechnology",Chemical Engineering,PepsiCo,Food Technician
+Michael Wong,"Food, Chemical and Biotechnology",Chemical Engineering,General Mills,Lab Technician
+Finley Ray,"Food, Chemical and Biotechnology",Chemical Engineering,Danone,Food Technologist
+Jack Ng,"Food, Chemical and Biotechnology",Chemical Engineering,Mondelez,Intern Quality Specialist
+Emily Quek,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Mondelez,Intern Quality Specialist
+Ava Murphy,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,General Mills,Lab Technician
+Oliver Simmons,"Food, Chemical and Biotechnology",Food Technology,Nestle,Food Scientist
+Lily Shelby,"Food, Chemical and Biotechnology",Food Technology,Danone,Food Technologist
+Armani Lau,"Food, Chemical and Biotechnology",Chemical Engineering,PepsiCo,Product Development
+Morgan Watts,"Food, Chemical and Biotechnology",Food Technology,PepsiCo,Food Technician
+Spencer Webb,"Food, Chemical and Biotechnology",Food Technology,PepsiCo,Product Development
+Emily Valentine,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Danone,Microbiologist
+Peyton Ng,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,PepsiCo,Food Technician
+Carter Toh,"Food, Chemical and Biotechnology",Chemical Engineering,General Mills,Product Developer
+Harper Tate,"Food, Chemical and Biotechnology",Food Technology,Mondelez,Food Engineer
+Emerson West,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Nestle,Food Scientist
+Benjamin Choo,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,PepsiCo,Product Development
+Cameron Lee,"Food, Chemical and Biotechnology",Food Technology,Nestle,Intern Quality Control
+Riley Tate,"Food, Chemical and Biotechnology",Chemical Engineering,General Mills,Lab Technician
+Natalie Low,"Food, Chemical and Biotechnology",Food Technology,Mondelez,Intern Quality Specialist
+Jessie Hunter,"Food, Chemical and Biotechnology",Pharmaceutical Engineering,Mondelez,Innovation Specialist

@@ -47,22 +47,23 @@
 
 /* Action buttons styling */
 
-.match-buttons {
+.import-buttons {
   display: flex;
   gap: 10px;
+  margin-left: auto;
 }
 
-.match-button.active {
+.import-button.active {
   background-color: #077bff;
   color: white;
 }
 
-.match-button {
+.import-button {
   background-color: #077bff;
   color: white;
 }
 
-.match-button:hover {
+.import-button:hover {
   background-color: #0056b3;
 }
 

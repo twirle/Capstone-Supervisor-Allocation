@@ -16,7 +16,7 @@ function createPreferenceLists(jaccardScores) {
     scores.sort((a, b) => b.score - a.score);
     studentPreferences[student] = scores.map((item) => item.supervisor);
   }
-  console.log("studentPreferences", studentPreferences);
+  // console.log("studentPreferences", studentPreferences);
 
   for (let supervisor = 0; supervisor < numSupervisors; supervisor++) {
     const scores = jaccardScores[supervisor].map((score, student) => ({
@@ -26,7 +26,7 @@ function createPreferenceLists(jaccardScores) {
     scores.sort((a, b) => b.score - a.score);
     supervisorPreferences[supervisor] = scores.map((item) => item.student);
   }
-  console.log("supervisorPreferences", supervisorPreferences);
+  // console.log("supervisorPreferences", supervisorPreferences);
 
   return { studentPreferences, supervisorPreferences };
 }

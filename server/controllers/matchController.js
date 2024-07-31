@@ -20,16 +20,16 @@ const runHungarianMatching = async (req, res) => {
       students,
       supervisorInterestMap
     );
-    console.log("jaccardScores:", jaccardScores);
+    // console.log("jaccardScores:", jaccardScores);
     const assignments = findHungarianAssignments(jaccardScores);
-    console.log("Assignments:", assignments);
+    // console.log("Assignments:", assignments);
     const matchDetails = simulateMatches(
       assignments,
       supervisors,
       students,
       jaccardScores
     );
-    console.log("matchDetails:", matchDetails);
+    // console.log("matchDetails:", matchDetails);
 
     await updateMatchesInDatabase(
       assignments,

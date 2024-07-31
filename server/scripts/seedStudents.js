@@ -123,7 +123,37 @@ const seedStudents = async () => {
 
     await createStudentUser(fullName, faculty, course, company._id, job._id);
   }
-  console.log(`Inserted ${totalStudents} students successfully.`);
+
+  const randomIndex = Math.floor(Math.random() * allCourses.length);
+  const { faculty, course } = allCourses[randomIndex];
+
+  // Select a random company based on faculty name
+  const testFacultyName = faculties.find(
+    (fac) => fac._id.toString() === faculty.toString()
+  ).name;
+  const relevantCompanies = companies.filter((company) =>
+    testFacultyName === "Food, Chemical and Biotechnology"
+      ? ["Nestle", "PepsiCo", "Mondelez", "Danone", "General Mills"].includes(
+          company.name
+        )
+      : ["Google", "Microsoft", "Apple", "Amazon", "Facebook"].includes(
+          company.name
+        )
+  );
+  const testCompany =
+    relevantCompanies[Math.floor(Math.random() * relevantCompanies.length)];
+  const testJobs = await fetchJobsForCompany(testCompany._id);
+  const testJob = testJobs[Math.floor(Math.random() * testJobs.length)];
+
+  await createStudentUser(
+    "Student Test",
+    faculty,
+    course,
+    testCompany._id,
+    testJob._id
+  );
+
+  console.log(`Inserted ${totalStudents + 1} students successfully.`);
 };
 
 seedStudents()

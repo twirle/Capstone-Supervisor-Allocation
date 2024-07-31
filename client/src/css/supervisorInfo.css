@@ -31,12 +31,12 @@
 
 .supervisor-info-container .table-style th:nth-child(2),
 .supervisor-info-container .table-style td:nth-child(2) {
-  width: 15%;
+  width: 20%;
 }
 
 .supervisor-info-container .table-style th:nth-child(3),
 .supervisor-info-container .table-style td:nth-child(3) {
-  width: 35%;
+  width: 15%;
 }
 
 .save-button {

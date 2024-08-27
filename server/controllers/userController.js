@@ -2,6 +2,11 @@ import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import {
+  importStudents,
+  importSupervisors,
+} from "../services/importService.js";
+import multer from "multer";
 
 const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET, { expiresIn: "3d" });
@@ -79,4 +84,26 @@ const changePassword = async (req, res) => {
   }
 };
 
-export { loginUser, getAllUsers, getUser, changePassword };
+const handleImport = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file provided." });
+  }
+
+  try {
+    const filename = req.file.originalname;
+    if (filename.startsWith("students_data")) {
+      await importStudents(req.file.buffer);
+      res.json({ message: "Student data imported successfully." });
+    } else if (filename.startsWith("supervisors_data")) {
+      await importSupervisors(req.file.buffer);
+      res.json({ message: "Supervisor data imported successfully." });
+    } else {
+      throw new Error("Unknown file type.");
+    }
+  } catch (error) {
+    console.error("Error during import:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { loginUser, getAllUsers, getUser, changePassword, handleImport };

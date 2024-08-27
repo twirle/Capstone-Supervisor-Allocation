@@ -1,0 +1,59 @@
+/* supervisorInfo.css */
+.student-info-container {
+  font-family: "Poppins", sans-serif;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.table-style {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-block: 16px;
+}
+
+.table-style th,
+.table-style td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  vertical-align: top;
+}
+
+.table-style th {
+  background-color: #f4f4f4;
+}
+
+.student-info-container .table-style th:nth-child(1),
+.student-info-container .table-style td:nth-child(1) {
+  width: 15%;
+}
+
+.student-info-container .table-style th:nth-child(2),
+.student-info-container .table-style td:nth-child(2) {
+  width: 20%;
+}
+
+.student-info-container .table-style th:nth-child(3),
+.student-info-container .table-style td:nth-child(3) {
+  width: 30%;
+}
+
+.student-info-container .table-style th:nth-child(4),
+.student-info-container .table-style td:nth-child(4) {
+  width: 35%;
+}
+
+.save-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+}

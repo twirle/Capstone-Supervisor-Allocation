@@ -19,6 +19,7 @@ const getJobs = async (req, res) => {
 // GET a single job by ID
 const getJob = async (req, res) => {
   const { jobId } = req.params;
+  // console.log("Job ID received:", jobId);
 
   if (!mongoose.Types.ObjectId.isValid(jobId)) {
     return res.status(404).json({ error: "Invalid jobId" });

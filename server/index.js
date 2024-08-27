@@ -9,6 +9,7 @@ import facultyRoutes from "./routes/faculty.js";
 import companyRoutes from "./routes/company.js";
 import jobRoutes from "./routes/job.js";
 import matchRoutes from "./routes/match.js";
+import matchResultRoutes from "./routes/matchResult.js";
 import supervisorInterestRoutes from "./routes/supervisorInterest.js";
 import cors from "cors";
 
@@ -19,7 +20,9 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://client-kohl-eight.vercel.app"], // Change this to match your frontend URL
+    // origin: ["http://localhost:3000"],
+    // origin: ["https://client-indol-mu.vercel.app"],
+    origin: [process.env.CLIENT_URL],
     credentials: true,
   })
 );
@@ -42,16 +45,17 @@ app.use("/api/faculty", facultyRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/job", jobRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/matchResult", matchResultRoutes);
 app.use("/api/supervisorInterest", supervisorInterestRoutes);
+
+app.get("/", (req, res) => {
+  res.json("Welcome to the API!");
+});
 
 // Error handling middleware (this should be the LAST middleware before you connect to DB and listen on a port)
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something went wrong!");
-});
-
-app.get("/", (req, res) => {
-  res.send("Welcome to the API!");
 });
 
 // Only connect to DB and listen on port if NOT in test environment

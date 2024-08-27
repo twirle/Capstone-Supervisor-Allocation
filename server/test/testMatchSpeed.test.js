@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { expect, use } from "chai";
 import chaiHttp from "chai-http";
-import server from "../server.js";
+import server from "../index.js";
 
 dotenv.config();
 const chai = use(chaiHttp);

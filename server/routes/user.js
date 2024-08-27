@@ -4,9 +4,11 @@ import {
   getAllUsers,
   getUser,
   changePassword,
+  handleImport,
 } from "../controllers/userController.js";
 import { requireAuth, checkRole } from "../middleware/requireAuth.js";
 import { signupUser, deleteUserandProfile } from "../services/userService.js";
+import { upload, handleFileImport } from "../controllers/importController.js";
 
 const router = express.Router();
 
@@ -47,5 +49,14 @@ router.get("/:userId", requireAuth, checkRole(["admin"]), getUser);
 
 // Change user password, requires authentication
 router.patch("/:userId/changePassword", requireAuth, changePassword);
+
+// Import
+router.post(
+  "/import",
+  requireAuth,
+  checkRole(["admin"]),
+  upload,
+  handleFileImport
+);
 
 export default router;

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import UserDetails from "../components/UserDetails";
+import ImportService from "../services/importService";
 import { useAuthContext } from "../hooks/useAuthContext";
 import "../css/adminUsersPage.css";
 
 const AdminUsersPage = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [users, setUsers] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -46,6 +49,7 @@ const AdminUsersPage = () => {
   };
 
   const fetchUsers = async (role) => {
+    setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/api/${role}`, {
         headers: {
@@ -61,11 +65,15 @@ const AdminUsersPage = () => {
 
       // Extract job IDs and remove duplicates
       const jobIds = [
-        ...new Set(data.filter((user) => user.job).map((user) => user.job)),
+        ...new Set(
+          data
+            .filter((user) => user.job)
+            .map((user) => {
+              // console.log("user job object:", user.job);
+              return user.job;
+            })
+        ),
       ];
-
-      // Fetch job details and map them by ID for quick lookup
-      const jobDetails = await fetchJobDetails(jobIds);
 
       // Combine user data with job details and format faculty, course, and other attributes
       const usersWithDetails = data.map((user) => ({
@@ -74,12 +82,8 @@ const AdminUsersPage = () => {
         facultyName: user.faculty ? user.faculty.name : "No Faculty",
         courseName: user.course || "No Course",
         company: user.company ? user.company.name : "No Company",
-        jobTitle: jobDetails[user.job]
-          ? jobDetails[user.job].title
-          : "No Job Job Defined",
-        jobScope: jobDetails[user.job]
-          ? jobDetails[user.job].scope
-          : "No Job Scope Defined",
+        jobTitle: user.job ? user.job.title : "No Job Defined",
+        jobScope: user.job ? user.job.scope : "No Job Scope Defined",
         supervisorName: user.assignedSupervisor
           ? user.assignedSupervisor.name
           : "No Supervisor Assigned",
@@ -90,36 +94,15 @@ const AdminUsersPage = () => {
 
       setUsers(usersWithDetails);
     } catch (err) {
-      console.error("Error fetching data:", err);
-    }
-  };
-
-  const fetchJobDetails = async (jobIds) => {
-    try {
-      const jobs = await Promise.all(
-        jobIds.map((id) =>
-          fetch(`${apiUrl}/api/job/${id}`, {
-            headers: { Authorization: `Bearer ${user.token}` },
-          })
-            .then((res) => res.json())
-            .catch((err) => {
-              console.error("Failed to fetch job:", id, err);
-              return { title: "No Job Title", scope: "No Job Scope" }; // Provide default values on failure
-            })
-        )
-      );
-
-      return jobs.reduce((acc, job) => {
-        acc[job._id] = job;
-        return acc;
-      }, {});
-    } catch (error) {
-      console.error("Error fetching job details:", error);
-      return {};
+      console.error("Error fetching user data:", err);
+      setError("Error fetching user data:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchFaculties = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${apiUrl}/api/faculty`, {
         headers: {
@@ -136,28 +119,76 @@ const AdminUsersPage = () => {
       }
     } catch (err) {
       console.error("Error fetching faculties:", err);
+      setError("Error fetching faculties:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchAllCourses = async () => {
-    const uniqueCourses = [
-      "All",
-      ...new Set(
-        users.map((user) => user.courseName).filter((course) => course)
-      ),
-    ];
-    setCourses(uniqueCourses);
+    try {
+      const uniqueCourses = [
+        "All",
+        ...new Set(
+          users.map((user) => user.courseName).filter((course) => course)
+        ),
+      ];
+      setCourses(uniqueCourses);
+    } catch (err) {
+      console.error("Error fetching courses", err);
+      setError("Error fetching courses", err);
+    }
   };
 
   const updateCoursesForFaculty = (faculty) => {
-    const relevantUsers = users.filter((user) => user.facultyName === faculty);
-    const uniqueCourses = [
-      "All",
-      ...new Set(relevantUsers.map((user) => user.courseName)),
-    ];
-    setCourses(uniqueCourses);
+    try {
+      const relevantUsers = users.filter(
+        (user) => user.facultyName === faculty
+      );
+      const uniqueCourses = [
+        "All",
+        ...new Set(relevantUsers.map((user) => user.courseName)),
+      ];
+      setCourses(uniqueCourses);
+    } catch (err) {
+      console.log("Error updating courses");
+      setError("Error updating courses");
+    }
   };
 
+  const handleImport = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileName = file.name.toLowerCase();
+      let role;
+
+      if (fileName.includes("students_data.csv")) {
+        role = "student";
+      } else if (fileName.includes("supervisors_data.csv")) {
+        role = "supervisor";
+      } else {
+        console.error(
+          'Invalid file name. Please use "students_data.csv" or "supervisors_data.csv".'
+        );
+        return;
+      }
+
+      try {
+        setLoading(true);
+        await ImportService.uploadFile(file, user.token, role);
+        console.log("File uploaded successfully");
+      } catch (err) {
+        console.error("Failed to upload file:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
 
   const filteredUsers = users
     .filter(
@@ -174,73 +205,53 @@ const AdminUsersPage = () => {
       return 0;
     });
 
+  // Pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    } else if (currentPage < 1) {
+      setCurrentPage(1);
+    }
+  }, [filteredUsers.length, currentPage, usersPerPage]);
+
+  useEffect(() => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages > 0 ? totalPages : 1); // Ensure the page is at least 1
+    }
+  }, [filteredUsers.length, currentPage, usersPerPage]);
+
+  const paginate = (pageNumber) => {
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const handleUserSave = (updatedUser) => {
-    setUsers(
-      users.map((user) => (user._id === updatedUser._id ? updatedUser : user))
-    );
-    fetchUsers(activeRole);
+    try {
+      setUsers(
+        users.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+      );
+      fetchUsers(activeRole);
+    } catch (err) {
+      console.log("Error saving user update");
+      setError("Error saving user update");
+    }
   };
 
   const handleUserDelete = (userId) => {
-    setUsers(users.filter((u) => u._id !== userId));
-    fetchUsers(activeRole);
-  };
-
-  const resetAssignments = async () => {
-    // Call endpoint to reset assignments
-    const response = await fetch(`${apiUrl}/api/match/reset`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Assignments reset successfully");
-    } else {
-      console.error("Failed to reset assignments");
-    }
-  };
-
-  const hungarianMatch = async () => {
-    const response = await fetch(`${apiUrl}/api/match/hungarianMatch`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Hungarian match executed successfully");
-    } else {
-      console.error("Failed to execute hungarian match");
-    }
-  };
-
-  const jaccardMatch = async () => {
-    const response = await fetch(`${apiUrl}/api/match/jaccardMatch`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${user.token}`,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (response.ok) {
-      fetchUsers(activeRole); // Refetch users to update UI post-reset
-      console.log("Jaccard match executed successfully");
-    } else {
-      console.error("Failed to execute jaccard match");
+    try {
+      setUsers(users.filter((u) => u._id !== userId));
+      fetchUsers(activeRole);
+    } catch (err) {
+      console.log("Error deleting user");
+      setError("Error deleting user");
     }
   };
 
@@ -254,6 +265,9 @@ const AdminUsersPage = () => {
       setSortDirection("asc");
     }
   };
+
+  if (loading) return <p>Loading..</p>;
+  if (error) return <p>{error}..</p>;
 
   return (
     <div className="admin-users-page">
@@ -272,20 +286,8 @@ const AdminUsersPage = () => {
             </button>
           ))}
         </div>
-        <div>
-          <div className="match-buttons">
-            <button className="match-button" onClick={resetAssignments}>
-              Reset Match
-            </button>
-            <button className="match-button" onClick={hungarianMatch}>
-              Hungarian Match
-            </button>
-            <button className="match-button" onClick={jaccardMatch}>
-              Jaccard Match
-            </button>
-          </div>
-        </div>
       </div>
+
       <div className="filters">
         <select
           value={selectedFaculty}
@@ -314,8 +316,25 @@ const AdminUsersPage = () => {
           className="search-input"
           placeholder="Search users..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          // onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleSearch}
         />
+        <div className="import-buttons">
+          <input
+            type="file"
+            accept=".csv"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleImport}
+          />
+          <button
+            className="import-button"
+            disabled={loading}
+            onClick={() => document.getElementById("fileInput").click()}
+          >
+            Import CSV
+          </button>
+        </div>
       </div>
       <table className="table-style">
         <thead>
@@ -355,19 +374,23 @@ const AdminUsersPage = () => {
         </tbody>
       </table>
       <div className="pagination">
-        {Array.from({
-          length: Math.ceil(filteredUsers.length / usersPerPage),
-        }).map((_, index) => (
-          <button
-            key={index}
-            className={`page-button ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
-            onClick={() => paginate(index + 1)}
-          >
-            {index + 1}
-          </button>
-        ))}
+        {Array.from(
+          {
+            length: Math.ceil(filteredUsers.length / usersPerPage),
+          },
+          // }).map((_, index) => (
+          (_, index) => (
+            <button
+              key={index}
+              className={`page-button ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+              onClick={() => paginate(index + 1)}
+            >
+              {index + 1}
+            </button>
+          )
+        )}
       </div>
     </div>
   );

@@ -1,142 +1,86 @@
 import munkres from "munkres-js";
-
-function calculateCompatibilityScores(supervisors, students) {
-  let scoresMatrix = [];
-
-  for (let i = 0; i < supervisors.length; i++) {
-    let supervisorScores = [];
-    for (let j = 0; j < students.length; j++) {
-      let score = 0;
-
-      if (supervisors[i].researchArea === students[j].course) {
-        score += 10;
-      } else if (supervisors[i].faculty.equals(students[j].faculty)) {
-        score += 5;
-      } else {
-        score += 1;
-      }
-
-      supervisorScores.push(score);
-    }
-    scoresMatrix.push(supervisorScores);
-  }
-
-  return scoresMatrix;
-}
-
-function findOptimalAssignments(scoresMatrix) {
-  const maxScore = scoresMatrix
+function oldfindHungarianAssignments(jaccardScores) {
+  const maxScore = jaccardScores
     .flat()
     .reduce((max, score) => Math.max(max, score), 0);
-  const costMatrix = scoresMatrix.map((row) =>
+
+  console.log("maxScore:", maxScore);
+
+  const costMatrix = jaccardScores.map((row) =>
     row.map((score) => maxScore - score)
   );
+
+  console.log("findoptimalcostmatrix:", costMatrix);
   const assignments = munkres(costMatrix);
 
   return assignments;
 }
 
-function simulateMatches(assignments, supervisors, students, scoresMatrix) {
-  let matchDetails = [];
+function findHungarianAssignments(jaccardScores) {
+  const supervisorCapacity = 10;
 
-  let sameFacultyCount = 0;
-  let differentFacultyCount = 0;
-  let researchAreaMatchCount = 0;
-  let totalCost = 0;
-
-  const maxScore = scoresMatrix
+  // Find the maximum score in the jaccardScores matrix
+  const maxScore = jaccardScores
     .flat()
     .reduce((max, score) => Math.max(max, score), 0);
 
-  for (let [supervisorIndex, studentIndex] of assignments) {
-    if (
-      supervisorIndex >= supervisors.length ||
-      studentIndex >= students.length
-    ) {
-      console.error(
-        `Invalid assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`
-      );
-      continue;
-    }
+  // Create the cost matrix by subtracting each score from the maxScore
+  const costMatrix = jaccardScores.map((row) =>
+    row.map((score) => maxScore - score)
+  );
 
-    const supervisor = supervisors[supervisorIndex];
-    const student = students[studentIndex];
+  // Expand the cost matrix based on supervisor capacities
+  const expandedCostMatrix = expandCostMatrix(costMatrix, supervisorCapacity);
 
-    let score = scoresMatrix[supervisorIndex][studentIndex];
-    let matchCost = maxScore - score;
-    totalCost += matchCost;
+  // Run Hungarian algorithm to find the optimal assignments
+  const assignments = munkres(expandedCostMatrix);
 
-    if (!supervisor || !student) {
-      console.error(
-        `Missing supervisor or student for assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`
-      );
-      continue;
-    }
+  // Map the assignments back to the original supervisors
+  const originalAssignments = mapAssignmentsToOriginal(
+    jaccardScores.length,
+    supervisorCapacity,
+    assignments
+  );
 
-    if (supervisor.faculty.equals(student.faculty)) {
-      sameFacultyCount++;
-    } else {
-      differentFacultyCount++;
-    }
-    if (supervisor.researchArea === student.course) {
-      researchAreaMatchCount++;
-    }
-
-    matchDetails.push({
-      "Supervisor + Student": `${supervisor.name} + ${student.name}`,
-      Details: `Research Area: ${supervisor.researchArea}, Course: ${student.course}`,
-      "Match Cost": matchCost,
-    });
-  }
-
-  console.log("Statistics:");
-  console.log(`Same faculty pairs: ${sameFacultyCount}`);
-  console.log(`Different faculty pairs: ${differentFacultyCount}`);
-  console.log(`Research area matches course: ${researchAreaMatchCount}`);
-  console.log(`Total cost of matching: ${totalCost}`);
-  console.table(matchDetails);
-
-  return matchDetails;
+  return originalAssignments;
 }
 
-async function updateMatchesInDatabase(assignments, supervisors, students) {
-  let updatePromises = [];
+function expandCostMatrix(jaccardScores, supervisorCapacity) {
+  const expandedCostMatrix = [];
+  const numSupervisors = jaccardScores.length;
 
-  for (let [supervisorIndex, studentIndex] of assignments) {
-    if (
-      supervisorIndex >= supervisors.length ||
-      studentIndex >= students.length
-    ) {
-      console.error(
-        `Invalid assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`
-      );
-      continue;
+  for (let supervisor = 0; supervisor < numSupervisors; supervisor++) {
+    for (let cap = 0; cap < supervisorCapacity; cap++) {
+      expandedCostMatrix.push([...jaccardScores[supervisor]]);
     }
-
-    const supervisor = supervisors[supervisorIndex];
-    const student = students[studentIndex];
-
-    if (!supervisor || !student) {
-      console.error(
-        `Missing supervisor or student for assignment: supervisorIndex=${supervisorIndex}, studentIndex=${studentIndex}`
-      );
-      continue;
-    }
-
-    updatePromises.push(
-      student.updateOne({ assignedSupervisor: supervisor._id })
-    );
-    updatePromises.push(
-      supervisor.updateOne({ $push: { assignedStudents: student._id } })
-    );
   }
+  console.log("expandedCostMatrix", expandedCostMatrix);
 
-  await Promise.all(updatePromises);
+  return expandedCostMatrix;
 }
 
-export {
-  calculateCompatibilityScores,
-  findOptimalAssignments,
-  simulateMatches,
-  updateMatchesInDatabase,
-};
+function mapAssignmentsToOriginal(
+  numSupervisors,
+  supervisorCapacity,
+  assignments
+) {
+  const supervisorMatches = [];
+  const supervisorCapacities = new Array(numSupervisors).fill(
+    supervisorCapacity
+  );
+  let currentSupervisor = 0;
+  let capacityUsed = 0;
+
+  for (const [expandedSupervisor, student] of assignments) {
+    while (capacityUsed >= supervisorCapacities[currentSupervisor]) {
+      currentSupervisor++;
+      capacityUsed = 0;
+    }
+    supervisorMatches.push([currentSupervisor, student]);
+    capacityUsed++;
+  }
+
+  return supervisorMatches;
+}
+
+export { findHungarianAssignments };

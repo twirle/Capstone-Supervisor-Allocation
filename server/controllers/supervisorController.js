@@ -27,7 +27,32 @@ const getSupervisor = async (req, res) => {
   const supervisor = await Supervisor.findOne({ user: userId })
     .populate("faculty", "name")
     .populate("user", "email")
-    .populate("assignedStudents", "name");
+    .populate({
+      path: "assignedStudents",
+      select: "name course faculty job company user",
+      populate: [
+        {
+          path: "faculty",
+          model: "Faculty",
+          select: "name",
+        },
+        {
+          path: "company",
+          model: "Company",
+          select: "name",
+        },
+        {
+          path: "job",
+          model: "Job",
+          select: "title",
+        },
+        {
+          path: "user",
+          model: "User",
+          select: "email",
+        },
+      ],
+    });
   if (!supervisor) {
     return res
       .status(404)

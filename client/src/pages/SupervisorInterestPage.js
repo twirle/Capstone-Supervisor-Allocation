@@ -3,6 +3,8 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import "../css/supervisorInterestPage.css";
 
 const SupervisorInterestPage = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [data, setData] = useState([]);
   const [faculties, setFaculties] = useState([]);
   const [companies, setCompanies] = useState([]);
@@ -27,6 +29,8 @@ const SupervisorInterestPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      // fetches student data, their faculty, company, job title, scope, etc
+      setLoading(true);
       try {
         const response = await fetch(`${apiUrl}/api/student/aggregate`, {
           headers: { Authorization: `Bearer ${user.token}` },
@@ -38,7 +42,7 @@ const SupervisorInterestPage = () => {
           const uniqueFaculties = [
             ...new Set(result.map((item) => item.faculty)),
           ];
-          setFaculties(uniqueFaculties);
+          setFaculties(uniqueFaculties.sort());
           if (uniqueFaculties.length > 0) {
             const initialFaculty = uniqueFaculties[0];
             setSelectedFaculty(initialFaculty);
@@ -58,11 +62,15 @@ const SupervisorInterestPage = () => {
         }
       } catch (err) {
         console.error("Failed to fetch data:", err.message);
+        setError("Failed to fetch data:", err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchInterests = async () => {
-      if (!user?._id) return; // Ensure user ID is available
+      setLoading(true);
+      if (!user?._id) return; // Check user ID is available
       try {
         const response = await fetch(
           `${apiUrl}/api/supervisorInterest/bySupervisor/${user._id}`,
@@ -86,6 +94,9 @@ const SupervisorInterestPage = () => {
         }
       } catch (error) {
         console.error("Failed to fetch interests:", error.message);
+        setError("Failed to fetch interests:", error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -170,7 +181,7 @@ const SupervisorInterestPage = () => {
 
   const handleSave = async () => {
     console.log("Save button clicked");
-
+    setLoading(true);
     try {
       const supervisorId = user ? user._id : null;
       console.log("Supervisor ID:", supervisorId);
@@ -190,9 +201,7 @@ const SupervisorInterestPage = () => {
           reason: reasons[key] || "",
         };
       });
-
       console.log("Payload to save:", payload);
-
       const response = await fetch(`${apiUrl}/api/supervisorInterest`, {
         method: "POST",
         headers: {
@@ -213,6 +222,9 @@ const SupervisorInterestPage = () => {
       }
     } catch (err) {
       console.error("Error saving interest:", err);
+      setError("Error saving interest:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -258,6 +270,9 @@ const SupervisorInterestPage = () => {
       [itemKey]: !prev[itemKey],
     }));
   };
+
+  if (loading) return <p>Loading..</p>;
+  if (error) return <p>{error}..</p>;
 
   return (
     <div className="supervisor-interest-container">

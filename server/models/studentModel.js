@@ -28,6 +28,7 @@ const studentSchema = new Schema({
   },
   job: {
     type: Schema.Types.ObjectId,
+    ref: "Job",
     required: true,
   },
   assignedSupervisor: {

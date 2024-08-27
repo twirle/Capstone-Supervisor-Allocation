@@ -5,6 +5,7 @@ import User from "../models/userModel.js";
 import Faculty from "../models/facultyModel.js";
 import Company from "../models/companyModel.js";
 import Job from "../models/jobModel.js";
+import matchResult from "../models/matchResultModel.js";
 import bcrypt from "bcrypt";
 import { firstNames, lastNames } from "./text/names.js";
 
@@ -21,6 +22,7 @@ mongoose
 const clearExistingStudentsAndUsers = async () => {
   await Student.deleteMany({});
   await User.deleteMany({ role: "student" });
+  await matchResult.deleteMany({});
   console.log("Cleared existing students and student users.");
 };
 
@@ -78,7 +80,7 @@ const seedStudents = async () => {
   await clearExistingStudentsAndUsers();
   const faculties = await fetchFaculties();
   const companies = await fetchCompanies();
-  const totalStudents = 10;
+  const totalStudents = 30;
   const allCourses = faculties.reduce(
     (acc, faculty) =>
       acc.concat(
@@ -122,7 +124,36 @@ const seedStudents = async () => {
     await createStudentUser(fullName, faculty, course, company._id, job._id);
   }
 
-  console.log(`Inserted ${totalStudents} students successfully.`);
+  const randomIndex = Math.floor(Math.random() * allCourses.length);
+  const { faculty, course } = allCourses[randomIndex];
+
+  // Select a random company based on faculty name
+  const testFacultyName = faculties.find(
+    (fac) => fac._id.toString() === faculty.toString()
+  ).name;
+  const relevantCompanies = companies.filter((company) =>
+    testFacultyName === "Food, Chemical and Biotechnology"
+      ? ["Nestle", "PepsiCo", "Mondelez", "Danone", "General Mills"].includes(
+          company.name
+        )
+      : ["Google", "Microsoft", "Apple", "Amazon", "Facebook"].includes(
+          company.name
+        )
+  );
+  const testCompany =
+    relevantCompanies[Math.floor(Math.random() * relevantCompanies.length)];
+  const testJobs = await fetchJobsForCompany(testCompany._id);
+  const testJob = testJobs[Math.floor(Math.random() * testJobs.length)];
+
+  await createStudentUser(
+    "Student Test",
+    faculty,
+    course,
+    testCompany._id,
+    testJob._id
+  );
+
+  console.log(`Inserted ${totalStudents + 1} students successfully.`);
 };
 
 seedStudents()
